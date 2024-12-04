@@ -1,0 +1,164 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome!",
+    "section": "",
+    "text": "Welcome to UCLA SOCIOL 212B (Winter 2025)!\nThis course is about answering social science questions using quantitative data. We will especially focus on how computational power is transforming the ways we can carry out quantitative research, covering both statistical and machine learning tools from the perspective of social science applications. The course especially emphasizes how to translate social science theories into quantities that can be estimated by algorithms designed for prediction. We will consider prediction in the service of both description and causal inference, building on ideas from SOCIOL 212A. The end product of the course is a research proposal using the ideas from the course. For students continuing to 212C, the research proposal can serve as the basis for the research project in that course. Students will leave the course prepared to connect social science theories to empirical evidence that can be produced by algorithms designed for prediction.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Welcome!",
+    "section": "",
+    "text": "Welcome to UCLA SOCIOL 212B (Winter 2025)!\nThis course is about answering social science questions using quantitative data. We will especially focus on how computational power is transforming the ways we can carry out quantitative research, covering both statistical and machine learning tools from the perspective of social science applications. The course especially emphasizes how to translate social science theories into quantities that can be estimated by algorithms designed for prediction. We will consider prediction in the service of both description and causal inference, building on ideas from SOCIOL 212A. The end product of the course is a research proposal using the ideas from the course. For students continuing to 212C, the research proposal can serve as the basis for the research project in that course. Students will leave the course prepared to connect social science theories to empirical evidence that can be produced by algorithms designed for prediction."
+  },
+  {
+    "objectID": "who_we_are.html",
+    "href": "who_we_are.html",
+    "title": "Who We Are",
+    "section": "",
+    "text": "This page will introduce the course staff."
+  },
+  {
+    "objectID": "about.html#learning-goals",
+    "href": "about.html#learning-goals",
+    "title": "Welcome!",
+    "section": "Learning goals",
+    "text": "Learning goals\nStudents will learn to\n\ndefine a precise quantitative research question\nconnect that question to predictions that can be made by statistical or machine learning algorithms\nmake a principled argument for the choice of a particular learning approach"
+  },
+  {
+    "objectID": "about.html#who-should-take-this-course",
+    "href": "about.html#who-should-take-this-course",
+    "title": "Welcome!",
+    "section": "Who should take this course?",
+    "text": "Who should take this course?\nThe course is designed to support the development of quantitative social science research projects. The course is a good fit for PhD students in sociology, statistics, political science, economics, and other social sciences. PhD students from disciplines other than sociology should request a code from the instructor to enroll."
+  },
+  {
+    "objectID": "about.html#prerequisite",
+    "href": "about.html#prerequisite",
+    "title": "Welcome!",
+    "section": "Prerequisite",
+    "text": "Prerequisite\nFamiliarity with basic probability and statistics (e.g., random variables, expectation, confidence intervals). Soc 212A is formally a prerequisite, but students who did not take Soc 212A are welcome to talk with me about whether Soc 212B would be a good fit for them."
+  },
+  {
+    "objectID": "about.html#instructional-format.",
+    "href": "about.html#instructional-format.",
+    "title": "Welcome!",
+    "section": "Instructional format.",
+    "text": "Instructional format.\nLecture with in-class exercises. Bring computers to class."
+  },
+  {
+    "objectID": "about.html#course-readings.",
+    "href": "about.html#course-readings.",
+    "title": "Welcome!",
+    "section": "Course readings.",
+    "text": "Course readings.\nReadings will be available online for free. See the course website for an updated schedule of readings and topics.\nMany readings from books with free PDFs available online:\n\nEfron, B., & T Hastie. 2016. Computer Age Statistical Inference: Algorithms, Evidence and Data Science. Cambridge: Cambridge University Press.\nHastie, T., R. Tibshirani, & J. Friedman. 2009. The Elements of Statistical Learning: Data Mining, Inference, and Prediction. New York: Springer.\nHern'an, M.A., & J.M. Robins. 2024. Causal Inference: What If? Boca Raton: Chapman & Hall / CRC.\n\n You can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language."
+  },
+  {
+    "objectID": "about.html#instructional-format",
+    "href": "about.html#instructional-format",
+    "title": "Welcome!",
+    "section": "Instructional format",
+    "text": "Instructional format\nLecture with in-class exercises. Bring computers to class."
+  },
+  {
+    "objectID": "about.html#course-readings",
+    "href": "about.html#course-readings",
+    "title": "Welcome!",
+    "section": "Course readings",
+    "text": "Course readings\nReadings will be available online for free. See the course website for an updated schedule of readings and topics.\nMany readings from books with free PDFs available online:\n\nEfron, B., & T Hastie. 2016. Computer Age Statistical Inference: Algorithms, Evidence and Data Science. Cambridge: Cambridge University Press.\nHastie, T., R. Tibshirani, & J. Friedman. 2009. The Elements of Statistical Learning: Data Mining, Inference, and Prediction. New York: Springer.\nHernán, M.A., & J.M. Robins. 2024. Causal Inference: What If? Boca Raton: Chapman & Hall / CRC."
+  },
+  {
+    "objectID": "about.html#statistical-software",
+    "href": "about.html#statistical-software",
+    "title": "Welcome!",
+    "section": "Statistical software",
+    "text": "Statistical software\nYou can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language."
+  },
+  {
+    "objectID": "yhat_approach_to_regression.html",
+    "href": "yhat_approach_to_regression.html",
+    "title": "A Y-hat Approach to Regression",
+    "section": "",
+    "text": "This page will be about a \\(\\hat{Y}\\) approach to regression as an approximation to a conditonal expectation function.",
+    "crumbs": [
+      "Syllabus",
+      "Regression to Approximate Conditional Means"
+    ]
+  },
+  {
+    "objectID": "asking_a_research_question.html",
+    "href": "asking_a_research_question.html",
+    "title": "Asking a research question",
+    "section": "",
+    "text": "This page will be about how to ask a quantitative research question.",
+    "crumbs": [
+      "Syllabus",
+      "Asking a Research Question"
+    ]
+  },
+  {
+    "objectID": "index.html#learning-goals",
+    "href": "index.html#learning-goals",
+    "title": "Welcome!",
+    "section": "Learning goals",
+    "text": "Learning goals\nStudents will learn to\n\ndefine a precise quantitative research question\nconnect that question to predictions that can be made by statistical or machine learning algorithms\nmake a principled argument for the choice of a particular learning approach",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#who-should-take-this-course",
+    "href": "index.html#who-should-take-this-course",
+    "title": "Welcome!",
+    "section": "Who should take this course?",
+    "text": "Who should take this course?\nThe course is designed to support the development of quantitative social science research projects. The course is a good fit for PhD students in sociology, statistics, political science, economics, and other social sciences. PhD students from disciplines other than sociology should request a code from the instructor to enroll.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#prerequisite",
+    "href": "index.html#prerequisite",
+    "title": "Welcome!",
+    "section": "Prerequisite",
+    "text": "Prerequisite\nFamiliarity with basic probability and statistics (e.g., random variables, expectation, confidence intervals). Soc 212A is formally a prerequisite, but students who did not take Soc 212A are welcome to talk with me about whether Soc 212B would be a good fit for them.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#instructional-format",
+    "href": "index.html#instructional-format",
+    "title": "Welcome!",
+    "section": "Instructional format",
+    "text": "Instructional format\nLecture with in-class exercises. Bring computers to class.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#course-readings",
+    "href": "index.html#course-readings",
+    "title": "Welcome!",
+    "section": "Course readings",
+    "text": "Course readings\nReadings will be available online for free. See the course website for an updated schedule of readings and topics.\nMany readings from books with free PDFs available online:\n\nEfron, B., & T Hastie. 2016. Computer Age Statistical Inference: Algorithms, Evidence and Data Science. Cambridge: Cambridge University Press.\nHastie, T., R. Tibshirani, & J. Friedman. 2009. The Elements of Statistical Learning: Data Mining, Inference, and Prediction. New York: Springer.\nHernán, M.A., & J.M. Robins. 2024. Causal Inference: What If? Boca Raton: Chapman & Hall / CRC.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#statistical-software",
+    "href": "index.html#statistical-software",
+    "title": "Welcome!",
+    "section": "Statistical software",
+    "text": "Statistical software\nYou can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language.",
+    "crumbs": [
+      "Home"
+    ]
+  }
+]

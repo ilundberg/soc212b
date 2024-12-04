@@ -1,0 +1,5 @@
+---
+title: "Regression to Approximate Conditional Means"
+---
+
+This page will be about a $\hat{Y}$ approach to regression as an approximation to a conditonal expectation function.

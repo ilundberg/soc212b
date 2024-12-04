@@ -1,0 +1,42 @@
+---
+title: "Welcome!"
+---
+
+Welcome to UCLA SOCIOL 212B (Winter 2025)!
+
+This course is about answering social science questions using quantitative data. We will especially focus on how computational power is transforming the ways we can carry out quantitative research, covering both statistical and machine learning tools from the perspective of social science applications. The course especially emphasizes how to translate social science theories into quantities that can be estimated by algorithms designed for prediction. We will consider prediction in the service of both description and causal inference, building on ideas from SOCIOL 212A. The end product of the course is a research proposal using the ideas from the course. For students continuing to 212C, the research proposal can serve as the basis for the research project in that course. Students will leave the course prepared to connect social science theories to empirical evidence that can be produced by algorithms designed for prediction.
+
+## Learning goals
+
+Students will learn to
+
+* define a precise quantitative research question
+* connect that question to predictions that can be made by statistical or machine learning algorithms
+* make a principled argument for the choice of a particular learning approach
+
+## Who should take this course?
+
+The course is designed to support the development of quantitative social science research projects. The course is a good fit for PhD students in sociology, statistics, political science, economics, and other social sciences. PhD students from disciplines other than sociology should request a code from the instructor to enroll.
+
+## Prerequisite
+
+Familiarity with basic probability and statistics (e.g., random variables, expectation, confidence intervals). Soc 212A is formally a prerequisite, but students who did not take Soc 212A are welcome to talk with me about whether Soc 212B would be a good fit for them.
+
+## Instructional format
+
+Lecture with in-class exercises. Bring computers to class.
+
+## Course readings
+
+Readings will be available online for free. See the course website for an updated schedule of readings and topics.
+
+Many readings from books with free PDFs available online:
+
+* Efron, B., \& T Hastie. 2016. [Computer Age Statistical Inference: Algorithms, Evidence and Data Science.](https://hastie.su.domains/CASI/order.html) Cambridge: Cambridge University Press.
+* Hastie, T., R. Tibshirani, \& J. Friedman. 2009. [The Elements of Statistical Learning: Data Mining, Inference, and Prediction.](https://hastie.su.domains/ElemStatLearn/) New York: Springer.
+* Hernán, M.A., \& J.M. Robins. 2024. [Causal Inference: What If?](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/) Boca Raton: Chapman \& Hall / CRC.
+
+
+## Statistical software
+
+You can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language.

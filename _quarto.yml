@@ -1,0 +1,35 @@
+project:
+  type: website
+  render: 
+    - "*.qmd"
+    - "!/assets/"
+
+execute: 
+  freeze: auto
+
+website:
+  title: "SOCIOL 212B: Quantitative Data Analysis"
+  description: "Using tools from data science and causal inference to answer social science research questions."
+  navbar:
+    pinned: true
+    right:
+      - href: assets/syllabus.pdf
+        text: Syllabus
+      - href: who_we_are.qmd
+        text: Team
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - href: index.qmd
+        text: Home
+      - href: asking_a_research_question.qmd
+        text: Asking a Research Question
+      - href: yhat_approach_to_regression.qmd
+        text: Regression to Approximate Conditional Means
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
