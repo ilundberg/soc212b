@@ -1,0 +1,5 @@
+---
+title: "Regression for Y-hat"
+---
+
+This page will cover a $\hat{Y}$ approach to regression as a tool to approximate a conditional expectation function.

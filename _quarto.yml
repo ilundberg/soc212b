@@ -17,17 +17,43 @@ website:
       - href: assets/syllabus.pdf
         text: Syllabus
       - href: who_we_are.qmd
-        text: Team
+        text: Who We Are
   sidebar:
     style: "docked"
     search: true
     contents:
-      - href: index.qmd
-        text: Home
       - href: asking_a_research_question.qmd
         text: Asking a Research Question
-      - href: yhat_approach_to_regression.qmd
-        text: Regression to Approximate Conditional Means
+      - section: "Descriptive Data Science with Probability Samples"
+        contents:
+        - href: yhat_regression.qmd
+          text: Regression for Y-hat
+        - href: algorithms_for_prediction.qmd
+          text: Algorithms for prediction
+        - href: data_driven_selection.qmd
+          text: Data-driven selection of an estimator
+        - href: resampling.qmd
+          text: Statistical uncertainty by resampling
+      - section: "Non-Probability Samples and Observational Causal Inference"
+        contents:
+        - href: nonparametric_identification.qmd
+          text: Nonparametric identification
+        - href: prediction_for_inference.qmd
+          text: Estimation by prediction
+        - href: weighting_for_inference.qmd
+          text: Estimation by weighting
+        - href: doubly_robust.qmd
+          text: Doubly-robust estimation
+        - href: panel_data.qmd
+          text: Panel data
+      - section: Additional topics
+        contents:
+        - href: missing_data.qmd
+          text: Missing data
+        - href: mediation.qmd
+          text: Mediation
+        - href: scales.qmd
+          text: Scale construction
 
 format:
   html:

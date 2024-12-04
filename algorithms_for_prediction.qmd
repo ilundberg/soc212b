@@ -1,0 +1,15 @@
+---
+title: "Algorithms for prediction"
+---
+
+This page will be about algorithms for prediction.
+
+## Penalized regression
+
+## Multilevel models
+
+## Trees
+
+## Forests
+
+## Gradient boosting

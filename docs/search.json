@@ -2,12 +2,12 @@
   {
     "objectID": "yhat_approach_to_regression.html",
     "href": "yhat_approach_to_regression.html",
-    "title": "Regression to Approximate Conditional Means",
+    "title": "Regression for Y-hat",
     "section": "",
-    "text": "This page will be about a \\(\\hat{Y}\\) approach to regression as an approximation to a conditonal expectation function.",
+    "text": "This page will cover a \\(\\hat{Y}\\) approach to regression as a tool to approximate a conditional expectation function.",
     "crumbs": [
       "Syllabus",
-      "Regression to Approximate Conditional Means"
+      "Regression for Y-hat"
     ]
   },
   {
@@ -15,77 +15,49 @@
     "href": "index.html",
     "title": "Welcome!",
     "section": "",
-    "text": "Welcome to UCLA SOCIOL 212B (Winter 2025)! See the syllabus.\nThis course is about answering social science questions using quantitative data. We will especially focus on how computational power is transforming the ways we can carry out quantitative research, covering both statistical and machine learning tools from the perspective of social science applications. The course especially emphasizes how to translate social science theories into quantities that can be estimated by algorithms designed for prediction. We will consider prediction in the service of both description and causal inference, building on ideas from SOCIOL 212A. The end product of the course is an extended abstract containing data analysis using the ideas from the course. For students continuing to 212C, the abstract can serve as the basis for the research project in that course. Students will leave the course prepared to connect social science theories to empirical evidence that can be produced by algorithms designed for prediction.",
-    "crumbs": [
-      "Syllabus",
-      "Home"
-    ]
+    "text": "Welcome to UCLA SOCIOL 212B (Winter 2025). See the syllabus.\nThis course is about answering social science questions using quantitative data. We will especially focus on how computational power is transforming the ways we can carry out quantitative research, covering both statistical and machine learning tools from the perspective of social science applications. The course especially emphasizes how to translate social science theories into quantities that can be estimated by algorithms designed for prediction. We will consider prediction in the service of both description and causal inference, building on ideas from SOCIOL 212A. The end product of the course is an extended abstract containing data analysis using the ideas from the course. For students continuing to 212C, the abstract can serve as the basis for the research project in that course. Students will leave the course prepared to connect social science theories to empirical evidence that can be produced by algorithms designed for prediction."
   },
   {
     "objectID": "index.html#learning-goals",
     "href": "index.html#learning-goals",
     "title": "Welcome!",
     "section": "Learning goals",
-    "text": "Learning goals\nStudents will learn to\n\ndefine a precise quantitative research question\nconnect that question to predictions that can be made by statistical or machine learning algorithms\nmake a principled argument for the choice of a particular learning approach",
-    "crumbs": [
-      "Syllabus",
-      "Home"
-    ]
+    "text": "Learning goals\nStudents will learn to\n\ndefine a precise quantitative research question\nconnect that question to predictions that can be made by statistical or machine learning algorithms\nmake a principled argument for the choice of a particular learning approach"
   },
   {
     "objectID": "index.html#who-should-take-this-course",
     "href": "index.html#who-should-take-this-course",
     "title": "Welcome!",
     "section": "Who should take this course?",
-    "text": "Who should take this course?\nThe course is designed to support the development of quantitative social science research projects. The course is a good fit for PhD students in sociology, statistics, political science, economics, and other social sciences. PhD students from disciplines other than sociology should request a code from the instructor to enroll.",
-    "crumbs": [
-      "Syllabus",
-      "Home"
-    ]
+    "text": "Who should take this course?\nThe course is designed to support the development of quantitative social science research projects. The course is a good fit for PhD students in sociology, statistics, political science, economics, and other social sciences. PhD students from disciplines other than sociology should request a code from the instructor to enroll."
   },
   {
     "objectID": "index.html#prerequisite",
     "href": "index.html#prerequisite",
     "title": "Welcome!",
     "section": "Prerequisite",
-    "text": "Prerequisite\nFamiliarity with basic probability and statistics (e.g., random variables, expectation, confidence intervals). Soc 212A is formally a prerequisite, but students who did not take Soc 212A are welcome to talk with me about whether Soc 212B would be a good fit for them.",
-    "crumbs": [
-      "Syllabus",
-      "Home"
-    ]
+    "text": "Prerequisite\nFamiliarity with basic probability and statistics (e.g., random variables, expectation, confidence intervals). Soc 212A is formally a prerequisite, but students who did not take Soc 212A are welcome to talk with me about whether Soc 212B would be a good fit for them."
   },
   {
     "objectID": "index.html#instructional-format",
     "href": "index.html#instructional-format",
     "title": "Welcome!",
     "section": "Instructional format",
-    "text": "Instructional format\nLecture with in-class exercises. Bring computers to class.",
-    "crumbs": [
-      "Syllabus",
-      "Home"
-    ]
+    "text": "Instructional format\nLecture with in-class exercises. Bring computers to class."
   },
   {
     "objectID": "index.html#course-readings",
     "href": "index.html#course-readings",
     "title": "Welcome!",
     "section": "Course readings",
-    "text": "Course readings\nReadings will be available online for free. See the course website for an updated schedule of readings and topics.\nMany readings from books with free PDFs available online:\n\nEfron, B., & T Hastie. 2016. Computer Age Statistical Inference: Algorithms, Evidence and Data Science. Cambridge: Cambridge University Press.\nHastie, T., R. Tibshirani, & J. Friedman. 2009. The Elements of Statistical Learning: Data Mining, Inference, and Prediction. New York: Springer.\nHernán, M.A., & J.M. Robins. 2024. Causal Inference: What If? Boca Raton: Chapman & Hall / CRC.",
-    "crumbs": [
-      "Syllabus",
-      "Home"
-    ]
+    "text": "Course readings\nReadings will be available online for free. See the course website for an updated schedule of readings and topics.\nMany readings from books with free PDFs available online:\n\nEfron, B., & T Hastie. 2016. Computer Age Statistical Inference: Algorithms, Evidence and Data Science. Cambridge: Cambridge University Press.\nHastie, T., R. Tibshirani, & J. Friedman. 2009. The Elements of Statistical Learning: Data Mining, Inference, and Prediction. New York: Springer.\nHernán, M.A., & J.M. Robins. 2024. Causal Inference: What If? Boca Raton: Chapman & Hall / CRC."
   },
   {
     "objectID": "index.html#statistical-software",
     "href": "index.html#statistical-software",
     "title": "Welcome!",
     "section": "Statistical software",
-    "text": "Statistical software\nYou can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language.",
-    "crumbs": [
-      "Syllabus",
-      "Home"
-    ]
+    "text": "Statistical software\nYou can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language."
   },
   {
     "objectID": "asking_a_research_question.html",
@@ -103,6 +75,249 @@
     "href": "who_we_are.html",
     "title": "Who We Are",
     "section": "",
-    "text": "This page will introduce the course staff."
+    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
+  },
+  {
+    "objectID": "weighting_for_inference.html",
+    "href": "weighting_for_inference.html",
+    "title": "Weighting for causal and population inference",
+    "section": "",
+    "text": "To be written.",
+    "crumbs": [
+      "Syllabus",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Estimation by weighting"
+    ]
+  },
+  {
+    "objectID": "panel_data.html",
+    "href": "panel_data.html",
+    "title": "Panel data",
+    "section": "",
+    "text": "This page will cover forecasting, interrupted time series, difference in difference, and fixed effects.",
+    "crumbs": [
+      "Syllabus",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Panel data"
+    ]
+  },
+  {
+    "objectID": "data_driven_selection.html",
+    "href": "data_driven_selection.html",
+    "title": "Data-driven selection of a prediction function",
+    "section": "",
+    "text": "To be written.",
+    "crumbs": [
+      "Syllabus",
+      "Descriptive Data Science with Probability Samples",
+      "Data-driven selection of an estimator"
+    ]
+  },
+  {
+    "objectID": "appendix.html",
+    "href": "appendix.html",
+    "title": "Appendix topics",
+    "section": "",
+    "text": "This appendix page covers topics that are not central to the course, but may be necessary in your own data analysis in your project."
+  },
+  {
+    "objectID": "appendix.html#missing-data",
+    "href": "appendix.html#missing-data",
+    "title": "Appendix topics",
+    "section": "Missing data",
+    "text": "Missing data"
+  },
+  {
+    "objectID": "appendix.html#scale-construction",
+    "href": "appendix.html#scale-construction",
+    "title": "Appendix topics",
+    "section": "Scale construction",
+    "text": "Scale construction"
+  },
+  {
+    "objectID": "appendix.html#mediation",
+    "href": "appendix.html#mediation",
+    "title": "Appendix topics",
+    "section": "Mediation",
+    "text": "Mediation"
+  },
+  {
+    "objectID": "algorithms_for_prediction.html",
+    "href": "algorithms_for_prediction.html",
+    "title": "Algorithms for prediction",
+    "section": "",
+    "text": "This page will be about algorithms for prediction.",
+    "crumbs": [
+      "Syllabus",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#penalized-regression",
+    "href": "algorithms_for_prediction.html#penalized-regression",
+    "title": "Algorithms for prediction",
+    "section": "Penalized regression",
+    "text": "Penalized regression",
+    "crumbs": [
+      "Syllabus",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#multilevel-models",
+    "href": "algorithms_for_prediction.html#multilevel-models",
+    "title": "Algorithms for prediction",
+    "section": "Multilevel models",
+    "text": "Multilevel models",
+    "crumbs": [
+      "Syllabus",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#trees",
+    "href": "algorithms_for_prediction.html#trees",
+    "title": "Algorithms for prediction",
+    "section": "Trees",
+    "text": "Trees",
+    "crumbs": [
+      "Syllabus",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#forests",
+    "href": "algorithms_for_prediction.html#forests",
+    "title": "Algorithms for prediction",
+    "section": "Forests",
+    "text": "Forests",
+    "crumbs": [
+      "Syllabus",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#gradient-boosting",
+    "href": "algorithms_for_prediction.html#gradient-boosting",
+    "title": "Algorithms for prediction",
+    "section": "Gradient boosting",
+    "text": "Gradient boosting",
+    "crumbs": [
+      "Syllabus",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "bootstrap_and_beyond.html",
+    "href": "bootstrap_and_beyond.html",
+    "title": "Statistical Uncertainty: Bootstrap and Beyond",
+    "section": "",
+    "text": "To be written.",
+    "crumbs": [
+      "Syllabus",
+      "Inference on Causal and Population Parameters"
+    ]
+  },
+  {
+    "objectID": "doubly_robust.html",
+    "href": "doubly_robust.html",
+    "title": "Doubly-robust estimation",
+    "section": "",
+    "text": "To be written.",
+    "crumbs": [
+      "Syllabus",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Doubly-robust estimation"
+    ]
+  },
+  {
+    "objectID": "nonparametric_identification.html",
+    "href": "nonparametric_identification.html",
+    "title": "Nonparametric Identification",
+    "section": "",
+    "text": "This page will cover nonparametric identification of causal and population parameters. To be written.",
+    "crumbs": [
+      "Syllabus",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Nonparametric identification"
+    ]
+  },
+  {
+    "objectID": "prediction_for_inference.html",
+    "href": "prediction_for_inference.html",
+    "title": "Prediction for causal and population inference",
+    "section": "",
+    "text": "To be written.",
+    "crumbs": [
+      "Syllabus",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Estimation by prediction"
+    ]
+  },
+  {
+    "objectID": "missing_data.html",
+    "href": "missing_data.html",
+    "title": "Missing data",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "crumbs": [
+      "Syllabus",
+      "Additional topics",
+      "Missing data"
+    ]
+  },
+  {
+    "objectID": "scales.html",
+    "href": "scales.html",
+    "title": "Scale construction",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "crumbs": [
+      "Syllabus",
+      "Additional topics",
+      "Scale construction"
+    ]
+  },
+  {
+    "objectID": "mediation.html",
+    "href": "mediation.html",
+    "title": "Mediation",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "crumbs": [
+      "Syllabus",
+      "Additional topics",
+      "Mediation"
+    ]
+  },
+  {
+    "objectID": "yhat_regression.html",
+    "href": "yhat_regression.html",
+    "title": "Regression for Y-hat",
+    "section": "",
+    "text": "This page will cover a \\(\\hat{Y}\\) approach to regression as a tool to approximate a conditional expectation function.",
+    "crumbs": [
+      "Syllabus",
+      "Descriptive Data Science with Probability Samples",
+      "Regression for Y-hat"
+    ]
+  },
+  {
+    "objectID": "resampling.html",
+    "href": "resampling.html",
+    "title": "Statistical Uncertainty: Bootstrap and Beyond",
+    "section": "",
+    "text": "To be written.",
+    "crumbs": [
+      "Syllabus",
+      "Descriptive Data Science with Probability Samples",
+      "Statistical uncertainty by resampling"
+    ]
   }
 ]

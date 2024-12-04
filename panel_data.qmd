@@ -1,0 +1,5 @@
+---
+title: "Panel data"
+---
+
+This page will cover forecasting, interrupted time series, difference in difference, and fixed effects.

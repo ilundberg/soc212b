@@ -1,5 +1,44 @@
 ---
 title: "Who We Are"
+# page-layout: full
+format:
+  html:
+    toc: false
 ---
 
-This page will introduce the course staff.
+::: {.grid}
+
+::: {.g-col-12}
+Get to know a little bit about our teaching team!
+
+## Faculty
+:::
+
+::: {.g-col-2}
+<img src="assets/profiles/ian.png" style="width:100%;">
+:::
+
+::: {.g-col-10}
+[**Ian Lundberg**](https://www.ianlundberg.org/)  
+[**ianlundberg@ucla.edu**](mailto:ianlundberg@ucla.edu)  
+(_he / him_)
+
+Working with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.
+:::
+
+::: {.g-col-12}
+## PhD Tutor
+:::
+
+::: {.g-col-2}
+<img src="assets/profiles/soonhong.png" style="width:100%;">
+:::
+
+::: {.g-col-10}
+[**Soonhong Cho**](https://soonhong-cho.github.io/)  
+[**tnsehdtm@gmail.com**](mailto:tnsehdtm@gmail.com)  
+(_he / him_)
+
+Soonhong is a PhD candidate in political science at UCLA.
+:::
+

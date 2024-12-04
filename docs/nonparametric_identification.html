@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Welcome! – SOCIOL 212B: Quantitative Data Analysis</title>
+<title>Nonparametric Identification – SOCIOL 212B: Quantitative Data Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -106,7 +106,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Welcome!</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./nonparametric_identification.html">Non-Probability Samples and Observational Causal Inference</a></li><li class="breadcrumb-item"><a href="./nonparametric_identification.html">Nonparametric identification</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -143,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./yhat_regression.qmd" class="sidebar-item-text sidebar-link">
+  <a href="./yhat_regression.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Regression for Y-hat</span></a>
   </div>
 </li>
@@ -178,7 +178,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./nonparametric_identification.html" class="sidebar-item-text sidebar-link">
+  <a href="./nonparametric_identification.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Nonparametric identification</span></a>
   </div>
 </li>
@@ -242,26 +242,15 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#learning-goals" id="toc-learning-goals" class="nav-link active" data-scroll-target="#learning-goals">Learning goals</a></li>
-  <li><a href="#who-should-take-this-course" id="toc-who-should-take-this-course" class="nav-link" data-scroll-target="#who-should-take-this-course">Who should take this course?</a></li>
-  <li><a href="#prerequisite" id="toc-prerequisite" class="nav-link" data-scroll-target="#prerequisite">Prerequisite</a></li>
-  <li><a href="#instructional-format" id="toc-instructional-format" class="nav-link" data-scroll-target="#instructional-format">Instructional format</a></li>
-  <li><a href="#course-readings" id="toc-course-readings" class="nav-link" data-scroll-target="#course-readings">Course readings</a></li>
-  <li><a href="#statistical-software" id="toc-statistical-software" class="nav-link" data-scroll-target="#statistical-software">Statistical software</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./nonparametric_identification.html">Non-Probability Samples and Observational Causal Inference</a></li><li class="breadcrumb-item"><a href="./nonparametric_identification.html">Nonparametric identification</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Welcome!</h1>
+<h1 class="title">Nonparametric Identification</h1>
 </div>
 
 
@@ -278,45 +267,9 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Welcome to UCLA SOCIOL 212B (Winter 2025). See the <a href="assets/syllabus.pdf"><strong>syllabus</strong></a>.</p>
-<p>This course is about answering social science questions using quantitative data. We will especially focus on how computational power is transforming the ways we can carry out quantitative research, covering both statistical and machine learning tools from the perspective of social science applications. The course especially emphasizes how to translate social science theories into quantities that can be estimated by algorithms designed for prediction. We will consider prediction in the service of both description and causal inference, building on ideas from SOCIOL 212A. The end product of the course is an extended abstract containing data analysis using the ideas from the course. For students continuing to 212C, the abstract can serve as the basis for the research project in that course. Students will leave the course prepared to connect social science theories to empirical evidence that can be produced by algorithms designed for prediction.</p>
-<section id="learning-goals" class="level2">
-<h2 class="anchored" data-anchor-id="learning-goals">Learning goals</h2>
-<p>Students will learn to</p>
-<ul>
-<li>define a precise quantitative research question</li>
-<li>connect that question to predictions that can be made by statistical or machine learning algorithms</li>
-<li>make a principled argument for the choice of a particular learning approach</li>
-</ul>
-</section>
-<section id="who-should-take-this-course" class="level2">
-<h2 class="anchored" data-anchor-id="who-should-take-this-course">Who should take this course?</h2>
-<p>The course is designed to support the development of quantitative social science research projects. The course is a good fit for PhD students in sociology, statistics, political science, economics, and other social sciences. PhD students from disciplines other than sociology should request a code from the instructor to enroll.</p>
-</section>
-<section id="prerequisite" class="level2">
-<h2 class="anchored" data-anchor-id="prerequisite">Prerequisite</h2>
-<p>Familiarity with basic probability and statistics (e.g., random variables, expectation, confidence intervals). Soc 212A is formally a prerequisite, but students who did not take Soc 212A are welcome to talk with me about whether Soc 212B would be a good fit for them.</p>
-</section>
-<section id="instructional-format" class="level2">
-<h2 class="anchored" data-anchor-id="instructional-format">Instructional format</h2>
-<p>Lecture with in-class exercises. Bring computers to class.</p>
-</section>
-<section id="course-readings" class="level2">
-<h2 class="anchored" data-anchor-id="course-readings">Course readings</h2>
-<p>Readings will be available online for free. See the course website for an updated schedule of readings and topics.</p>
-<p>Many readings from books with free PDFs available online:</p>
-<ul>
-<li>Efron, B., &amp; T Hastie. 2016. <a href="https://hastie.su.domains/CASI/order.html">Computer Age Statistical Inference: Algorithms, Evidence and Data Science.</a> Cambridge: Cambridge University Press.</li>
-<li>Hastie, T., R. Tibshirani, &amp; J. Friedman. 2009. <a href="https://hastie.su.domains/ElemStatLearn/">The Elements of Statistical Learning: Data Mining, Inference, and Prediction.</a> New York: Springer.</li>
-<li>Hernán, M.A., &amp; J.M. Robins. 2024. <a href="https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/">Causal Inference: What If?</a> Boca Raton: Chapman &amp; Hall / CRC.</li>
-</ul>
-</section>
-<section id="statistical-software" class="level2">
-<h2 class="anchored" data-anchor-id="statistical-software">Statistical software</h2>
-<p>You can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language.</p>
+<p>This page will cover nonparametric identification of causal and population parameters. To be written.</p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
