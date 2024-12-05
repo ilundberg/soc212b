@@ -2,4 +2,4 @@
 title: "Prediction for causal and population inference"
 ---
 
-To be written.
+This session will be about prediction to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. If you have a Census with features $\vec{X}$, ignorable sampling conditional on $\vec{X}$, and a good sample estimator of $E(Y\mid\vec{X})$ then you can predict $E(Y\mid\vec{X})$ and aggregate over the Census-known population distribution of $\vec{X}$. For causal inference, being assigned to treatment is analogous to being sampled to observe the potential outcome under treatment.

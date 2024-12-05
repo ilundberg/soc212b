@@ -2,7 +2,10 @@
 title: "Algorithms for prediction"
 ---
 
-This page will be about algorithms for prediction.
+For two sessions, we will cover a few algorithms for prediction. We aim to
+
+* draw connections between algorithms often viewed as classical statistics (e.g., multilevel models) and those often viewed as machine learning (e.g., penalized regression)
+* by learning a few new methods, become comfortable with the skills to read about additional new methods on your own in the future
 
 ## Penalized regression
 

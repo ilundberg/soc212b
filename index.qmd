@@ -14,6 +14,23 @@ Students will learn to
 * connect that question to predictions that can be made by statistical or machine learning algorithms
 * make a principled argument for the choice of a particular learning approach
 
+## Schedule of topics (tentative)
+
+Part 1. Descriptive data science with probability samples.
+
+* Jan 8. [Asking research questions without $\hat\beta$](asking_a_research_question.qmd) and [regression for $\hat{Y}$](yhat_regression.qmd)
+* Jan 15 and 22. [Algorithms for prediction](algorithms_for_prediction.qmd)
+* Jan 29. [Data-driven selection of an estimator](data_driven_selection.qmd)
+* Feb 5. [Panel data](panel_data.qmd) (actually a Part 2 topic, presented out of order to align with afternoon CCPR workshop)
+* Feb 12. [Statistical uncertainty by resampling](resampling.qmd)
+
+Part 2. Non-probability samples and observational causal inference
+ 
+* Feb 19. [Nonparametric identification](nonparametric_identification.qmd)
+* Feb 26. [Estimation by prediction](prediction_for_inference.qmd)
+* Mar 5. [Estimation by weighting](weighting_for_inference.qmd)
+* Mar 12. [Doubly-robust estimation](doubly_robust.qmd)
+
 ## Who should take this course?
 
 The course is designed to support the development of quantitative social science research projects. The course is a good fit for PhD students in sociology, statistics, political science, economics, and other social sciences. PhD students from disciplines other than sociology should request a code from the instructor to enroll.

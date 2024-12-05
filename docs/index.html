@@ -66,6 +66,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -143,7 +172,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./yhat_regression.qmd" class="sidebar-item-text sidebar-link">
+  <a href="./yhat_regression.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Regression for Y-hat</span></a>
   </div>
 </li>
@@ -248,6 +277,7 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#learning-goals" id="toc-learning-goals" class="nav-link active" data-scroll-target="#learning-goals">Learning goals</a></li>
+  <li><a href="#schedule-of-topics-tentative" id="toc-schedule-of-topics-tentative" class="nav-link" data-scroll-target="#schedule-of-topics-tentative">Schedule of topics (tentative)</a></li>
   <li><a href="#who-should-take-this-course" id="toc-who-should-take-this-course" class="nav-link" data-scroll-target="#who-should-take-this-course">Who should take this course?</a></li>
   <li><a href="#prerequisite" id="toc-prerequisite" class="nav-link" data-scroll-target="#prerequisite">Prerequisite</a></li>
   <li><a href="#instructional-format" id="toc-instructional-format" class="nav-link" data-scroll-target="#instructional-format">Instructional format</a></li>
@@ -287,6 +317,24 @@ ul.task-list li input[type="checkbox"] {
 <li>define a precise quantitative research question</li>
 <li>connect that question to predictions that can be made by statistical or machine learning algorithms</li>
 <li>make a principled argument for the choice of a particular learning approach</li>
+</ul>
+</section>
+<section id="schedule-of-topics-tentative" class="level2">
+<h2 class="anchored" data-anchor-id="schedule-of-topics-tentative">Schedule of topics (tentative)</h2>
+<p>Part 1. Descriptive data science with probability samples.</p>
+<ul>
+<li>Jan 8. <a href="./asking_a_research_question.html">Asking research questions without <span class="math inline">\(\hat\beta\)</span></a> and <a href="./yhat_regression.html">regression for <span class="math inline">\(\hat{Y}\)</span></a></li>
+<li>Jan 15 and 22. <a href="./algorithms_for_prediction.html">Algorithms for prediction</a></li>
+<li>Jan 29. <a href="./data_driven_selection.html">Data-driven selection of an estimator</a></li>
+<li>Feb 5. <a href="./panel_data.html">Panel data</a> (actually a Part 2 topic, presented out of order to align with afternoon CCPR workshop)</li>
+<li>Feb 12. <a href="./resampling.html">Statistical uncertainty by resampling</a></li>
+</ul>
+<p>Part 2. Non-probability samples and observational causal inference</p>
+<ul>
+<li>Feb 19. <a href="./nonparametric_identification.html">Nonparametric identification</a></li>
+<li>Feb 26. <a href="./prediction_for_inference.html">Estimation by prediction</a></li>
+<li>Mar 5. <a href="./weighting_for_inference.html">Estimation by weighting</a></li>
+<li>Mar 12. <a href="./doubly_robust.html">Doubly-robust estimation</a></li>
 </ul>
 </section>
 <section id="who-should-take-this-course" class="level2">

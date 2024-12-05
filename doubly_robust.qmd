@@ -2,4 +2,4 @@
 title: "Doubly-robust estimation"
 ---
 
-To be written.
+This session will combine prediction and weighting methods for an approach with properties superior to either on its own.
