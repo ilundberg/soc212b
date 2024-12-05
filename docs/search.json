@@ -1,13 +1,62 @@
 [
   {
-    "objectID": "yhat_approach_to_regression.html",
-    "href": "yhat_approach_to_regression.html",
+    "objectID": "yhat_regression.html",
+    "href": "yhat_regression.html",
     "title": "Regression for Y-hat",
     "section": "",
-    "text": "This page will cover a \\(\\hat{Y}\\) approach to regression as a tool to approximate a conditional expectation function.",
+    "text": "This page will introduce regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.",
     "crumbs": [
       "Syllabus",
+      "Descriptive Data Science with Probability Samples",
       "Regression for Y-hat"
+    ]
+  },
+  {
+    "objectID": "weighting_for_inference.html",
+    "href": "weighting_for_inference.html",
+    "title": "Weighting for causal and population inference",
+    "section": "",
+    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators.",
+    "crumbs": [
+      "Syllabus",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Estimation by weighting"
+    ]
+  },
+  {
+    "objectID": "resampling.html",
+    "href": "resampling.html",
+    "title": "Statistical Uncertainty: Bootstrap and Beyond",
+    "section": "",
+    "text": "As researchers adopt algorithmic estimation methods for which analytical standard errors do not exist, methods to produce standard errors by resampling become all the more important. We will discuss the bootstrap for simple random samples and extensions to allow resampling-based standard error estimates in complex survey samples.",
+    "crumbs": [
+      "Syllabus",
+      "Descriptive Data Science with Probability Samples",
+      "Statistical uncertainty by resampling"
+    ]
+  },
+  {
+    "objectID": "panel_data.html",
+    "href": "panel_data.html",
+    "title": "Panel data",
+    "section": "",
+    "text": "This page will cover forecasting, interrupted time series, difference in difference, and fixed effects.",
+    "crumbs": [
+      "Syllabus",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Panel data"
+    ]
+  },
+  {
+    "objectID": "missing_data.html",
+    "href": "missing_data.html",
+    "title": "Missing data",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "crumbs": [
+      "Syllabus",
+      "Additional topics",
+      "Missing data"
     ]
   },
   {
@@ -23,6 +72,13 @@
     "title": "Welcome!",
     "section": "Learning goals",
     "text": "Learning goals\nStudents will learn to\n\ndefine a precise quantitative research question\nconnect that question to predictions that can be made by statistical or machine learning algorithms\nmake a principled argument for the choice of a particular learning approach"
+  },
+  {
+    "objectID": "index.html#schedule-of-topics-tentative",
+    "href": "index.html#schedule-of-topics-tentative",
+    "title": "Welcome!",
+    "section": "Schedule of topics (tentative)",
+    "text": "Schedule of topics (tentative)\nPart 1. Descriptive data science with probability samples.\n\nJan 8. Asking research questions without \\(\\hat\\beta\\) and regression for \\(\\hat{Y}\\)\nJan 15 and 22. Algorithms for prediction\nJan 29. Data-driven selection of an estimator\nFeb 5. Panel data (actually a Part 2 topic, presented out of order to align with afternoon CCPR workshop)\nFeb 12. Statistical uncertainty by resampling\n\nPart 2. Non-probability samples and observational causal inference\n\nFeb 19. Nonparametric identification\nFeb 26. Estimation by prediction\nMar 5. Estimation by weighting\nMar 12. Doubly-robust estimation"
   },
   {
     "objectID": "index.html#who-should-take-this-course",
@@ -60,48 +116,6 @@
     "text": "Statistical software\nYou can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language."
   },
   {
-    "objectID": "asking_a_research_question.html",
-    "href": "asking_a_research_question.html",
-    "title": "Asking a research question",
-    "section": "",
-    "text": "This page will be about how to ask a quantitative research question. The focus will be on summarizing outcomes over well-defined populations, for which a regression coefficient \\(\\hat\\beta\\) may or may not be a meaningful summary. We will focus on summarizing subgroups by the average value of \\(Y\\), or in small samples by summarizing subgroup means using predicted values (\\(\\hat{Y}\\)) from regression models.",
-    "crumbs": [
-      "Syllabus",
-      "Asking a Research Question"
-    ]
-  },
-  {
-    "objectID": "who_we_are.html",
-    "href": "who_we_are.html",
-    "title": "Who We Are",
-    "section": "",
-    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
-  },
-  {
-    "objectID": "weighting_for_inference.html",
-    "href": "weighting_for_inference.html",
-    "title": "Weighting for causal and population inference",
-    "section": "",
-    "text": "To be written.",
-    "crumbs": [
-      "Syllabus",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Estimation by weighting"
-    ]
-  },
-  {
-    "objectID": "panel_data.html",
-    "href": "panel_data.html",
-    "title": "Panel data",
-    "section": "",
-    "text": "This page will cover forecasting, interrupted time series, difference in difference, and fixed effects.",
-    "crumbs": [
-      "Syllabus",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Panel data"
-    ]
-  },
-  {
     "objectID": "data_driven_selection.html",
     "href": "data_driven_selection.html",
     "title": "Data-driven selection of a prediction function",
@@ -114,39 +128,11 @@
     ]
   },
   {
-    "objectID": "appendix.html",
-    "href": "appendix.html",
-    "title": "Appendix topics",
-    "section": "",
-    "text": "This appendix page covers topics that are not central to the course, but may be necessary in your own data analysis in your project."
-  },
-  {
-    "objectID": "appendix.html#missing-data",
-    "href": "appendix.html#missing-data",
-    "title": "Appendix topics",
-    "section": "Missing data",
-    "text": "Missing data"
-  },
-  {
-    "objectID": "appendix.html#scale-construction",
-    "href": "appendix.html#scale-construction",
-    "title": "Appendix topics",
-    "section": "Scale construction",
-    "text": "Scale construction"
-  },
-  {
-    "objectID": "appendix.html#mediation",
-    "href": "appendix.html#mediation",
-    "title": "Appendix topics",
-    "section": "Mediation",
-    "text": "Mediation"
-  },
-  {
     "objectID": "algorithms_for_prediction.html",
     "href": "algorithms_for_prediction.html",
     "title": "Algorithms for prediction",
     "section": "",
-    "text": "This page will be about algorithms for prediction.",
+    "text": "For two sessions, we will cover a few algorithms for prediction. We aim to",
     "crumbs": [
       "Syllabus",
       "Descriptive Data Science with Probability Samples",
@@ -214,14 +200,14 @@
     ]
   },
   {
-    "objectID": "bootstrap_and_beyond.html",
-    "href": "bootstrap_and_beyond.html",
-    "title": "Statistical Uncertainty: Bootstrap and Beyond",
+    "objectID": "asking_a_research_question.html",
+    "href": "asking_a_research_question.html",
+    "title": "Asking a research question",
     "section": "",
-    "text": "To be written.",
+    "text": "This page will be about how to ask a quantitative research question. The focus will be on summarizing outcomes over well-defined populations, for which a regression coefficient \\(\\hat\\beta\\) may or may not be a meaningful summary. We will focus on summarizing subgroups by the average value of \\(Y\\), or in small samples by summarizing subgroup means using predicted values (\\(\\hat{Y}\\)) from regression models.",
     "crumbs": [
       "Syllabus",
-      "Inference on Causal and Population Parameters"
+      "Asking a Research Question"
     ]
   },
   {
@@ -229,11 +215,23 @@
     "href": "doubly_robust.html",
     "title": "Doubly-robust estimation",
     "section": "",
-    "text": "To be written.",
+    "text": "This session will combine prediction and weighting methods for an approach with properties superior to either on its own.",
     "crumbs": [
       "Syllabus",
       "Non-Probability Samples and Observational Causal Inference",
       "Doubly-robust estimation"
+    ]
+  },
+  {
+    "objectID": "mediation.html",
+    "href": "mediation.html",
+    "title": "Mediation",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "crumbs": [
+      "Syllabus",
+      "Additional topics",
+      "Mediation"
     ]
   },
   {
@@ -253,23 +251,11 @@
     "href": "prediction_for_inference.html",
     "title": "Prediction for causal and population inference",
     "section": "",
-    "text": "To be written.",
+    "text": "This session will be about prediction to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. If you have a Census with features \\(\\vec{X}\\), ignorable sampling conditional on \\(\\vec{X}\\), and a good sample estimator of \\(E(Y\\mid\\vec{X})\\) then you can predict \\(E(Y\\mid\\vec{X})\\) and aggregate over the Census-known population distribution of \\(\\vec{X}\\). For causal inference, being assigned to treatment is analogous to being sampled to observe the potential outcome under treatment.",
     "crumbs": [
       "Syllabus",
       "Non-Probability Samples and Observational Causal Inference",
       "Estimation by prediction"
-    ]
-  },
-  {
-    "objectID": "missing_data.html",
-    "href": "missing_data.html",
-    "title": "Missing data",
-    "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
-    "crumbs": [
-      "Syllabus",
-      "Additional topics",
-      "Missing data"
     ]
   },
   {
@@ -285,53 +271,10 @@
     ]
   },
   {
-    "objectID": "mediation.html",
-    "href": "mediation.html",
-    "title": "Mediation",
+    "objectID": "who_we_are.html",
+    "href": "who_we_are.html",
+    "title": "Who We Are",
     "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
-    "crumbs": [
-      "Syllabus",
-      "Additional topics",
-      "Mediation"
-    ]
-  },
-  {
-    "objectID": "yhat_regression.html",
-    "href": "yhat_regression.html",
-    "title": "Regression for Y-hat",
-    "section": "",
-    "text": "This page will cover a \\(\\hat{Y}\\) approach to regression as a tool to approximate a conditional expectation function.",
-    "crumbs": [
-      "Syllabus",
-      "Descriptive Data Science with Probability Samples",
-      "Regression for Y-hat"
-    ]
-  },
-  {
-    "objectID": "resampling.html",
-    "href": "resampling.html",
-    "title": "Statistical Uncertainty: Bootstrap and Beyond",
-    "section": "",
-    "text": "To be written.",
-    "crumbs": [
-      "Syllabus",
-      "Descriptive Data Science with Probability Samples",
-      "Statistical uncertainty by resampling"
-    ]
-  },
-  {
-    "objectID": "index.html#schedule-of-topics",
-    "href": "index.html#schedule-of-topics",
-    "title": "Welcome!",
-    "section": "Schedule of topics",
-    "text": "Schedule of topics\nPart 1. Descriptive data science with probability samples.\n\nJan 8. Asking research questions without \\(\\hat\\beta\\) and regression for \\(\\hat{Y}\\)\nJan 15 and 22. Algorithms for prediction\nJan 29. Data-driven selection of an estimator\nFeb 5. Panel data (actually a Part 2 topic, presented out of order to align with afternoon CCPR workshop)\nFeb 12. Statistical uncertainty by resampling\n\nPart 2. Non-probability samples and observational causal inference\n\nFeb 19. Nonparametric identification\nFeb 26. Estimation by prediction\nMar 5. Estimation by weighting\nMar 12. Doubly-robust estimation"
-  },
-  {
-    "objectID": "index.html#schedule-of-topics-tentative",
-    "href": "index.html#schedule-of-topics-tentative",
-    "title": "Welcome!",
-    "section": "Schedule of topics (tentative)",
-    "text": "Schedule of topics (tentative)\nPart 1. Descriptive data science with probability samples.\n\nJan 8. Asking research questions without \\(\\hat\\beta\\) and regression for \\(\\hat{Y}\\)\nJan 15 and 22. Algorithms for prediction\nJan 29. Data-driven selection of an estimator\nFeb 5. Panel data (actually a Part 2 topic, presented out of order to align with afternoon CCPR workshop)\nFeb 12. Statistical uncertainty by resampling\n\nPart 2. Non-probability samples and observational causal inference\n\nFeb 19. Nonparametric identification\nFeb 26. Estimation by prediction\nMar 5. Estimation by weighting\nMar 12. Doubly-robust estimation"
+    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
   }
 ]
