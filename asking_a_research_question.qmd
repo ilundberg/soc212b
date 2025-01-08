@@ -2,4 +2,6 @@
 title: "Asking a research question"
 ---
 
-This page will be about how to ask a quantitative research question. The focus will be on summarizing outcomes over well-defined populations, for which a regression coefficient $\hat\beta$ may or may not be a meaningful summary. We will focus on summarizing subgroups by the average value of $Y$, or in small samples by summarizing subgroup means using predicted values ($\hat{Y}$) from regression models.
+[slides](slides/lec1/lec1.pdf)
+
+This class is about how to ask a quantitative research question. The focus will be on summarizing outcomes over well-defined populations, for which a regression coefficient $\hat\beta$ may or may not be a meaningful summary. We will focus on summarizing subgroups by the average value of $Y$, or in small samples by summarizing subgroup means using predicted values ($\hat{Y}$) from regression models.

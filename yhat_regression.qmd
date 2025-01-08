@@ -2,4 +2,8 @@
 title: "Regression for Y-hat"
 ---
 
-This page will introduce regression as a tool to approximate a conditional expectation function. From this perspective, the $\hat\beta$ estimates are only a step toward the broader purpose of regression to produce $\hat{Y}$ values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.
+[slides](slides/lec1/lec1.pdf)
+
+This class is about regression as a tool to approximate a conditional expectation function. From this perspective, the $\hat\beta$ estimates are only a step toward the broader purpose of regression to produce $\hat{Y}$ values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.
+
+Some of this class relies on an ongoing project on description: [ilundberg.github.io/description](https://ilundberg.github.io/description/)

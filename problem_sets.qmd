@@ -1,0 +1,32 @@
+---
+title: "Problem Sets"
+---
+
+This page will contain a problem set corresponding to each class meeting. The problem sets are very open-ended and are designed to connect the material from class to your ongoing project.
+
+For every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.
+
+We will discuss the weekly pattern in our first meeting. A proposed pattern is:
+
+* Wednesday lecture
+* Problem set due the following Monday at 5pm
+* Peer review due Tuesday at 5pm
+
+We will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another's projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer's work as well as offering suggestions for improvement or future directions.
+
+## Problem Set 1
+
+#### 1. Your ongoing paper.
+
+1.1. (15 points) Write an abstract of your research paper.
+
+1.2. (5 points) What is one unit-specific quantity in your paper?
+
+1.3. (5 points) What is one target population in your paper?
+
+#### 2. Regression for a conditional mean
+
+(25 points)
+
+In class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing.
+

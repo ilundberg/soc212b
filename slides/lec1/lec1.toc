@@ -1,0 +1,5 @@
+\beamer@sectionintoc {1}{Course Intro}{2}{0}{1}
+\beamer@sectionintoc {2}{Define an Estimand}{10}{0}{2}
+\beamer@sectionintoc {3}{$\hat {Y}$ View of Regression}{42}{0}{3}
+\beamer@sectionintoc {4}{Computer Tutorial}{60}{0}{4}
+\beamer@sectionintoc {5}{Organizing Your Workflow}{79}{0}{5}

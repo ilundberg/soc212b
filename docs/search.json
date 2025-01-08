@@ -1,39 +1,36 @@
 [
   {
-    "objectID": "yhat_regression.html",
-    "href": "yhat_regression.html",
-    "title": "Regression for Y-hat",
+    "objectID": "who_we_are.html",
+    "href": "who_we_are.html",
+    "title": "Who We Are",
     "section": "",
-    "text": "This page will introduce regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.",
+    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
+  },
+  {
+    "objectID": "scales.html",
+    "href": "scales.html",
+    "title": "Scale construction",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
     "crumbs": [
-      "Syllabus",
-      "Descriptive Data Science with Probability Samples",
-      "Regression for Y-hat"
+      "Problem Sets",
+      "Additional topics",
+      "Scale construction"
     ]
   },
   {
-    "objectID": "weighting_for_inference.html",
-    "href": "weighting_for_inference.html",
-    "title": "Weighting for causal and population inference",
+    "objectID": "problem_sets.html",
+    "href": "problem_sets.html",
+    "title": "Problem Sets",
     "section": "",
-    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators.",
-    "crumbs": [
-      "Syllabus",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Estimation by weighting"
-    ]
+    "text": "This page will contain a problem set corresponding to each class meeting. The problem sets are very open-ended and are designed to connect the material from class to your ongoing project.\nFor every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.\nWe will discuss the weekly pattern in our first meeting. A proposed pattern is:\nWe will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another’s projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer’s work as well as offering suggestions for improvement or future directions."
   },
   {
-    "objectID": "resampling.html",
-    "href": "resampling.html",
-    "title": "Statistical Uncertainty: Bootstrap and Beyond",
-    "section": "",
-    "text": "As researchers adopt algorithmic estimation methods for which analytical standard errors do not exist, methods to produce standard errors by resampling become all the more important. We will discuss the bootstrap for simple random samples and extensions to allow resampling-based standard error estimates in complex survey samples.",
-    "crumbs": [
-      "Syllabus",
-      "Descriptive Data Science with Probability Samples",
-      "Statistical uncertainty by resampling"
-    ]
+    "objectID": "problem_sets.html#problem-set-1",
+    "href": "problem_sets.html#problem-set-1",
+    "title": "Problem Sets",
+    "section": "Problem Set 1",
+    "text": "Problem Set 1\n\n1. Your ongoing paper.\n1.1. (15 points) Write an abstract of your research paper.\n1.2. (5 points) What is one unit-specific quantity in your paper?\n1.3. (5 points) What is one target population in your paper?\n\n\n2. Regression for a conditional mean\n(25 points)\nIn class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing."
   },
   {
     "objectID": "panel_data.html",
@@ -42,7 +39,7 @@
     "section": "",
     "text": "This page will cover forecasting, interrupted time series, difference in difference, and fixed effects.",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Non-Probability Samples and Observational Causal Inference",
       "Panel data"
     ]
@@ -54,7 +51,7 @@
     "section": "",
     "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Additional topics",
       "Missing data"
     ]
@@ -122,7 +119,7 @@
     "section": "",
     "text": "To be written.",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Descriptive Data Science with Probability Samples",
       "Data-driven selection of an estimator"
     ]
@@ -134,7 +131,7 @@
     "section": "",
     "text": "For two sessions, we will cover a few algorithms for prediction. We aim to",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Descriptive Data Science with Probability Samples",
       "Algorithms for prediction"
     ]
@@ -146,7 +143,7 @@
     "section": "Penalized regression",
     "text": "Penalized regression",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Descriptive Data Science with Probability Samples",
       "Algorithms for prediction"
     ]
@@ -158,7 +155,7 @@
     "section": "Multilevel models",
     "text": "Multilevel models",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Descriptive Data Science with Probability Samples",
       "Algorithms for prediction"
     ]
@@ -170,7 +167,7 @@
     "section": "Trees",
     "text": "Trees",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Descriptive Data Science with Probability Samples",
       "Algorithms for prediction"
     ]
@@ -182,7 +179,7 @@
     "section": "Forests",
     "text": "Forests",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Descriptive Data Science with Probability Samples",
       "Algorithms for prediction"
     ]
@@ -194,7 +191,7 @@
     "section": "Gradient boosting",
     "text": "Gradient boosting",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Descriptive Data Science with Probability Samples",
       "Algorithms for prediction"
     ]
@@ -204,9 +201,9 @@
     "href": "asking_a_research_question.html",
     "title": "Asking a research question",
     "section": "",
-    "text": "This page will be about how to ask a quantitative research question. The focus will be on summarizing outcomes over well-defined populations, for which a regression coefficient \\(\\hat\\beta\\) may or may not be a meaningful summary. We will focus on summarizing subgroups by the average value of \\(Y\\), or in small samples by summarizing subgroup means using predicted values (\\(\\hat{Y}\\)) from regression models.",
+    "text": "slides\nThis class is about how to ask a quantitative research question. The focus will be on summarizing outcomes over well-defined populations, for which a regression coefficient \\(\\hat\\beta\\) may or may not be a meaningful summary. We will focus on summarizing subgroups by the average value of \\(Y\\), or in small samples by summarizing subgroup means using predicted values (\\(\\hat{Y}\\)) from regression models.",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Asking a Research Question"
     ]
   },
@@ -217,7 +214,7 @@
     "section": "",
     "text": "This session will combine prediction and weighting methods for an approach with properties superior to either on its own.",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Non-Probability Samples and Observational Causal Inference",
       "Doubly-robust estimation"
     ]
@@ -229,7 +226,7 @@
     "section": "",
     "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Additional topics",
       "Mediation"
     ]
@@ -241,7 +238,7 @@
     "section": "",
     "text": "This page will cover nonparametric identification of causal and population parameters. To be written.",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Non-Probability Samples and Observational Causal Inference",
       "Nonparametric identification"
     ]
@@ -253,28 +250,45 @@
     "section": "",
     "text": "This session will be about prediction to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. If you have a Census with features \\(\\vec{X}\\), ignorable sampling conditional on \\(\\vec{X}\\), and a good sample estimator of \\(E(Y\\mid\\vec{X})\\) then you can predict \\(E(Y\\mid\\vec{X})\\) and aggregate over the Census-known population distribution of \\(\\vec{X}\\). For causal inference, being assigned to treatment is analogous to being sampled to observe the potential outcome under treatment.",
     "crumbs": [
-      "Syllabus",
+      "Problem Sets",
       "Non-Probability Samples and Observational Causal Inference",
       "Estimation by prediction"
     ]
   },
   {
-    "objectID": "scales.html",
-    "href": "scales.html",
-    "title": "Scale construction",
+    "objectID": "resampling.html",
+    "href": "resampling.html",
+    "title": "Statistical Uncertainty: Bootstrap and Beyond",
     "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "text": "As researchers adopt algorithmic estimation methods for which analytical standard errors do not exist, methods to produce standard errors by resampling become all the more important. We will discuss the bootstrap for simple random samples and extensions to allow resampling-based standard error estimates in complex survey samples.",
     "crumbs": [
-      "Syllabus",
-      "Additional topics",
-      "Scale construction"
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Statistical uncertainty by resampling"
     ]
   },
   {
-    "objectID": "who_we_are.html",
-    "href": "who_we_are.html",
-    "title": "Who We Are",
+    "objectID": "weighting_for_inference.html",
+    "href": "weighting_for_inference.html",
+    "title": "Weighting for causal and population inference",
     "section": "",
-    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
+    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Estimation by weighting"
+    ]
+  },
+  {
+    "objectID": "yhat_regression.html",
+    "href": "yhat_regression.html",
+    "title": "Regression for Y-hat",
+    "section": "",
+    "text": "slides\nThis class is about regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.\nSome of this class relies on an ongoing project on description: ilundberg.github.io/description",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Regression for Y-hat"
+    ]
   }
 ]
