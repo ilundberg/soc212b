@@ -6,11 +6,11 @@ This page will contain a problem set corresponding to each class meeting. The pr
 
 For every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.
 
-We will discuss the weekly pattern in our first meeting. A proposed pattern is:
+We chose together the following weekly pattern for problem sets:
 
 * Wednesday lecture
-* Problem set due the following Monday at 5pm
-* Peer review due Tuesday at 5pm
+* Problem set due the following Monday at 9pm
+* Peer review due Wednesday at 9am
 
 We will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another's projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer's work as well as offering suggestions for improvement or future directions.
 
