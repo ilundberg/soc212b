@@ -1,59 +1,229 @@
 [
   {
-    "objectID": "who_we_are.html",
-    "href": "who_we_are.html",
-    "title": "Who We Are",
+    "objectID": "algorithms_for_prediction.html",
+    "href": "algorithms_for_prediction.html",
+    "title": "Algorithms for prediction",
     "section": "",
-    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
-  },
-  {
-    "objectID": "scales.html",
-    "href": "scales.html",
-    "title": "Scale construction",
-    "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "text": "For two sessions, we will cover a few algorithms for prediction. We aim to",
     "crumbs": [
       "Problem Sets",
-      "Additional topics",
-      "Scale construction"
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
     ]
   },
   {
-    "objectID": "problem_sets.html",
-    "href": "problem_sets.html",
-    "title": "Problem Sets",
-    "section": "",
-    "text": "This page will contain a problem set corresponding to each class meeting. The problem sets are very open-ended and are designed to connect the material from class to your ongoing project.\nFor every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.\nWe chose together the following weekly pattern for problem sets:\nWe will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another’s projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer’s work as well as offering suggestions for improvement or future directions."
+    "objectID": "algorithms_for_prediction.html#sec-baseball",
+    "href": "algorithms_for_prediction.html#sec-baseball",
+    "title": "Algorithms for prediction",
+    "section": "Data: Baseball salaries",
+    "text": "Data: Baseball salaries\nWe will explore algorithms for prediction through a simple example dataset. The data contain the salaries of all 944 Major League Baseball Players who were on active rosters, injured lists, and restricted lists on Opening Day 2023. These data were compiled by USA Today. After scraping the data and selecting a few variables, I appended each team’s win-loss record from 2022. The data are available in baseball.csv.\n\nlibrary(tidyverse)\n\n\nbaseball_population &lt;- read_csv(\"https://ilundberg.github.io/soc212b/data/baseball_population.csv\")\n\nThe first rows of the data are depicted below. Each row is a player. The player Madison Bumgarner had a salary of $21,882,892. His position was LHP for left-handed pitcher. His team was Arizona, and this team’s record in the previous season was 0.457, meaning that they won 45.7% of their games.\nWe will summarize mean salaries. Some useful facts about mean salaries are that they vary substantially across positions and also across teams.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nEach team has about 30 players. As a task, we will often focus on estimating the mean salary of the L.A. Dodgers. Because we have the full population of data, we can calculate the answer directly:\n\ntrue_dodger_mean &lt;- baseball_population |&gt;\n  # Restrict to the Dodgers\n  filter(team == \"L.A. Dodgers\") |&gt;\n  # Record the mean salary\n  summarize(mean_salary = mean(salary)) |&gt;\n  # Pull that estimate out of the data frame to just be a number\n  pull(mean_salary)\n\nThe true Dodger mean salary on Opening Day 2023 was $6,232,196. We will imagine that we don’t know this number. Instead of having the full population, we will imagine we have a sample of only 5 players per team. The function draw_sample will draw one such sample.\n\nbaseball_sample &lt;- baseball_population |&gt;\n  group_by(team) |&gt;\n  slice_sample(n = 5) |&gt;\n  ungroup()\n\nWe will imagine we know the identities of the Dodger players and the team’s past win-loss record, but we need to predict their salaries in 2023.\n\ndodgers_to_predict &lt;- baseball_population |&gt;\n  filter(team == \"L.A. Dodgers\") |&gt;\n  select(-salary)",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
   },
   {
-    "objectID": "problem_sets.html#problem-set-1",
-    "href": "problem_sets.html#problem-set-1",
-    "title": "Problem Sets",
-    "section": "Problem Set 1",
-    "text": "Problem Set 1\n\n1. Your ongoing paper.\n1.1. (15 points) Write an abstract of your research paper.\n1.2. (5 points) What is one unit-specific quantity in your paper?\n1.3. (5 points) What is one target population in your paper?\n\n\n2. Regression for a conditional mean\n(25 points)\nIn class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing."
+    "objectID": "algorithms_for_prediction.html#ordinary-least-squares",
+    "href": "algorithms_for_prediction.html#ordinary-least-squares",
+    "title": "Algorithms for prediction",
+    "section": "Ordinary Least Squares",
+    "text": "Ordinary Least Squares\nTo walk through the steps of our prediction task, we first consider Ordinary Least Squares. After walking through these steps, we will consider a series of more advanced algorithms for prediction that involve similar steps.\nFor OLS, we might model salary as a function of team_past_record. The code below learns this model in our sample.\n\nols &lt;- lm(\n  salary ~ team_past_record,\n  data = baseball_sample\n)\n\nWe can then make a prediction for every player on the Dodgers. Because our only predictor is a team-level predictor (team_past_record), the prediction will be the same for every player. But this may not always be the case, as further down the page when we consider position as an additional predictor.\n\nols_predicted &lt;- dodgers_to_predict |&gt;\n  mutate(predicted_salary = predict(ols, newdata = dodgers_to_predict)) |&gt;\n  print(n = 3)\n\n# A tibble: 35 × 5\n  player           position team         team_past_record predicted_salary\n  &lt;chr&gt;            &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt;            &lt;dbl&gt;\n1 Freeman, Freddie 1B       L.A. Dodgers            0.685         5552999.\n2 Heyward, Jason   OF       L.A. Dodgers            0.685         5552999.\n3 Betts, Mookie    OF       L.A. Dodgers            0.685         5552999.\n# ℹ 32 more rows\n\n\nFinally, we can average over these predictions to estimate the mean salary on the Dodgers.\n\nols_estimate &lt;- ols_predicted |&gt;\n  summarize(ols_estimate = mean(predicted_salary))\n\nBy OLS prediction, we estimate that the mean Dodger salary was $5.6 million. Because we estimated in a sample and under some modeling assumptions, this is a bit lower than the true population mean of $6.2 million.\n\nPerformance over repeated samples\nBecause this is a hypothetical setting, we can consider the performance of our estimator across repeated samples. The chunk below pulls our code into a single function that we call estimator(). The estimator takes a sample and returns an estimate.\n\nols_estimator &lt;- function(sample) {\n  # Learn a model in the sample\n  ols &lt;- lm(\n    salary ~ team_past_record,\n    data = baseball_sample\n  )\n  # Predict for our target population\n  ols_predicted &lt;- dodgers_to_predict |&gt;\n    mutate(predicted_salary = predict(ols, newdata = dodgers_to_predict))\n  # Average over the target population\n  ols_estimate &lt;- ols_predicted |&gt;\n    summarize(ols_estimate = mean(predicted_salary)) |&gt;\n    pull(ols_estimate)\n  # Return the estimate\n  return(ols_estimate)\n}\n\nWe can run the estimator repeatedly, getting one estimate for each repeated sample from the population. This exercise is possible because in this simplified setting we have data on the full population.\n\nlibrary(foreach)\n\n\nmany_sample_estimates &lt;- foreach(\n  repetition = 1:100, .combine = \"c\"\n) %do% {\n  # Draw a sample from the population\n  baseball_sample &lt;- baseball_population |&gt;\n    group_by(team) |&gt;\n    slice_sample(n = 5) |&gt;\n    ungroup()\n  # Apply the estimator to the sample\n  estimate &lt;- ols_estimator(baseball_sample)\n  return(estimate)\n}\n\nThen we can visualize the performance across repeated samples.\n\n\n\n\n\n\n\n\n\nAcross repeated samples, the estimates have a standard deviation of $1.3 million and are on average $1.2 million too high.\n\n\nModels with more parameters\nAn OLS model for salary that is linear in the team past record clearly suffers from model approximation error. If you fit a regression line to the entire population of baseball players you would see that th Dodger’s mean salary is below this line.\n\n\n\n\n\n\n\n\n\nHow can we solve model approximation error? One might replace the linear term team_past_record with a series of categories for team in the OLS model.\n\nols_team_categories &lt;- lm(\n  salary ~ team,\n  data = baseball_sample\n)\n\nBut because the sample contains only 5 players per team, these estimates are quite noisy.\n\n\n\n\n\n\n\n\n\nIn broad strokes, this is the problem that algorithms for prediction seek to solve:\n\navoid bias from model approximation error\navoid a high-variance estimator\n\nWe need a model that strikes a balance between bias and variance.",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
   },
   {
-    "objectID": "panel_data.html",
-    "href": "panel_data.html",
-    "title": "Panel data",
+    "objectID": "algorithms_for_prediction.html#multilevel-models",
+    "href": "algorithms_for_prediction.html#multilevel-models",
+    "title": "Algorithms for prediction",
+    "section": "Multilevel models",
+    "text": "Multilevel models\nMultilevel models1 are an algorithm for prediction that is fully grounded in classical statistics. They are especially powerful for the problem depicted above: making predictions when there are many groups (teams) with a small sample size in each group.\nWe will first illustrate a multilevel model’s performance and then consider the statistics behind this model. We will estimate using the lme4 package. If you don’t have this package, install it with install.packages(\"lme4\").\n\nlibrary(lme4)\n\nIn the syntax, the code (1 | team) says that our model should have a unique intercept for every team, and that these intercepts should be regularized (more on this soon).\n\nmultilevel &lt;- lmer(salary ~ team_past_record + (1 | team), data = baseball_sample)\n\nWe can make predictions from a multilevel model just like we can from OLS. For example, the code below makes predictions for the Dodgers.\n\nmultilevel_predicted &lt;- dodgers_to_predict |&gt;\n  mutate(\n    fitted = predict(multilevel, newdata = dodgers_to_predict)\n  )\n\n\nIntuition\nThe multilevel model is a partial-pooling estimator. The figure below displays this visually. For each team, the solid dot is the mean salary among the 5 sampled players. The ends of the arrows are the multilevel model estimates. The multilevel model pools the team-specific estimates toward the model-based prediction.\n\n\n\n\n\n\n\n\n\nThe multilevel model only regularizes the team-specific estimates to the degree that they are imprecise. If we repeat the entire process on a sample of 20 players per team, each team-specific estimate becomes more precise and the overall amount of shrinkage is less.\n\n\n\n\n\n\n\n\n\n\n\nPerformance over repeated samples\nWe previously discussed how an OLS prediction that was linear in the past team record was a biased estimator with low variance. The sample mean within each team was an unbiased estimator with high variance. The multilevel model falls in between these two extremes.\n\n\n\n\n\n\n\n\n\n\n\nIn math\nMathematically, a multilevel model is a maximum likelihood estimator. For our case, the model assumes that the salary of player \\(j\\) on team \\(i\\) is assumed to be normally distributed around the team mean salary \\(\\mu_i\\), with standard deviation \\(\\sigma\\) which in our case is assumed to be the same across teams.\n\\[Y_{ij} \\sim \\text{Normal}(\\mu_i, \\sigma)\\] The team-specific mean \\(\\mu_i\\) involves two components. First, this mean is assumed to be centered at a linear prediction \\(\\alpha + X_i\\beta\\) where \\(X_i\\) is the win-loss record of team \\(i\\) in the previous year. This is the value toward which team-specific estimates are regularized. Second, the mean for the particular team \\(i\\) is drawn from a normal distribution with standard deviation \\(\\sigma_\\mu\\), which is the standard deviation of the team-specific mean salary residuals across teams.\n\\[\\mu_i \\sim \\text{Normal}(\\alpha + X_i\\beta, \\sigma_\\mu)\\] By maximizing the log likelihood of the observed data under this model, one comes to maximum likelihood estimates of all of the unknown parameters.",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#ridge-regression",
+    "href": "algorithms_for_prediction.html#ridge-regression",
+    "title": "Algorithms for prediction",
+    "section": "Ridge regression",
+    "text": "Ridge regression\nWhile multilevel models are often approached from the standpoint of classical statistics, they are very similar to another approach commonly approached from the standpoint of data science: ridge regression.\n\nIntuition\nConsider our sample of 30 baseball teams with 5 players per team. We might want to fit a linear regression model as follows,\n\\[\nY_{ij} = \\alpha + \\beta X_i + \\gamma_{i} + \\epsilon_{ij}\n\\] where \\(Y_{ij}\\) is the salary of player \\(i\\) on team \\(j\\) and \\(X_i\\) is the past win-loss record of that team. In this model, \\(\\gamma_i\\) is a team-specific deviation from the linear fit, which corrects for model approximation error that will arise if particular teams have average salaries not well-captured by the linear fit. The error term \\(\\epsilon_ij\\) is the deviation for player \\(j\\) from their own team’s average salary.\nThe problem with this model is its high variance: with 30 teams, there are 30 different values of \\(\\gamma_i\\) to be estimated. And there are only 5 players per team! We might believe that \\(\\gamma_i\\) values will generally be small, so we might want to estimate by penalizing large values of \\(\\gamma_i\\).\nWe can penalize large values of \\(\\gamma_i\\) by an estimator written as it might be written in a data science course:\n\\[\n\\{\\hat\\alpha, \\hat\\beta, \\hat{\\vec\\gamma}\\} = \\underset{\\alpha,\\beta,\\vec\\gamma}{\\text{arg min}} \\left[\\sum_i\\sum_j\\left(Y_{ij} - \\left(\\alpha + \\beta X_i + \\gamma_{i}\\right)\\right)^2 + \\lambda\\sum_i\\gamma_i^2\\right]\n\\]\nwhere the estimated values \\(\\{\\hat\\alpha, \\hat\\beta, \\hat{\\vec\\gamma}\\}\\) are chosen to minimize a loss function which is the sum over the data of the squared prediction error plus a penalty on large values of \\(\\gamma_i\\).\n\n\nIn code\n\nlibrary(glmnet)\n\n\nridge &lt;- glmnet(\n  x = model.matrix(~ -1 + team_past_record + team, data = baseball_sample),\n  y = baseball_sample$salary,\n  penalty.factor = c(0,rep(1,30)),\n  # Choose the ridge penalty (alpha = 0).\n  # Later, we will learn about the LASSO penalty (alpha = 1)\n  alpha = 0\n)\n\nWe can visualize the ridge regression estimates just like the multilevel model estimates. Because the penalty applies to squared values of team deviations from the line, the points furthest from the line are most strongly regularized toward the line.\n\n\n\n\n\n\n\n\n\nThe amount of regularization will depend on the chosen value of the penalty parameter \\(\\lambda\\). To the degree that \\(\\lambda\\) is large, estimates will be more strongly pulled toward the regression line. Below is a visualization at three values of \\(\\lambda\\).\n\n\n\n\n\n\n\n\n\nFocusing on the prediction for the Dodgers, we can see how the estimate changes as a function of the penalty parameter \\(\\lambda\\).\n\n\nWarning: Removed 23 rows containing missing values or values outside the scale range\n(`geom_line()`).\n\n\n\n\n\n\n\n\n\nWe will discuss how to choose the value of lambda more in two weeks when we discuss data-driven selection of an estimator.\n\n\nPerformance over repeated samples\nThe ridge regression estimator has intuitive performance across repeated samples: the variance of the estimates decreases as the value of the penalty parameter \\(\\lambda\\) rises. The biase of the estimates also increases as the value of \\(\\lambda\\) increases. The optimal value of \\(\\lambda\\) is a problem-specific question that requires one to balance the tradeoff between bias and variance.",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#lasso-regression",
+    "href": "algorithms_for_prediction.html#lasso-regression",
+    "title": "Algorithms for prediction",
+    "section": "LASSO regression",
+    "text": "LASSO regression\nLASSO regression is just like ridge regression except for one key difference: instead of penalizing the sum of squared coefficients, LASSO penalizes the sum of the absolute value of coefficients. As we will see, this change means that some parameters become regularized all the way to zero so that some terms drop out of the model completely.\nAs with ridge regressiom, our outcome model is\n\\[\nY_{ij} = \\alpha + \\beta X_i + \\gamma_{i} + \\epsilon_{ij}\n\\] where \\(Y_{ij}\\) is the salary of player \\(i\\) on team \\(j\\) and \\(X_i\\) is the past win-loss record of that team. In this model, \\(\\gamma_i\\) is a team-specific deviation from the linear fit, which corrects for model approximation error that will arise if particular teams have average salaries not well-captured by the linear fit. The error term \\(\\epsilon_ij\\) is the deviation for player \\(j\\) from their own team’s average salary.\nTo solve the high-variance estimates of \\(\\gamma_i\\), LASSO regression uses a different penalty term in its loss function:\n\\[\n\\{\\hat\\alpha, \\hat\\beta, \\hat{\\vec\\gamma}\\} = \\underset{\\alpha,\\beta,\\vec\\gamma}{\\text{arg min}} \\left[\\sum_i\\sum_j\\left(Y_{ij} - \\left(\\alpha + \\beta X_i + \\gamma_{i}\\right)\\right)^2 + \\lambda\\sum_i\\lvert\\gamma_i\\rvert\\right]\n\\]\nwhere \\(\\gamma_i^2\\) from the ridge regression penalty has been replaced by the absolute value \\(\\lvert\\gamma_i\\rvert\\). We will first apply this in code and then see how it changes the performance of the estimator.\n\nIn code\n\nlibrary(glmnet)\n\n\nlasso &lt;- glmnet(\n  x = model.matrix(~ -1 + team_past_record + team, data = baseball_sample),\n  y = baseball_sample$salary,\n  penalty.factor = c(0,rep(1,30)),\n  # Choose LASSO (alpha = 1) instead of ridge (alpha = 0)\n  alpha = 1\n)\n\nVisualizing the estimates, we see behavior similar to what we have previously seen from multilevel models and ridge regression. All estimates are pulled toward a linear regression fit. There are two key differences, however.\nFirst, the previous estimators most strongly pulled the large deviations toward the linear fit. The LASSO estimates pull all parameter estimates toward the linear fit to a similar degree, regardless of their size. This is because the LASSO estimates penalize the absolute value of \\(\\gamma_i\\) instead of the squared value of \\(\\gamma_i\\).\nSecond, the multilevel and ridge estimates never pulled any of the estimates all the way to the line; instead, the estimates asymptoted toward the line as the penalty parameter grew. In LASSO, some estimates are pulled all the way to the line.\n\n\n\n\n\n\n\n\n\nFocusing on the prediction for the Dodgers, we can see how the estimate changes as a function of the penalty parameter \\(\\lambda\\). At a very small penalty, the estimate is approximately the same as the mean among the 5 sampled Dodger players. As the penalty parameter \\(\\lambda\\) gets larger, the estimates move around. They generally move toward zero, but not always: as some other team-specific deviations are pulled to zero, the unregularized intercept and slope on team past record move around in response. Ultimately, the penalty becomes so large that the Dodger estimate is regularized all the way to the estimate we would get in a model with no team-specific deviations.\n\n\n\n\n\n\n\n\n\nAs with ridge regression, we will discuss how to choose the value of lambda more in two weeks when we discuss data-driven selection of an estimator.\n\n\nPerformance over repeated samples\nSimilar to the ridge regression estimator, we can visualize the performance of the LASSO regression estimator across repeated samples from the population.",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#trees",
+    "href": "algorithms_for_prediction.html#trees",
+    "title": "Algorithms for prediction",
+    "section": "Trees",
+    "text": "Trees",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#forests",
+    "href": "algorithms_for_prediction.html#forests",
+    "title": "Algorithms for prediction",
+    "section": "Forests",
+    "text": "Forests",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#gradient-boosting",
+    "href": "algorithms_for_prediction.html#gradient-boosting",
+    "title": "Algorithms for prediction",
+    "section": "Gradient boosting",
+    "text": "Gradient boosting",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "algorithms_for_prediction.html#footnotes",
+    "href": "algorithms_for_prediction.html#footnotes",
+    "title": "Algorithms for prediction",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nRaudenbush, S. W., and A.S. Bryk. (2002). Hierarchical linear models: Applications and data analysis methods. Advanced Quantitative Techniques in the Social Sciences Series/SAGE.↩︎",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Algorithms for prediction"
+    ]
+  },
+  {
+    "objectID": "yhat_regression.html",
+    "href": "yhat_regression.html",
+    "title": "Regression for Y-hat",
     "section": "",
-    "text": "This page will cover forecasting, interrupted time series, difference in difference, and fixed effects.",
+    "text": "slides\nThis class is about regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.\nSome of this class relies on an ongoing project on description: ilundberg.github.io/description",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Regression for Y-hat"
+    ]
+  },
+  {
+    "objectID": "weighting_for_inference.html",
+    "href": "weighting_for_inference.html",
+    "title": "Weighting for causal and population inference",
+    "section": "",
+    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators.",
     "crumbs": [
       "Problem Sets",
       "Non-Probability Samples and Observational Causal Inference",
-      "Panel data"
+      "Estimation by weighting"
     ]
   },
   {
-    "objectID": "missing_data.html",
-    "href": "missing_data.html",
-    "title": "Missing data",
+    "objectID": "resampling.html",
+    "href": "resampling.html",
+    "title": "Statistical Uncertainty: Bootstrap and Beyond",
+    "section": "",
+    "text": "As researchers adopt algorithmic estimation methods for which analytical standard errors do not exist, methods to produce standard errors by resampling become all the more important. We will discuss the bootstrap for simple random samples and extensions to allow resampling-based standard error estimates in complex survey samples.",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Statistical uncertainty by resampling"
+    ]
+  },
+  {
+    "objectID": "prediction_for_inference.html",
+    "href": "prediction_for_inference.html",
+    "title": "Prediction for causal and population inference",
+    "section": "",
+    "text": "This session will be about prediction to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. If you have a Census with features \\(\\vec{X}\\), ignorable sampling conditional on \\(\\vec{X}\\), and a good sample estimator of \\(E(Y\\mid\\vec{X})\\) then you can predict \\(E(Y\\mid\\vec{X})\\) and aggregate over the Census-known population distribution of \\(\\vec{X}\\). For causal inference, being assigned to treatment is analogous to being sampled to observe the potential outcome under treatment.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Estimation by prediction"
+    ]
+  },
+  {
+    "objectID": "nonparametric_identification.html",
+    "href": "nonparametric_identification.html",
+    "title": "Nonparametric Identification",
+    "section": "",
+    "text": "This page will cover nonparametric identification of causal and population parameters. To be written.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Nonparametric identification"
+    ]
+  },
+  {
+    "objectID": "mediation.html",
+    "href": "mediation.html",
+    "title": "Mediation",
     "section": "",
     "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
     "crumbs": [
       "Problem Sets",
       "Additional topics",
-      "Missing data"
+      "Mediation"
+    ]
+  },
+  {
+    "objectID": "doubly_robust.html",
+    "href": "doubly_robust.html",
+    "title": "Doubly-robust estimation",
+    "section": "",
+    "text": "This session will combine prediction and weighting methods for an approach with properties superior to either on its own.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Doubly-robust estimation"
+    ]
+  },
+  {
+    "objectID": "asking_a_research_question.html",
+    "href": "asking_a_research_question.html",
+    "title": "Asking a research question",
+    "section": "",
+    "text": "slides\nThis class is about how to ask a quantitative research question. The focus will be on summarizing outcomes over well-defined populations, for which a regression coefficient \\(\\hat\\beta\\) may or may not be a meaningful summary. We will focus on summarizing subgroups by the average value of \\(Y\\), or in small samples by summarizing subgroup means using predicted values (\\(\\hat{Y}\\)) from regression models.",
+    "crumbs": [
+      "Problem Sets",
+      "Asking a Research Question"
+    ]
+  },
+  {
+    "objectID": "data_driven_selection.html",
+    "href": "data_driven_selection.html",
+    "title": "Data-driven selection of a prediction function",
+    "section": "",
+    "text": "To be written.",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Data-driven selection of an estimator"
     ]
   },
   {
@@ -113,182 +283,60 @@
     "text": "Statistical software\nYou can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language."
   },
   {
-    "objectID": "data_driven_selection.html",
-    "href": "data_driven_selection.html",
-    "title": "Data-driven selection of a prediction function",
-    "section": "",
-    "text": "To be written.",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Data-driven selection of an estimator"
-    ]
-  },
-  {
-    "objectID": "algorithms_for_prediction.html",
-    "href": "algorithms_for_prediction.html",
-    "title": "Algorithms for prediction",
-    "section": "",
-    "text": "For two sessions, we will cover a few algorithms for prediction. We aim to",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Algorithms for prediction"
-    ]
-  },
-  {
-    "objectID": "algorithms_for_prediction.html#penalized-regression",
-    "href": "algorithms_for_prediction.html#penalized-regression",
-    "title": "Algorithms for prediction",
-    "section": "Penalized regression",
-    "text": "Penalized regression",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Algorithms for prediction"
-    ]
-  },
-  {
-    "objectID": "algorithms_for_prediction.html#multilevel-models",
-    "href": "algorithms_for_prediction.html#multilevel-models",
-    "title": "Algorithms for prediction",
-    "section": "Multilevel models",
-    "text": "Multilevel models",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Algorithms for prediction"
-    ]
-  },
-  {
-    "objectID": "algorithms_for_prediction.html#trees",
-    "href": "algorithms_for_prediction.html#trees",
-    "title": "Algorithms for prediction",
-    "section": "Trees",
-    "text": "Trees",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Algorithms for prediction"
-    ]
-  },
-  {
-    "objectID": "algorithms_for_prediction.html#forests",
-    "href": "algorithms_for_prediction.html#forests",
-    "title": "Algorithms for prediction",
-    "section": "Forests",
-    "text": "Forests",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Algorithms for prediction"
-    ]
-  },
-  {
-    "objectID": "algorithms_for_prediction.html#gradient-boosting",
-    "href": "algorithms_for_prediction.html#gradient-boosting",
-    "title": "Algorithms for prediction",
-    "section": "Gradient boosting",
-    "text": "Gradient boosting",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Algorithms for prediction"
-    ]
-  },
-  {
-    "objectID": "asking_a_research_question.html",
-    "href": "asking_a_research_question.html",
-    "title": "Asking a research question",
-    "section": "",
-    "text": "slides\nThis class is about how to ask a quantitative research question. The focus will be on summarizing outcomes over well-defined populations, for which a regression coefficient \\(\\hat\\beta\\) may or may not be a meaningful summary. We will focus on summarizing subgroups by the average value of \\(Y\\), or in small samples by summarizing subgroup means using predicted values (\\(\\hat{Y}\\)) from regression models.",
-    "crumbs": [
-      "Problem Sets",
-      "Asking a Research Question"
-    ]
-  },
-  {
-    "objectID": "doubly_robust.html",
-    "href": "doubly_robust.html",
-    "title": "Doubly-robust estimation",
-    "section": "",
-    "text": "This session will combine prediction and weighting methods for an approach with properties superior to either on its own.",
-    "crumbs": [
-      "Problem Sets",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Doubly-robust estimation"
-    ]
-  },
-  {
-    "objectID": "mediation.html",
-    "href": "mediation.html",
-    "title": "Mediation",
+    "objectID": "missing_data.html",
+    "href": "missing_data.html",
+    "title": "Missing data",
     "section": "",
     "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
     "crumbs": [
       "Problem Sets",
       "Additional topics",
-      "Mediation"
+      "Missing data"
     ]
   },
   {
-    "objectID": "nonparametric_identification.html",
-    "href": "nonparametric_identification.html",
-    "title": "Nonparametric Identification",
+    "objectID": "panel_data.html",
+    "href": "panel_data.html",
+    "title": "Panel data",
     "section": "",
-    "text": "This page will cover nonparametric identification of causal and population parameters. To be written.",
+    "text": "This page will cover forecasting, interrupted time series, difference in difference, and fixed effects.",
     "crumbs": [
       "Problem Sets",
       "Non-Probability Samples and Observational Causal Inference",
-      "Nonparametric identification"
+      "Panel data"
     ]
   },
   {
-    "objectID": "prediction_for_inference.html",
-    "href": "prediction_for_inference.html",
-    "title": "Prediction for causal and population inference",
+    "objectID": "problem_sets.html",
+    "href": "problem_sets.html",
+    "title": "Problem Sets",
     "section": "",
-    "text": "This session will be about prediction to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. If you have a Census with features \\(\\vec{X}\\), ignorable sampling conditional on \\(\\vec{X}\\), and a good sample estimator of \\(E(Y\\mid\\vec{X})\\) then you can predict \\(E(Y\\mid\\vec{X})\\) and aggregate over the Census-known population distribution of \\(\\vec{X}\\). For causal inference, being assigned to treatment is analogous to being sampled to observe the potential outcome under treatment.",
+    "text": "This page will contain a problem set corresponding to each class meeting. The problem sets are very open-ended and are designed to connect the material from class to your ongoing project.\nFor every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.\nWe chose together the following weekly pattern for problem sets:\nWe will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another’s projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer’s work as well as offering suggestions for improvement or future directions."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-1",
+    "href": "problem_sets.html#problem-set-1",
+    "title": "Problem Sets",
+    "section": "Problem Set 1",
+    "text": "Problem Set 1\n\n1. Your ongoing paper.\n1.1. (15 points) Write an abstract of your research paper.\n1.2. (5 points) What is one unit-specific quantity in your paper?\n1.3. (5 points) What is one target population in your paper?\n\n\n2. Regression for a conditional mean\n(25 points)\nIn class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing."
+  },
+  {
+    "objectID": "scales.html",
+    "href": "scales.html",
+    "title": "Scale construction",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
     "crumbs": [
       "Problem Sets",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Estimation by prediction"
+      "Additional topics",
+      "Scale construction"
     ]
   },
   {
-    "objectID": "resampling.html",
-    "href": "resampling.html",
-    "title": "Statistical Uncertainty: Bootstrap and Beyond",
+    "objectID": "who_we_are.html",
+    "href": "who_we_are.html",
+    "title": "Who We Are",
     "section": "",
-    "text": "As researchers adopt algorithmic estimation methods for which analytical standard errors do not exist, methods to produce standard errors by resampling become all the more important. We will discuss the bootstrap for simple random samples and extensions to allow resampling-based standard error estimates in complex survey samples.",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Statistical uncertainty by resampling"
-    ]
-  },
-  {
-    "objectID": "weighting_for_inference.html",
-    "href": "weighting_for_inference.html",
-    "title": "Weighting for causal and population inference",
-    "section": "",
-    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators.",
-    "crumbs": [
-      "Problem Sets",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Estimation by weighting"
-    ]
-  },
-  {
-    "objectID": "yhat_regression.html",
-    "href": "yhat_regression.html",
-    "title": "Regression for Y-hat",
-    "section": "",
-    "text": "slides\nThis class is about regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.\nSome of this class relies on an ongoing project on description: ilundberg.github.io/description",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Regression for Y-hat"
-    ]
+    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
   }
 ]
