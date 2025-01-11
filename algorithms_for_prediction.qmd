@@ -12,7 +12,7 @@ For two sessions, we will cover a few algorithms for prediction. We aim to
 
 ## Data: Baseball salaries {#sec-baseball}
 
-We will explore algorithms for prediction through a simple example dataset. The data contain the salaries of all 944 Major League Baseball Players who were on active rosters, injured lists, and restricted lists on Opening Day 2023. These data were compiled by [USA Today](https://databases.usatoday.com/major-league-baseball-salaries-2023/). After scraping the data and selecting a few variables, I appended each team's win-loss record from 2022. The data are available in [baseball.csv](../data/baseball.csv).
+We will explore algorithms for prediction through a simple example dataset. The data contain the salaries of all 944 Major League Baseball Players who were on active rosters, injured lists, and restricted lists on Opening Day 2023. These data were compiled by [USA Today](https://databases.usatoday.com/major-league-baseball-salaries-2023/). After scraping the data and selecting a few variables, I appended each team's win-loss record from 2022. The data are available in [baseball_population.csv](data/baseball_population.csv).
 
 ```{r, message = F, warning = F, comment = T}
 library(tidyverse)
@@ -103,7 +103,8 @@ baseball_population |>
   scale_y_continuous(
     name = "Team Average Salary in 2023",
     labels = scales::label_currency(scale = 1e-6, accuracy = 1, suffix = " million")
-  )
+  ) +
+  ggtitle("Baseball salaries vary across teams")
 ```
 
 Each team has about 30 players. As a task, we will often focus on estimating the mean salary of the L.A. Dodgers. Because we have the full population of data, we can calculate the answer directly:
@@ -173,15 +174,18 @@ By OLS prediction, we estimate that the mean Dodger salary was `r label_millions
 Because this is a hypothetical setting, we can consider the performance of our estimator across repeated samples. The chunk below pulls our code into a single function that we call `estimator()`. The estimator takes a sample and returns an estimate.
 
 ```{r}
-ols_estimator <- function(sample) {
+ols_estimator <- function(
+    sample = baseball_sample, 
+    to_predict = dodgers_to_predict
+) {
   # Learn a model in the sample
   ols <- lm(
     salary ~ team_past_record,
-    data = baseball_sample
+    data = sample
   )
   # Predict for our target population
-  ols_predicted <- dodgers_to_predict |>
-    mutate(predicted_salary = predict(ols, newdata = dodgers_to_predict))
+  ols_predicted <- to_predict |>
+    mutate(predicted_salary = predict(ols, newdata = to_predict))
   # Average over the target population
   ols_estimate <- ols_predicted |>
     summarize(ols_estimate = mean(predicted_salary)) |>
