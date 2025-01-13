@@ -14,8 +14,10 @@ For two sessions, we will cover a few algorithms for prediction. We aim to
 
 We will explore algorithms for prediction through a simple example dataset. The data contain the salaries of all 944 Major League Baseball Players who were on active rosters, injured lists, and restricted lists on Opening Day 2023. These data were compiled by [USA Today](https://databases.usatoday.com/major-league-baseball-salaries-2023/). After scraping the data and selecting a few variables, I appended each team's win-loss record from 2022. The data are available in [baseball_population.csv](data/baseball_population.csv).
 
-```{r, message = F, warning = F, comment = T}
+```{r, message = F, warning = F, comment = F}
 library(tidyverse)
+library(scales)
+library(foreach)
 ```
 
 ```{r, echo = F}
@@ -119,7 +121,12 @@ true_dodger_mean <- baseball_population |>
   pull(mean_salary)
 ```
 
-The true Dodger mean salary on Opening Day 2023 was `r scales::label_currency()(true_dodger_mean)`. We will imagine that we don't know this number. Instead of having the full population, we will imagine we have a sample of only 5 players per team. The function `draw_sample` will draw one such sample.
+The true Dodger mean salary on Opening Day 2023 was `r scales::label_currency()(true_dodger_mean)`. We will imagine that we don't know this number. Instead of having the full population, we will imagine we have
+
+* information on predictors for all players: position, team, team past record
+* information on salary for a random sample of 5 players per team
+
+The function `draw_sample` will draw one such sample.
 
 ```{r, echo = F}
 set.seed(90095)
@@ -131,13 +138,92 @@ baseball_sample <- baseball_population |>
   ungroup()
 ```
 
-We will imagine we know the identities of the Dodger players and the team's past win-loss record, but we need to predict their salaries in 2023.
+```{r, echo = F}
+dodger_sample_mean <- baseball_sample |> 
+  filter(team == "L.A. Dodgers") |>
+  summarize(salary = mean(salary)) |>
+  pull(salary)
+```
+
+In our sample, we observe the salaries of 5 players per team. Our 5 sampled Dodger players have an average salary of `r label_dollar()(dodger_sample_mean)`.
+
+Using our sample of 5 players per team, our task is to predict the mean salary across all `r sum(baseball_population$team == "L.A. Dodgers")` Dodger players in 2023.
 
 ```{r}
 dodgers_to_predict <- baseball_population |>
   filter(team == "L.A. Dodgers") |>
   select(-salary)
 ```
+
+<!-- ## James-Stein estimator -->
+
+<!-- ```{r} -->
+
+<!-- ``` -->
+
+<!-- $$ -->
+<!-- \hat\mu_i = \bar{Y} + \hat{B}\left(Y_i - \bar{Y}\right) -->
+<!-- $$ -->
+<!-- where  -->
+<!-- $$ -->
+<!-- \hat{B} = 1 - \frac{n - 3}{\sum_{i=1}^n(Y_i-\bar{Y})^2} -->
+<!-- $$ -->
+
+
+<!-- ```{r} -->
+<!-- repeated_simulations <- foreach(rep = 1:100, .combine = "rbind") %do% { -->
+
+<!--   for_shrinkage <- baseball_population |> -->
+<!--     group_by(team) |> -->
+<!--     slice_sample(n = 5) |> -->
+<!--     group_by(team) |> -->
+<!--     summarize(within_mean = mean(salary)) |> -->
+<!--     # Calculate grand mean. Works since equal size groups. -->
+<!--     mutate(grand_mean = mean(within_mean)) -->
+
+<!--   pooled <- foreach(within_weight_value = seq(0,1,.05), .combine = "rbind") %do% { -->
+<!--     for_shrinkage |> -->
+<!--       mutate(within_weight = within_weight_value) |> -->
+<!--       mutate( -->
+<!--         estimate = within_mean * within_weight +  -->
+<!--           grand_mean * (1 - within_weight) -->
+<!--       ) |> -->
+<!--       select(team, within_weight, estimate) -->
+<!--   } -->
+
+<!--   return(pooled) -->
+
+<!-- } -->
+
+<!-- truth <- baseball_population |> -->
+<!--   group_by(team) |> -->
+<!--   summarize(truth = mean(salary)) -->
+
+<!-- # Determine the optimal shrinkage -->
+<!-- best_within_weight <- baseball_population |> -->
+<!--   group_by(team) |> -->
+<!--   summarize( -->
+<!--     within_variance = var(salary) / n(), -->
+<!--     between_mean = mean(salary) -->
+<!--   ) |> -->
+<!--   ungroup() |> -->
+<!--   summarize(within_variance = mean(within_variance), -->
+<!--             between_variance = var(between_mean) / n()) |> -->
+<!--   mutate( -->
+<!--     grand_weight = within_variance / (within_variance + between_variance), -->
+<!--     best_within_weight = 1 - grand_weight -->
+<!--   ) |> -->
+<!--   pull(best_within_weight) -->
+
+<!-- repeated_simulations |> -->
+<!--   left_join(truth, by = "team") |> -->
+<!--   group_by(within_weight) |> -->
+<!--   summarize(mse = mean((estimate - truth) ^ 2)) |> -->
+<!--   ggplot(aes(x = within_weight, y = mse)) + -->
+<!--   geom_point() + -->
+<!--   geom_line() + -->
+<!--   geom_vline(xintercept = best_within_weight) -->
+<!-- ``` -->
 
 ## Ordinary Least Squares
 
@@ -187,19 +273,15 @@ ols_estimator <- function(
   ols_predicted <- to_predict |>
     mutate(predicted_salary = predict(ols, newdata = to_predict))
   # Average over the target population
-  ols_estimate <- ols_predicted |>
+  ols_estimate_star <- ols_predicted |>
     summarize(ols_estimate = mean(predicted_salary)) |>
     pull(ols_estimate)
   # Return the estimate
-  return(ols_estimate)
+  return(ols_estimate_star)
 }
 ```
 
 We can run the estimator repeatedly, getting one estimate for each repeated sample from the population. This exercise is possible because in this simplified setting we have data on the full population.
-
-```{r, comment = F, message = F, warning = F}
-library(foreach)
-```
 
 ```{r}
 many_sample_estimates <- foreach(
@@ -351,6 +433,164 @@ In broad strokes, this is the problem that algorithms for prediction seek to sol
 * avoid a high-variance estimator
 
 We need a model that strikes a balance between bias and variance.
+
+## A big idea: Regularization
+
+We might want a middle ground between two extreme possibilities:
+
+* our OLS linear prediction: $\hat{Y}^\text{Linear}_\text{Dodgers} = \hat\alpha + \hat\beta\text{(Past Record)}_\text{Dodgers}={}$ `r label_millions(ols_estimate)`
+* the mean of the 5 sampled Dodger salaries: $\hat{Y}^\text{Nonparametric}_\text{Dodgers} = {}$ `r label_millions(dodger_sample_mean)`
+
+Our estimator could be a weighted average of these two, with weight $w$ placed on the nonparametric mean and weight $1 - w$ placed on the linear prediction.
+$$
+\hat\tau = w \hat{Y}^\text{Nonparametric}_\text{Dodgers} + (1 - w)\hat{Y}^\text{Linear}_\text{Dodgers}
+$$
+The graph below visualizes the resulting estimate at various values of $w$.
+
+```{r, echo = F, warning = F, comment = F}
+estimates_by_w <- foreach(w_value = seq(0,1,.05), .combine = "rbind") %do% {
+  tibble(
+    w = w_value,
+    estimate = (1 - w) * dodger_sample_mean + w * ols_estimate
+  )
+}
+estimates_by_w |>
+  ggplot(aes(x = w, y = estimate)) +
+  geom_point() +
+  geom_line() +
+  geom_text(
+    data = estimates_by_w |>
+      filter(w %in% c(0,1)) |>
+      mutate(
+        w = w + c(1,-1) * .13, 
+        hjust = c(0,1),
+        label = c("Nonparametric Dodger Samle Mean",
+                  "Linear Prediction from OLS")
+      ),
+    aes(label = label, hjust = hjust)
+  ) +
+  geom_segment(
+     data = estimates_by_w |>
+      filter(w %in% c(0,1)) |>
+       mutate(x = w + c(1,-1) * .12,
+              xend = w + c(1,-1) * .04),
+     aes(x = x, xend = xend),
+     arrow = arrow(length = unit(.08,"in"))
+  ) +
+  annotate(
+    geom = "text", x = .3, y = estimates_by_w$estimate[12],
+    label = "Partial\nPooling\nEstimates",
+    vjust = 1
+  ) +
+  annotate(
+    geom = "segment", 
+    x = c(.3,.4), 
+    xend = c(.3,.55),
+    y = estimates_by_w$estimate[c(11,14)],
+    yend = estimates_by_w$estimate[c(8,14)],
+    arrow = arrow(length = unit(.08,"in"))
+  ) +
+  scale_x_continuous("Weight: Amount of Shrinkage Toward Linear Fit") +
+  scale_y_continuous(
+    labels = label_millions,
+    name = "Dodger Mean Salary Estimates",
+    expand = expansion(mult =.1)
+  ) +
+  theme_minimal()
+```
+
+Partial pooling allows one to avoid choosing an extreme: we can choose somewhere in between estimating by the mean among the sampled Dodgers and estimating by the linear model. The best estimator in fact lies somewhere in between. Let $\hat\mu_\text{Dodgers}$ be an estimator: a function that when applied to a sample $S$ returns an estimate $\hat\mu_\text{Dodgers}(S)$. The squared error of this estimator in a particular sample $S$ is $(\hat\mu_\text{Dodgers}(S) - \mu_\text{Dodgers})^2$. Expected squared error is the expected value of this performance taken across repeated samples $S$ from the population.
+
+$$
+\text{Expected Squared Error}(\hat\mu_\text{Dodgers}) = \text{E}_S\left(\left(\hat\mu_\text{Dodgers}(S) - \mu_\text{Dodgers}\right)^2\right)
+$$
+Below, we visualize a simulation-based estimate of expected squared error. For each of $r = 1,\dots,100$ repetitions, we draw a sample $S_r$ from the population, apply the estimators, and record squared error. We then take the average across simulated samples
+
+$$
+\widehat{\text{Expected Squared Error}}(\hat\mu_\text{Dodgers}) = \frac{1}{100}\sum_{r=1}^{100}\left(\hat\mu_\text{Dodgers}(S_r) - \mu_\text{Dodgers}\right)^2
+$$
+
+
+To approximate the expected squared error, we repeatedly take samples of 5 players per MLB team and apply the estimator with each weight value from 0 to 1. Across repeated samples, we estimate the expected squared error of the estimator for the Dodger salaries. Results are visualized below.
+
+```{r, echo = F}
+repeated_simulations <- foreach(rep = 1:100, .combine = "rbind") %do% {
+  
+  a_sample <- baseball_population |>
+    group_by(team) |>
+    slice_sample(n = 5) |>
+    ungroup()
+  
+  ols_fit <- lm(salary ~ team_past_record, data = a_sample)
+  
+  ols_estimate <- predict(
+    ols_fit, 
+    newdata = baseball_population |> 
+      filter(team == "L.A. Dodgers") |>
+      distinct(team_past_record)
+  )
+  
+  nonparametric_estimate <- a_sample |>
+    filter(team == "L.A. Dodgers") |>
+    summarize(salary = mean(salary)) |>
+    pull(salary)
+  
+  foreach(w_value = seq(0,1,.05), .combine = "rbind") %do% {
+    tibble(
+      w = w_value,
+      estimate = w * ols_estimate + (1 - w) * nonparametric_estimate
+    )
+  }
+}
+
+aggregated <- repeated_simulations |>
+  group_by(w) |>
+  summarize(mse = mean((estimate - true_dodger_mean) ^ 2)) |>
+  mutate(best = mse == min(mse))
+
+aggregated |>
+  ggplot(aes(x = w, y = mse, color = best)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(name = "Expected Squared Error\nfor Dodger Mean Salary") +
+  scale_x_continuous(name = "Weight: Amount of Shrinkage Toward Linear Fit") +
+  scale_color_manual(values = c("black","dodgerblue")) +
+  geom_vline(xintercept = c(0,1), linetype = "dashed") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  annotate(
+    geom = "text", 
+    x = c(0.02,.98), 
+    y = range(aggregated$mse),
+    hjust = c(0,1), vjust = c(0,1),
+    size = 3,
+    label = c(
+      "Nonparametric estimator:\nDodger mean salary",
+      "Model-based estimator:\nOLS linear prediction"
+    )
+  ) +
+  annotate(
+    geom = "text", 
+    x = aggregated$w[aggregated$best], 
+    y = min(aggregated$mse) + .2 * diff(range(aggregated$mse)),
+    vjust = -.1,
+    label = "Best-Performing\nEstimator",
+    size = 3,
+    color = "dodgerblue"
+  ) +
+  annotate(
+    geom = "segment",
+    x = aggregated$w[aggregated$best], 
+    y = min(aggregated$mse) + .18 * diff(range(aggregated$mse)),
+    yend = min(aggregated$mse) + .05 * diff(range(aggregated$mse)),
+    arrow = arrow(length = unit(.08,"in")),
+    color = "dodgerblue"
+  )
+```
+
+In this illustration, the best performance is an estimator that puts `r label_percent()(aggregated$w[aggregated$best])` of the weight on the linear fit and `r label_percent()(1 - aggregated$w[aggregated$best])` of the weight on the mean among the 5 sampled Dodgers.
+
+The example above illustrates an idea known as regularization, shrinkage, or partial pooling: we may often want to combine an estimate on a subgroup (the Dodger mean) with an estimate made on the full population (the linear fit). We will consider various methods to accomplish regularization, and we will return at the end to consider connections among them.
 
 ## Multilevel models
 
@@ -505,13 +745,24 @@ tibble(x = "OLS with\nlinear record", y = many_sample_estimates) |>
 
 ### In math
 
-Mathematically, a multilevel model is a maximum likelihood estimator. For our case, the model assumes that the salary of player $j$ on team $i$ is assumed to be normally distributed around the team mean salary $\mu_i$, with standard deviation $\sigma$ which in our case is assumed to be the same across teams.
+Mathematically, a multilevel model is a maximum likelihood estimator. For our case, the model assumes that the salary of player $i$ on team $t$ is assumed to be normally distributed around the team mean salary $\mu_t$, with variance $\sigma^2$ which in our case is assumed to be the same across teams.
 
-$$Y_{ij} \sim \text{Normal}(\mu_i, \sigma)$$
-The team-specific mean $\mu_i$ involves two components. First, this mean is assumed to be centered at a linear prediction $\alpha + X_i\beta$ where $X_i$ is the win-loss record of team $i$ in the previous year. This is the value toward which team-specific estimates are regularized. Second, the mean for the particular team $i$ is drawn from a normal distribution with standard deviation $\sigma_\mu$, which is the standard deviation of the team-specific mean salary residuals across teams.
+$$Y_{ti} \sim \text{Normal}\left(\mu_t, \sigma^2\right)$$
+The team-specific mean $\mu_t$ involves two components. First, this mean is assumed to be centered at a linear prediction $\alpha + X_t\beta$ where $X_t$ is the win-loss record of team $t$ in the previous year. This is the value toward which team-specific estimates are regularized. Second, the mean for the particular team $i$ is drawn from a normal distribution with standard deviation $\tau^2$, which is the standard deviation of the team-specific mean salary residuals across teams.
 
-$$\mu_i \sim \text{Normal}(\alpha + X_i\beta, \sigma_\mu)$$
-By maximizing the log likelihood of the observed data under this model, one comes to maximum likelihood estimates of all of the unknown parameters.
+$$\mu_t \sim \text{Normal}(\alpha + X_t\beta, \tau^2)$$
+By maximizing the log likelihood of the observed data under this model, one comes to maximum likelihood estimates of all of the unknown parameters. The $\mu_t$ estimates will partially pool between two estimators,
+
+1. the sample mean $\bar{Y}_t$ within team $t$
+2. the linear model prediction $\hat\alpha + X_t\hat\beta$
+
+where the weight on (1) will depend on the relative precision of this within-team estimate and the weight (2) will depend on the relative precision of the between-team estimate. After explaining ridge regression, we will return to a simplified case where the formula for the multilevel model estimates allows further intuition building.
+
+<!-- The estimates involve partial pooling between two components -->
+
+<!-- $$ -->
+<!-- \hat\mu_t^\text{Multilevel} = \frac{\sum_{i}Y_{ti} + \frac{\hat\sigma^2}{\hat\tau^2}\left(\hat\alpha + X_t\hat\beta\right)}{n_t + \frac{\hat\sigma^2}{\hat\tau^2}} -->
+<!-- $$ -->
 
 ## Ridge regression
 
@@ -723,6 +974,40 @@ many_sample_estimates_ridge |>
   geom_hline(yintercept = true_dodger_mean, linetype = "dashed") +
   annotate(geom = "text", x = .4, y = true_dodger_mean, hjust = 0, vjust = .5, label = "Truth in\npopulation", size = 3)
 ```
+
+### Connections: Multilevel model and ridge regression
+
+Multilevel models and ridge regression are closely connected, and they can yield mathematically equivalent estimates in special cases.  Consider again the multilevel model for the salary $Y_{ti}$ of player $i$ on team $t$.
+
+$$
+\begin{aligned}
+Y_{ti} &\sim \text{Normal}(\mu_t,\sigma^2) \\
+\mu_t &\sim \text{Normal}(\mu_0, \tau^2)
+\end{aligned}
+$$
+For simplicity, suppose we already have estimates $\hat\mu_0$, $\hat\tau^2$, and $\hat\sigma^2$. One can show that the multilevel model estimates of $\mu_t$ are:
+
+$$
+\hat\mu_t^\text{Multilevel} = \frac{\sum_{i}Y_{ti} + \frac{\hat\sigma^2}{\hat\tau^2}\hat\mu_0}{n_t + \frac{\hat\sigma^2}{\hat\tau^2}}
+$$
+This formula can be interpreted as analogous to a sample mean, but with some added observations. The first part of the numerator and denominator corresponds to a sample mean: the sum $\sum_i Y_{ti}$ of salaries of all sampled players in team $t$ in the numerator and the number of such players $n_t$ in the denominator. The right side of the numerator and denominator correspond to pseudo-observations. It is as though in addition to the sampled players, we also saw $\frac{\hat\sigma^2}{\hat\tau^2}$ additional players with exactly the overall baseball mean salary estimate $\hat\mu_0$. This part of the formula partially pools the team-specific mean toward this overall mean. Partial pooling is greater to the degree that there is small within-team variance (small $\sigma^2$) or large across-team variance (large $\hat\tau^2$).
+
+Next, we consider a ridge regression estimator that minimizes an objective function where $\hat\mu_0$ is an unpenalized estimate for the baseball-wide mean salary.^[While we write out $\hat\mu_0$, algorithmic implementations of ridge regression often mean-center $Y$ before applying the algorithm which is equivalent to having an unpenalized $\hat\mu_0$.]
+
+$$
+\hat{\vec\mu}^\text{Ridge} = \underset{\vec\mu}{\text{arg min}} \underbrace{\sum_t\sum_i \left(Y_{it}-\mu_t\right)^2}_\text{Sum of Squared Error} + \underbrace{\lambda\sum_t \left(\mu_t - \hat\mu_0\right)^2}_\text{Penalty}
+$$
+We can gain some additional intuition for this estimate by rearranging to pull the penalty into the main term.
+
+$$
+\hat{\vec\mu}^\text{Ridge} = \underset{\vec\mu}{\text{arg min}} \sum_t\left(\sum_i \left(Y_{it}-\mu_t\right)^2 + \lambda\left(\hat\mu_0 - \mu_t\right)^2\right)
+$$
+The first part of this term is the sum over observed squared errors within team $t$, $\sum_i\left(Y_{it}-\mu_t\right)^2$. The second part is as though we had observed an additional $\lambda$ cases within team $t$ with an outcome value $\mu_0$ equal to the baseball-wide mean. With this intuition, the ridge regression estimator becomes
+
+$$
+\hat\mu_t^\text{Ridge} = \frac{\sum_i Y_{it} + \lambda\hat\mu_0}{n_t + \lambda}
+$$
+which is the same as the multilevel model estimator in the special case when $\lambda = \frac{\hat\sigma^2}{\hat\tau^2}$. Multilevel models and ridge regression are actually accomplishing the same thing!
 
 ## LASSO regression
 

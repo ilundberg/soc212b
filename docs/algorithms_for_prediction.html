@@ -320,6 +320,7 @@ window.Quarto = {
   <li><a href="#performance-over-repeated-samples" id="toc-performance-over-repeated-samples" class="nav-link" data-scroll-target="#performance-over-repeated-samples">Performance over repeated samples</a></li>
   <li><a href="#models-with-more-parameters" id="toc-models-with-more-parameters" class="nav-link" data-scroll-target="#models-with-more-parameters">Models with more parameters</a></li>
   </ul></li>
+  <li><a href="#a-big-idea-regularization" id="toc-a-big-idea-regularization" class="nav-link" data-scroll-target="#a-big-idea-regularization">A big idea: Regularization</a></li>
   <li><a href="#multilevel-models" id="toc-multilevel-models" class="nav-link" data-scroll-target="#multilevel-models">Multilevel models</a>
   <ul class="collapse">
   <li><a href="#intuition" id="toc-intuition" class="nav-link" data-scroll-target="#intuition">Intuition</a></li>
@@ -331,6 +332,7 @@ window.Quarto = {
   <li><a href="#intuition-1" id="toc-intuition-1" class="nav-link" data-scroll-target="#intuition-1">Intuition</a></li>
   <li><a href="#in-code" id="toc-in-code" class="nav-link" data-scroll-target="#in-code">In code</a></li>
   <li><a href="#performance-over-repeated-samples-2" id="toc-performance-over-repeated-samples-2" class="nav-link" data-scroll-target="#performance-over-repeated-samples-2">Performance over repeated samples</a></li>
+  <li><a href="#connections-multilevel-model-and-ridge-regression" id="toc-connections-multilevel-model-and-ridge-regression" class="nav-link" data-scroll-target="#connections-multilevel-model-and-ridge-regression">Connections: Multilevel model and ridge regression</a></li>
   </ul></li>
   <li><a href="#lasso-regression" id="toc-lasso-regression" class="nav-link" data-scroll-target="#lasso-regression">LASSO regression</a>
   <ul class="collapse">
@@ -374,7 +376,9 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="sec-baseball">Data: Baseball salaries</h2>
 <p>We will explore algorithms for prediction through a simple example dataset. The data contain the salaries of all 944 Major League Baseball Players who were on active rosters, injured lists, and restricted lists on Opening Day 2023. These data were compiled by <a href="https://databases.usatoday.com/major-league-baseball-salaries-2023/">USA Today</a>. After scraping the data and selecting a few variables, I appended each team’s win-loss record from 2022. The data are available in <a href="data/baseball_population.csv">baseball_population.csv</a>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(foreach)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>baseball_population <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://ilundberg.github.io/soc212b/data/baseball_population.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -409,19 +413,82 @@ window.Quarto = {
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Pull that estimate out of the data frame to just be a number</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(mean_salary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The true Dodger mean salary on Opening Day 2023 was $6,232,196. We will imagine that we don’t know this number. Instead of having the full population, we will imagine we have a sample of only 5 players per team. The function <code>draw_sample</code> will draw one such sample.</p>
+<p>The true Dodger mean salary on Opening Day 2023 was $6,232,196. We will imagine that we don’t know this number. Instead of having the full population, we will imagine we have</p>
+<ul>
+<li>information on predictors for all players: position, team, team past record</li>
+<li>information on salary for a random sample of 5 players per team</li>
+</ul>
+<p>The function <code>draw_sample</code> will draw one such sample.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>baseball_sample <span class="ot">&lt;-</span> baseball_population <span class="sc">|&gt;</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(team) <span class="sc">|&gt;</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We will imagine we know the identities of the Dodger players and the team’s past win-loss record, but we need to predict their salaries in 2023.</p>
+<p>In our sample, we observe the salaries of 5 players per team. Our 5 sampled Dodger players have an average salary of $7,936,238.</p>
+<p>Using our sample of 5 players per team, our task is to predict the mean salary across all 35 Dodger players in 2023.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dodgers_to_predict <span class="ot">&lt;-</span> baseball_population <span class="sc">|&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(team <span class="sc">==</span> <span class="st">"L.A. Dodgers"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>salary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<!-- ## James-Stein estimator -->
+<!-- ```{r} -->
+<!-- ``` -->
+<!-- $$ -->
+<!-- \hat\mu_i = \bar{Y} + \hat{B}\left(Y_i - \bar{Y}\right) -->
+<!-- $$ -->
+<!-- where  -->
+<!-- $$ -->
+<!-- \hat{B} = 1 - \frac{n - 3}{\sum_{i=1}^n(Y_i-\bar{Y})^2} -->
+<!-- $$ -->
+<!-- ```{r} -->
+<!-- repeated_simulations <- foreach(rep = 1:100, .combine = "rbind") %do% { -->
+<!--   for_shrinkage <- baseball_population |> -->
+<!--     group_by(team) |> -->
+<!--     slice_sample(n = 5) |> -->
+<!--     group_by(team) |> -->
+<!--     summarize(within_mean = mean(salary)) |> -->
+<!--     # Calculate grand mean. Works since equal size groups. -->
+<!--     mutate(grand_mean = mean(within_mean)) -->
+<!--   pooled <- foreach(within_weight_value = seq(0,1,.05), .combine = "rbind") %do% { -->
+<!--     for_shrinkage |> -->
+<!--       mutate(within_weight = within_weight_value) |> -->
+<!--       mutate( -->
+<!--         estimate = within_mean * within_weight +  -->
+<!--           grand_mean * (1 - within_weight) -->
+<!--       ) |> -->
+<!--       select(team, within_weight, estimate) -->
+<!--   } -->
+<!--   return(pooled) -->
+<!-- } -->
+<!-- truth <- baseball_population |> -->
+<!--   group_by(team) |> -->
+<!--   summarize(truth = mean(salary)) -->
+<!-- # Determine the optimal shrinkage -->
+<!-- best_within_weight <- baseball_population |> -->
+<!--   group_by(team) |> -->
+<!--   summarize( -->
+<!--     within_variance = var(salary) / n(), -->
+<!--     between_mean = mean(salary) -->
+<!--   ) |> -->
+<!--   ungroup() |> -->
+<!--   summarize(within_variance = mean(within_variance), -->
+<!--             between_variance = var(between_mean) / n()) |> -->
+<!--   mutate( -->
+<!--     grand_weight = within_variance / (within_variance + between_variance), -->
+<!--     best_within_weight = 1 - grand_weight -->
+<!--   ) |> -->
+<!--   pull(best_within_weight) -->
+<!-- repeated_simulations |> -->
+<!--   left_join(truth, by = "team") |> -->
+<!--   group_by(within_weight) |> -->
+<!--   summarize(mse = mean((estimate - truth) ^ 2)) |> -->
+<!--   ggplot(aes(x = within_weight, y = mse)) + -->
+<!--   geom_point() + -->
+<!--   geom_line() + -->
+<!--   geom_vline(xintercept = best_within_weight) -->
+<!-- ``` -->
 </section>
 <section id="ordinary-least-squares" class="level2">
 <h2 class="anchored" data-anchor-id="ordinary-least-squares">Ordinary Least Squares</h2>
@@ -471,30 +538,27 @@ window.Quarto = {
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  ols_predicted <span class="ot">&lt;-</span> to_predict <span class="sc">|&gt;</span></span>
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">predicted_salary =</span> <span class="fu">predict</span>(ols, <span class="at">newdata =</span> to_predict))</span>
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Average over the target population</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  ols_estimate <span class="ot">&lt;-</span> ols_predicted <span class="sc">|&gt;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  ols_estimate_star <span class="ot">&lt;-</span> ols_predicted <span class="sc">|&gt;</span></span>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">ols_estimate =</span> <span class="fu">mean</span>(predicted_salary)) <span class="sc">|&gt;</span></span>
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(ols_estimate)</span>
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return the estimate</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(ols_estimate)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(ols_estimate_star)</span>
 <span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can run the estimator repeatedly, getting one estimate for each repeated sample from the population. This exercise is possible because in this simplified setting we have data on the full population.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(foreach)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>many_sample_estimates <span class="ot">&lt;-</span> <span class="fu">foreach</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">repetition =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="at">.combine =</span> <span class="st">"c"</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%do%</span> {</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Draw a sample from the population</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  baseball_sample <span class="ot">&lt;-</span> baseball_population <span class="sc">|&gt;</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(team) <span class="sc">|&gt;</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Apply the estimator to the sample</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  estimate <span class="ot">&lt;-</span> <span class="fu">ols_estimator</span>(baseball_sample)</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(estimate)</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>many_sample_estimates <span class="ot">&lt;-</span> <span class="fu">foreach</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">repetition =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="at">.combine =</span> <span class="st">"c"</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%do%</span> {</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Draw a sample from the population</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  baseball_sample <span class="ot">&lt;-</span> baseball_population <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(team) <span class="sc">|&gt;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Apply the estimator to the sample</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  estimate <span class="ot">&lt;-</span> <span class="fu">ols_estimator</span>(baseball_sample)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(estimate)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Then we can visualize the performance across repeated samples.</p>
 <div class="cell">
@@ -522,10 +586,10 @@ window.Quarto = {
 </div>
 <p>How can we solve model approximation error? One might replace the linear term <code>team_past_record</code> with a series of categories for <code>team</code> in the OLS model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ols_team_categories <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  salary <span class="sc">~</span> team,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> baseball_sample</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ols_team_categories <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  salary <span class="sc">~</span> team,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> baseball_sample</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>But because the sample contains only 5 players per team, these estimates are quite noisy.</p>
 <div class="cell">
@@ -545,23 +609,62 @@ window.Quarto = {
 <p>We need a model that strikes a balance between bias and variance.</p>
 </section>
 </section>
+<section id="a-big-idea-regularization" class="level2">
+<h2 class="anchored" data-anchor-id="a-big-idea-regularization">A big idea: Regularization</h2>
+<p>We might want a middle ground between two extreme possibilities:</p>
+<ul>
+<li>our OLS linear prediction: <span class="math inline">\(\hat{Y}^\text{Linear}_\text{Dodgers} = \hat\alpha + \hat\beta\text{(Past Record)}_\text{Dodgers}={}\)</span> $3.9 million</li>
+<li>the mean of the 5 sampled Dodger salaries: <span class="math inline">\(\hat{Y}^\text{Nonparametric}_\text{Dodgers} = {}\)</span> $7.9 million</li>
+</ul>
+<p>Our estimator could be a weighted average of these two, with weight <span class="math inline">\(w\)</span> placed on the nonparametric mean and weight <span class="math inline">\(1 - w\)</span> placed on the linear prediction. <span class="math display">\[
+\hat\tau = w \hat{Y}^\text{Nonparametric}_\text{Dodgers} + (1 - w)\hat{Y}^\text{Linear}_\text{Dodgers}
+\]</span> The graph below visualizes the resulting estimate at various values of <span class="math inline">\(w\)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Partial pooling allows one to avoid choosing an extreme: we can choose somewhere in between estimating by the mean among the sampled Dodgers and estimating by the linear model. The best estimator in fact lies somewhere in between. Let <span class="math inline">\(\hat\mu_\text{Dodgers}\)</span> be an estimator: a function that when applied to a sample <span class="math inline">\(S\)</span> returns an estimate <span class="math inline">\(\hat\mu_\text{Dodgers}(S)\)</span>. The squared error of this estimator in a particular sample <span class="math inline">\(S\)</span> is <span class="math inline">\((\hat\mu_\text{Dodgers}(S) - \mu_\text{Dodgers})^2\)</span>. Expected squared error is the expected value of this performance taken across repeated samples <span class="math inline">\(S\)</span> from the population.</p>
+<p><span class="math display">\[
+\text{Expected Squared Error}(\hat\mu_\text{Dodgers}) = \text{E}_S\left(\left(\hat\mu_\text{Dodgers}(S) - \mu_\text{Dodgers}\right)^2\right)
+\]</span> Below, we visualize a simulation-based estimate of expected squared error. For each of <span class="math inline">\(r = 1,\dots,100\)</span> repetitions, we draw a sample <span class="math inline">\(S_r\)</span> from the population, apply the estimators, and record squared error. We then take the average across simulated samples</p>
+<p><span class="math display">\[
+\widehat{\text{Expected Squared Error}}(\hat\mu_\text{Dodgers}) = \frac{1}{100}\sum_{r=1}^{100}\left(\hat\mu_\text{Dodgers}(S_r) - \mu_\text{Dodgers}\right)^2
+\]</span></p>
+<p>To approximate the expected squared error, we repeatedly take samples of 5 players per MLB team and apply the estimator with each weight value from 0 to 1. Across repeated samples, we estimate the expected squared error of the estimator for the Dodger salaries. Results are visualized below.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In this illustration, the best performance is an estimator that puts 75% of the weight on the linear fit and 25% of the weight on the mean among the 5 sampled Dodgers.</p>
+<p>The example above illustrates an idea known as regularization, shrinkage, or partial pooling: we may often want to combine an estimate on a subgroup (the Dodger mean) with an estimate made on the full population (the linear fit). We will consider various methods to accomplish regularization, and we will return at the end to consider connections among them.</p>
+</section>
 <section id="multilevel-models" class="level2">
 <h2 class="anchored" data-anchor-id="multilevel-models">Multilevel models</h2>
 <p>Multilevel models<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> are an algorithm for prediction that is fully grounded in classical statistics. They are especially powerful for the problem depicted above: making predictions when there are many groups (teams) with a small sample size in each group.</p>
 <p>We will first illustrate a multilevel model’s performance and then consider the statistics behind this model. We will estimate using the <code>lme4</code> package. If you don’t have this package, install it with <code>install.packages("lme4")</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>In the syntax, the code <code>(1 | team)</code> says that our model should have a unique intercept for every team, and that these intercepts should be regularized (more on this soon).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>multilevel <span class="ot">&lt;-</span> <span class="fu">lmer</span>(salary <span class="sc">~</span> team_past_record <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> team), <span class="at">data =</span> baseball_sample)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>multilevel <span class="ot">&lt;-</span> <span class="fu">lmer</span>(salary <span class="sc">~</span> team_past_record <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> team), <span class="at">data =</span> baseball_sample)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can make predictions from a multilevel model just like we can from OLS. For example, the code below makes predictions for the Dodgers.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>multilevel_predicted <span class="ot">&lt;-</span> dodgers_to_predict <span class="sc">|&gt;</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">fitted =</span> <span class="fu">predict</span>(multilevel, <span class="at">newdata =</span> dodgers_to_predict)</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>multilevel_predicted <span class="ot">&lt;-</span> dodgers_to_predict <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">fitted =</span> <span class="fu">predict</span>(multilevel, <span class="at">newdata =</span> dodgers_to_predict)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="intuition" class="level3">
 <h3 class="anchored" data-anchor-id="intuition">Intuition</h3>
@@ -570,7 +673,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -580,7 +683,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -593,7 +696,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -601,9 +704,18 @@ window.Quarto = {
 </section>
 <section id="in-math" class="level3">
 <h3 class="anchored" data-anchor-id="in-math">In math</h3>
-<p>Mathematically, a multilevel model is a maximum likelihood estimator. For our case, the model assumes that the salary of player <span class="math inline">\(j\)</span> on team <span class="math inline">\(i\)</span> is assumed to be normally distributed around the team mean salary <span class="math inline">\(\mu_i\)</span>, with standard deviation <span class="math inline">\(\sigma\)</span> which in our case is assumed to be the same across teams.</p>
-<p><span class="math display">\[Y_{ij} \sim \text{Normal}(\mu_i, \sigma)\]</span> The team-specific mean <span class="math inline">\(\mu_i\)</span> involves two components. First, this mean is assumed to be centered at a linear prediction <span class="math inline">\(\alpha + X_i\beta\)</span> where <span class="math inline">\(X_i\)</span> is the win-loss record of team <span class="math inline">\(i\)</span> in the previous year. This is the value toward which team-specific estimates are regularized. Second, the mean for the particular team <span class="math inline">\(i\)</span> is drawn from a normal distribution with standard deviation <span class="math inline">\(\sigma_\mu\)</span>, which is the standard deviation of the team-specific mean salary residuals across teams.</p>
-<p><span class="math display">\[\mu_i \sim \text{Normal}(\alpha + X_i\beta, \sigma_\mu)\]</span> By maximizing the log likelihood of the observed data under this model, one comes to maximum likelihood estimates of all of the unknown parameters.</p>
+<p>Mathematically, a multilevel model is a maximum likelihood estimator. For our case, the model assumes that the salary of player <span class="math inline">\(i\)</span> on team <span class="math inline">\(t\)</span> is assumed to be normally distributed around the team mean salary <span class="math inline">\(\mu_t\)</span>, with variance <span class="math inline">\(\sigma^2\)</span> which in our case is assumed to be the same across teams.</p>
+<p><span class="math display">\[Y_{ti} \sim \text{Normal}\left(\mu_t, \sigma^2\right)\]</span> The team-specific mean <span class="math inline">\(\mu_t\)</span> involves two components. First, this mean is assumed to be centered at a linear prediction <span class="math inline">\(\alpha + X_t\beta\)</span> where <span class="math inline">\(X_t\)</span> is the win-loss record of team <span class="math inline">\(t\)</span> in the previous year. This is the value toward which team-specific estimates are regularized. Second, the mean for the particular team <span class="math inline">\(i\)</span> is drawn from a normal distribution with standard deviation <span class="math inline">\(\tau^2\)</span>, which is the standard deviation of the team-specific mean salary residuals across teams.</p>
+<p><span class="math display">\[\mu_t \sim \text{Normal}(\alpha + X_t\beta, \tau^2)\]</span> By maximizing the log likelihood of the observed data under this model, one comes to maximum likelihood estimates of all of the unknown parameters. The <span class="math inline">\(\mu_t\)</span> estimates will partially pool between two estimators,</p>
+<ol type="1">
+<li>the sample mean <span class="math inline">\(\bar{Y}_t\)</span> within team <span class="math inline">\(t\)</span></li>
+<li>the linear model prediction <span class="math inline">\(\hat\alpha + X_t\hat\beta\)</span></li>
+</ol>
+<p>where the weight on (1) will depend on the relative precision of this within-team estimate and the weight (2) will depend on the relative precision of the between-team estimate. After explaining ridge regression, we will return to a simplified case where the formula for the multilevel model estimates allows further intuition building.</p>
+<!-- The estimates involve partial pooling between two components -->
+<!-- $$ -->
+<!-- \hat\mu_t^\text{Multilevel} = \frac{\sum_{i}Y_{ti} + \frac{\hat\sigma^2}{\hat\tau^2}\left(\hat\alpha + X_t\hat\beta\right)}{n_t + \frac{\hat\sigma^2}{\hat\tau^2}} -->
+<!-- $$ -->
 </section>
 </section>
 <section id="ridge-regression" class="level2">
@@ -625,24 +737,24 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <section id="in-code" class="level3">
 <h3 class="anchored" data-anchor-id="in-code">In code</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ridge <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> team_past_record <span class="sc">+</span> team, <span class="at">data =</span> baseball_sample),</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> baseball_sample<span class="sc">$</span>salary,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">penalty.factor =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">30</span>)),</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Choose the ridge penalty (alpha = 0).</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Later, we will learn about the LASSO penalty (alpha = 1)</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ridge <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> team_past_record <span class="sc">+</span> team, <span class="at">data =</span> baseball_sample),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> baseball_sample<span class="sc">$</span>salary,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">penalty.factor =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">30</span>)),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Choose the ridge penalty (alpha = 0).</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Later, we will learn about the LASSO penalty (alpha = 1)</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can visualize the ridge regression estimates just like the multilevel model estimates. Because the penalty applies to squared values of team deviations from the line, the points furthest from the line are most strongly regularized toward the line.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -652,7 +764,7 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -660,13 +772,13 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <p>Focusing on the prediction for the Dodgers, we can see how the estimate changes as a function of the penalty parameter <span class="math inline">\(\lambda\)</span>.</p>
 <div class="cell">
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 23 rows containing missing values or values outside the scale range
+<pre><code>Warning: Removed 27 rows containing missing values or values outside the scale range
 (`geom_line()`).</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -680,11 +792,34 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+</section>
+<section id="connections-multilevel-model-and-ridge-regression" class="level3">
+<h3 class="anchored" data-anchor-id="connections-multilevel-model-and-ridge-regression">Connections: Multilevel model and ridge regression</h3>
+<p>Multilevel models and ridge regression are closely connected, and they can yield mathematically equivalent estimates in special cases. Consider again the multilevel model for the salary <span class="math inline">\(Y_{ti}\)</span> of player <span class="math inline">\(i\)</span> on team <span class="math inline">\(t\)</span>.</p>
+<p><span class="math display">\[
+\begin{aligned}
+Y_{ti} &amp;\sim \text{Normal}(\mu_t,\sigma^2) \\
+\mu_t &amp;\sim \text{Normal}(\mu_0, \tau^2)
+\end{aligned}
+\]</span> For simplicity, suppose we already have estimates <span class="math inline">\(\hat\mu_0\)</span>, <span class="math inline">\(\hat\tau^2\)</span>, and <span class="math inline">\(\hat\sigma^2\)</span>. One can show that the multilevel model estimates of <span class="math inline">\(\mu_t\)</span> are:</p>
+<p><span class="math display">\[
+\hat\mu_t^\text{Multilevel} = \frac{\sum_{i}Y_{ti} + \frac{\hat\sigma^2}{\hat\tau^2}\hat\mu_0}{n_t + \frac{\hat\sigma^2}{\hat\tau^2}}
+\]</span> This formula can be interpreted as analogous to a sample mean, but with some added observations. The first part of the numerator and denominator corresponds to a sample mean: the sum <span class="math inline">\(\sum_i Y_{ti}\)</span> of salaries of all sampled players in team <span class="math inline">\(t\)</span> in the numerator and the number of such players <span class="math inline">\(n_t\)</span> in the denominator. The right side of the numerator and denominator correspond to pseudo-observations. It is as though in addition to the sampled players, we also saw <span class="math inline">\(\frac{\hat\sigma^2}{\hat\tau^2}\)</span> additional players with exactly the overall baseball mean salary estimate <span class="math inline">\(\hat\mu_0\)</span>. This part of the formula partially pools the team-specific mean toward this overall mean. Partial pooling is greater to the degree that there is small within-team variance (small <span class="math inline">\(\sigma^2\)</span>) or large across-team variance (large <span class="math inline">\(\hat\tau^2\)</span>).</p>
+<p>Next, we consider a ridge regression estimator that minimizes an objective function where <span class="math inline">\(\hat\mu_0\)</span> is an unpenalized estimate for the baseball-wide mean salary.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p><span class="math display">\[
+\hat{\vec\mu}^\text{Ridge} = \underset{\vec\mu}{\text{arg min}} \underbrace{\sum_t\sum_i \left(Y_{it}-\mu_t\right)^2}_\text{Sum of Squared Error} + \underbrace{\lambda\sum_t \left(\mu_t - \hat\mu_0\right)^2}_\text{Penalty}
+\]</span> We can gain some additional intuition for this estimate by rearranging to pull the penalty into the main term.</p>
+<p><span class="math display">\[
+\hat{\vec\mu}^\text{Ridge} = \underset{\vec\mu}{\text{arg min}} \sum_t\left(\sum_i \left(Y_{it}-\mu_t\right)^2 + \lambda\left(\hat\mu_0 - \mu_t\right)^2\right)
+\]</span> The first part of this term is the sum over observed squared errors within team <span class="math inline">\(t\)</span>, <span class="math inline">\(\sum_i\left(Y_{it}-\mu_t\right)^2\)</span>. The second part is as though we had observed an additional <span class="math inline">\(\lambda\)</span> cases within team <span class="math inline">\(t\)</span> with an outcome value <span class="math inline">\(\mu_0\)</span> equal to the baseball-wide mean. With this intuition, the ridge regression estimator becomes</p>
+<p><span class="math display">\[
+\hat\mu_t^\text{Ridge} = \frac{\sum_i Y_{it} + \lambda\hat\mu_0}{n_t + \lambda}
+\]</span> which is the same as the multilevel model estimator in the special case when <span class="math inline">\(\lambda = \frac{\hat\sigma^2}{\hat\tau^2}\)</span>. Multilevel models and ridge regression are actually accomplishing the same thing!</p>
 </section>
 </section>
 <section id="lasso-regression" class="level2">
@@ -702,16 +837,16 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <section id="in-code-1" class="level3">
 <h3 class="anchored" data-anchor-id="in-code-1">In code</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>lasso <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> team_past_record <span class="sc">+</span> team, <span class="at">data =</span> baseball_sample),</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> baseball_sample<span class="sc">$</span>salary,</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">penalty.factor =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">30</span>)),</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Choose LASSO (alpha = 1) instead of ridge (alpha = 0)</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">1</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>lasso <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> team_past_record <span class="sc">+</span> team, <span class="at">data =</span> baseball_sample),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> baseball_sample<span class="sc">$</span>salary,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">penalty.factor =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">30</span>)),</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Choose LASSO (alpha = 1) instead of ridge (alpha = 0)</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">1</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Visualizing the estimates, we see behavior similar to what we have previously seen from multilevel models and ridge regression. All estimates are pulled toward a linear regression fit. There are two key differences, however.</p>
 <p>First, the previous estimators most strongly pulled the large deviations toward the linear fit. The LASSO estimates pull all parameter estimates toward the linear fit to a similar degree, regardless of their size. This is because the LASSO estimates penalize the absolute value of <span class="math inline">\(\gamma_i\)</span> instead of the squared value of <span class="math inline">\(\gamma_i\)</span>.</p>
@@ -720,7 +855,7 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -730,7 +865,7 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -744,7 +879,7 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -768,6 +903,7 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 
 <ol>
 <li id="fn1"><p>Raudenbush, S. W., and A.S. Bryk. (2002). Hierarchical linear models: Applications and data analysis methods. Advanced Quantitative Techniques in the Social Sciences Series/SAGE.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>While we write out <span class="math inline">\(\hat\mu_0\)</span>, algorithmic implementations of ridge regression often mean-center <span class="math inline">\(Y\)</span> before applying the algorithm which is equivalent to having an unpenalized <span class="math inline">\(\hat\mu_0\)</span>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
