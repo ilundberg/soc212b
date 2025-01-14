@@ -21,7 +21,7 @@ library(foreach)
 ```
 
 ```{r, echo = F}
-label_millions <- scales::label_currency(
+label_millions <- label_currency(
   scale = 1e-6, accuracy = .1, suffix = " million"
 )
 ```
@@ -45,9 +45,14 @@ baseball_population <- read_csv("https://ilundberg.github.io/soc212b/data/baseba
 
 The first rows of the data are depicted below. Each row is a player. The `player` Madison Bumgarner had a `salary` of `r scales::label_dollar()(baseball_population$salary[1])`. His `position` was `LHP` for left-handed pitcher. His `team` was `Arizona`, and this team's record in the previous season was 0.457, meaning that they won 45.7\% of their games.
 
+```{r, echo = F}
+baseball_population |> print(n = 3)
+```
+
 We will summarize mean salaries. Some useful facts about mean salaries are that they vary substantially across positions and also across teams.
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 baseball_population |>
   group_by(position) |>
   summarize(salary = mean(salary)) |>
@@ -56,15 +61,16 @@ baseball_population |>
   geom_bar(stat = "identity") +
   geom_text(
     aes(
-      label = scales::label_currency(
+      label = label_currency(
         scale = 1e-6, accuracy = .1, suffix = " m"
       )(salary)
     ), 
     y = 0, color = "white", size = 3, fontface = "bold",
-    vjust = -1) +
+    vjust = -1
+  ) +
   scale_y_continuous(
     name = "Average Salary",
-    labels = scales::label_currency(scale = 1e-6, accuracy = 1, suffix = " million")
+    labels = label_currency(scale = 1e-6, accuracy = 1, suffix = " million")
   ) +
   scale_x_discrete(
     name = "Position",
@@ -86,7 +92,8 @@ baseball_population |>
   ggtitle("Baseball salaries vary across positions")
 ```
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 baseball_population |>
   group_by(team) |>
   summarize(
@@ -104,12 +111,18 @@ baseball_population |>
   ) +
   scale_y_continuous(
     name = "Team Average Salary in 2023",
-    labels = scales::label_currency(scale = 1e-6, accuracy = 1, suffix = " million")
+    labels = label_currency(
+      scale = 1e-6, 
+      accuracy = 1, 
+      suffix = " million"
+    )
   ) +
   ggtitle("Baseball salaries vary across teams")
 ```
 
-Each team has about 30 players. As a task, we will often focus on estimating the mean salary of the L.A. Dodgers. Because we have the full population of data, we can calculate the answer directly:
+## Task: Predict the Dodgers' mean salary
+
+As a task, we will often focus on estimating the mean salary of the L.A. Dodgers. Because we have the full population of data, we can calculate the answer directly:
 
 ```{r}
 true_dodger_mean <- baseball_population |>
@@ -121,7 +134,7 @@ true_dodger_mean <- baseball_population |>
   pull(mean_salary)
 ```
 
-The true Dodger mean salary on Opening Day 2023 was `r scales::label_currency()(true_dodger_mean)`. We will imagine that we don't know this number. Instead of having the full population, we will imagine we have
+The true Dodger mean salary on Opening Day 2023 was `r label_currency()(true_dodger_mean)`. We will imagine that we don't know this number. Instead of having the full population, we will imagine we have
 
 * information on predictors for all players: position, team, team past record
 * information on salary for a random sample of 5 players per team
@@ -147,7 +160,12 @@ dodger_sample_mean <- baseball_sample |>
 
 In our sample, we observe the salaries of 5 players per team. Our 5 sampled Dodger players have an average salary of `r label_dollar()(dodger_sample_mean)`.
 
-Using our sample of 5 players per team, our task is to predict the mean salary across all `r sum(baseball_population$team == "L.A. Dodgers")` Dodger players in 2023.
+```{r, echo = F}
+baseball_sample |>
+  filter(team == "L.A. Dodgers")
+```
+
+Our task is to predict the salary for all `r sum(baseball_population$team == "L.A. Dodgers")` Dodger players and average those predictions to yield a predicted vaue of the Dodgers' mean salary on opening day 2023. The data we will use to predict include all variables except the outcome for the Dodger players.
 
 ```{r}
 dodgers_to_predict <- baseball_population |>
@@ -300,7 +318,8 @@ many_sample_estimates <- foreach(
 
 Then we can visualize the performance across repeated samples.
 
-```{r, echo = F, fig.height = 2.5}
+```{r, fig.height = 2.5}
+#| code-fold: true
 tibble(y = many_sample_estimates) |>
   # Random jitter for x
   mutate(x = runif(n(), -.1, .1)) |>
@@ -321,11 +340,12 @@ tibble(y = many_sample_estimates) |>
 
 Across repeated samples, the estimates have a standard deviation of `r label_millions(sd(many_sample_estimates))` and are on average `r label_millions(abs(mean(many_sample_estimates) - true_dodger_mean))` too `r ifelse(mean(many_sample_estimates) > true_dodger_mean,"high","low")`.
 
-### Models with more parameters
+### Model approximation error
 
 An OLS model for salary that is linear in the team past record clearly suffers from model approximation error. If you fit a regression line to the entire population of baseball players you would see that th Dodger's mean salary is below this line.
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 population_ols <- lm(salary ~ team_past_record, data = baseball_population)
 forplot <- baseball_population |>
   mutate(fitted = predict(population_ols)) |>
@@ -365,7 +385,12 @@ forplot |>
   scale_color_manual(
     values = c("gray","dodgerblue")
   ) +
-  scale_y_continuous(name = "Team Mean Salary in 2023", labels = label_millions) +
+  scale_y_continuous(
+    name = "Team Mean Salary in 2023", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
+  ) +
   scale_x_continuous(limits = c(.3,.8), name = "Team Past Record: Proportion Wins in 2022") +
   theme_classic() +
   theme(legend.position = "none")
@@ -382,7 +407,8 @@ ols_team_categories <- lm(
 
 But because the sample contains only 5 players per team, these estimates are quite noisy.
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 # Create many sample estimates with categorical teams
 many_sample_estimates_categories <- foreach(
   repetition = 1:100, .combine = "c"
@@ -415,8 +441,10 @@ tibble(x = "OLS linear in\nteam past record", y = many_sample_estimates) |>
   ggplot(aes(x = x, y = y)) +
   geom_jitter(width = .2, height = 0) +
   scale_y_continuous(
-    name = "Dodger Mean Salary",
-    labels = label_millions
+    name = "Dodger Mean Salary", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
   ) +
   theme_minimal() +
   scale_x_discrete(
@@ -427,27 +455,26 @@ tibble(x = "OLS linear in\nteam past record", y = many_sample_estimates) |>
   annotate(geom = "text", x = .4, y = true_dodger_mean, hjust = 0, vjust = .5, label = "Truth in\npopulation", size = 3)
 ```
 
-In broad strokes, this is the problem that algorithms for prediction seek to solve:
-
-* avoid bias from model approximation error
-* avoid a high-variance estimator
-
-We need a model that strikes a balance between bias and variance.
+We would like to make the model more flexible to reduce model approximation error, while also avoiding high variance. To balance these competing objectives, we need a new strategy from machine learning.
 
 ## A big idea: Regularization
 
-We might want a middle ground between two extreme possibilities:
+Regularization encompasses a broad class of approaches designed for models that have many parameters, such as a unique intercept for every team in Major League Baseball. Regularization allows us to estimate many parameters while pulling them toward some common value in order to reduce the high variance that tends to results.
+
+As one concrete example of regularization, we might want a middle ground between two extremes:
 
 * our OLS linear prediction: $\hat{Y}^\text{Linear}_\text{Dodgers} = \hat\alpha + \hat\beta\text{(Past Record)}_\text{Dodgers}={}$ `r label_millions(ols_estimate)`
 * the mean of the 5 sampled Dodger salaries: $\hat{Y}^\text{Nonparametric}_\text{Dodgers} = {}$ `r label_millions(dodger_sample_mean)`
 
-Our estimator could be a weighted average of these two, with weight $w$ placed on the nonparametric mean and weight $1 - w$ placed on the linear prediction.
+A regularized estimator could be a weighted average of these two, with weight $w$ placed on the nonparametric mean and weight $1 - w$ placed on the linear prediction.
+
 $$
 \hat\tau = w \hat{Y}^\text{Nonparametric}_\text{Dodgers} + (1 - w)\hat{Y}^\text{Linear}_\text{Dodgers}
 $$
-The graph below visualizes the resulting estimate at various values of $w$.
+The graph below visualizes the resulting estimate at various values of $w$. The regularized estimates are partially pooled toward the linear model prediction, with the amount of pooling controlled by $w$.
 
-```{r, echo = F, warning = F, comment = F}
+```{r, warning = F, comment = F}
+#| code-fold: true
 estimates_by_w <- foreach(w_value = seq(0,1,.05), .combine = "rbind") %do% {
   tibble(
     w = w_value,
@@ -492,28 +519,31 @@ estimates_by_w |>
   ) +
   scale_x_continuous("Weight: Amount of Shrinkage Toward Linear Fit") +
   scale_y_continuous(
-    labels = label_millions,
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    ),
     name = "Dodger Mean Salary Estimates",
     expand = expansion(mult =.1)
   ) +
   theme_minimal()
 ```
 
-Partial pooling allows one to avoid choosing an extreme: we can choose somewhere in between estimating by the mean among the sampled Dodgers and estimating by the linear model. The best estimator in fact lies somewhere in between. Let $\hat\mu_\text{Dodgers}$ be an estimator: a function that when applied to a sample $S$ returns an estimate $\hat\mu_\text{Dodgers}(S)$. The squared error of this estimator in a particular sample $S$ is $(\hat\mu_\text{Dodgers}(S) - \mu_\text{Dodgers})^2$. Expected squared error is the expected value of this performance taken across repeated samples $S$ from the population.
+Partial pooling is one way to navigate the bias-variance tradeoff: it allows us to have a flexible model while reducing the high amount of variance that such a model can create. In our case, the best estimator lies somewhere between the fully-pooled estimator (linear regression) and the fully-separate estimator (unique intercepts for each team).
+
+One way to formally investigate the properties of our estimator is by defining a concept known as **expected squared error**. Let $\hat\mu_\text{Dodgers}$ be an estimator: a function that when applied to a sample $S$ returns an estimate $\hat\mu_\text{Dodgers}(S)$. The squared error of this estimator in a particular sample $S$ is $(\hat\mu_\text{Dodgers}(S) - \mu_\text{Dodgers})^2$. Expected squared error is the expected value of this performance taken across repeated samples $S$ from the population.
 
 $$
 \text{Expected Squared Error}(\hat\mu_\text{Dodgers}) = \text{E}_S\left(\left(\hat\mu_\text{Dodgers}(S) - \mu_\text{Dodgers}\right)^2\right)
 $$
-Below, we visualize a simulation-based estimate of expected squared error. For each of $r = 1,\dots,100$ repetitions, we draw a sample $S_r$ from the population, apply the estimators, and record squared error. We then take the average across simulated samples
+
+Ordinarily, one has only one sample and cannot directly calculate expected squared error. But our setting is useful for pedagogical purposes because we have the full population of baseball players and can repeatedly draw samples to evaluate performance. Below, we simulate $r = 1,\dots,100$ repeated samples and estimated expected squared error by the mean squared error of the estimates $\hat\mu_\text{Dodgers}(S_r)$ that we get from each simulated sample $S_r$.
 
 $$
 \widehat{\text{Expected Squared Error}}(\hat\mu_\text{Dodgers}) = \frac{1}{100}\sum_{r=1}^{100}\left(\hat\mu_\text{Dodgers}(S_r) - \mu_\text{Dodgers}\right)^2
 $$
 
-
-To approximate the expected squared error, we repeatedly take samples of 5 players per MLB team and apply the estimator with each weight value from 0 to 1. Across repeated samples, we estimate the expected squared error of the estimator for the Dodger salaries. Results are visualized below.
-
-```{r, echo = F}
+```{r}
+#| code-fold: true
 repeated_simulations <- foreach(rep = 1:100, .combine = "rbind") %do% {
   
   a_sample <- baseball_population |>
@@ -620,7 +650,8 @@ multilevel_predicted <- dodgers_to_predict |>
 
 The multilevel model is a **partial-pooling estimator**. The figure below displays this visually. For each team, the solid dot is the mean salary among the 5 sampled players. The ends of the arrows are the multilevel model estimates. The multilevel model pools the team-specific estimates toward the model-based prediction.
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 p <- baseball_sample |>
   group_by(team) |>
   mutate(nonparametric = mean(salary)) |>
@@ -644,7 +675,12 @@ p <- baseball_sample |>
   geom_point(aes(y = nonparametric)) +
   #ggrepel::geom_text_repel(aes(y = fitted, label = team), size = 2) +
   theme_minimal() +
-  scale_y_continuous(name = "Team Mean Salary in 2023", labels = label_millions) +
+  scale_y_continuous(
+    name = "Team Mean Salary in 2023", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
+  ) +
   scale_x_continuous(name = "Team Past Record: Proportion Wins in 2022") +
   ggtitle("Multilevel model on a sample of 5 players per team",
           subtitle = "Points are nonparametric sample mean estimates.\nArrow ends are multilevel model estimates.\nDashed line is an unregularized fixed effect.")
@@ -653,7 +689,8 @@ p
 
 The multilevel model only regularizes the team-specific estimates to the degree that they are imprecise. If we repeat the entire process on a sample of 20 players per team, each team-specific estimate becomes more precise and the overall amount of shrinkage is less.
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 bigger_sample <- baseball_population |>
   group_by(team) |>
   slice_sample(n = 20) |>
@@ -684,7 +721,9 @@ bigger_sample |>
   theme_minimal() +
   scale_y_continuous(
     name = "Team Mean Salary in 2023", 
-    labels = label_millions,
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    ),
     limits = layer_scales(p)$y$range$range
   ) +
   scale_x_continuous(name = "Team Past Record: Proportion Wins in 2022") +
@@ -696,7 +735,8 @@ bigger_sample |>
 
 We previously discussed how an OLS prediction that was linear in the past team record was a biased estimator with low variance. The sample mean within each team was an unbiased estimator with high variance. The multilevel model falls in between these two extremes.
 
-```{r, echo = F, comment = F, warning = F, message = F}
+```{r, comment = F, warning = F, message = F}
+#| code-fold: true
 many_sample_estimates_multilevel <- foreach(
   repetition = 1:100, .combine = "c"
 ) %do% {
@@ -731,8 +771,10 @@ tibble(x = "OLS with\nlinear record", y = many_sample_estimates) |>
   ggplot(aes(x = x, y = y)) +
   geom_jitter(width = .2, height = 0) +
   scale_y_continuous(
-    name = "Dodger Mean Salary",
-    labels = label_millions
+    name = "Dodger Mean Salary", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
   ) +
   theme_minimal() +
   scale_x_discrete(
@@ -757,12 +799,6 @@ By maximizing the log likelihood of the observed data under this model, one come
 2. the linear model prediction $\hat\alpha + X_t\hat\beta$
 
 where the weight on (1) will depend on the relative precision of this within-team estimate and the weight (2) will depend on the relative precision of the between-team estimate. After explaining ridge regression, we will return to a simplified case where the formula for the multilevel model estimates allows further intuition building.
-
-<!-- The estimates involve partial pooling between two components -->
-
-<!-- $$ -->
-<!-- \hat\mu_t^\text{Multilevel} = \frac{\sum_{i}Y_{ti} + \frac{\hat\sigma^2}{\hat\tau^2}\left(\hat\alpha + X_t\hat\beta\right)}{n_t + \frac{\hat\sigma^2}{\hat\tau^2}} -->
-<!-- $$ -->
 
 ## Ridge regression
 
@@ -806,7 +842,8 @@ ridge <- glmnet(
 
 We can visualize the ridge regression estimates just like the multilevel model estimates. Because the penalty applies to squared values of team deviations from the line, the points furthest from the line are most strongly regularized toward the line.
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 baseball_sample |>
   group_by(team) |>
   mutate(nonparametric = mean(salary)) |>
@@ -834,7 +871,12 @@ baseball_sample |>
   geom_point(aes(y = nonparametric)) +
   #ggrepel::geom_text_repel(aes(y = fitted, label = team), size = 2) +
   theme_minimal() +
-  scale_y_continuous(name = "Team Mean Salary in 2023", labels = label_millions) +
+  scale_y_continuous(
+    name = "Team Mean Salary in 2023", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
+  ) +
   scale_x_continuous(name = "Team Past Record: Proportion Wins in 2022") +
   ggtitle("Ridge regression on a sample of 5 players per team",
           subtitle = "Points are nonparametric sample mean estimates.\nArrow ends are ridge regression estimates.\nDashed line is the unregularized component of the model.")
@@ -842,7 +884,8 @@ baseball_sample |>
 
 The amount of regularization will depend on the chosen value of the penalty parameter $\lambda$. To the degree that $\lambda$ is large, estimates will be more strongly pulled toward the regression line. Below is a visualization at three values of $\lambda$.
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 fitted <- predict(
   ridge, 
   s = ridge$lambda[c(20,60,80)],
@@ -867,7 +910,12 @@ baseball_sample |>
   facet_wrap(~name) +
   #ggrepel::geom_text_repel(aes(y = fitted, label = team), size = 2) +
   theme_minimal() +
-  scale_y_continuous(name = "Team Mean Salary in 2023", labels = label_millions) +
+  scale_y_continuous(
+    name = "Team Mean Salary in 2023", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
+  ) +
   scale_x_continuous(name = "Team Past Record: Proportion Wins in 2022") +
   ggtitle("Ridge regression on a sample of 5 players per team",
           subtitle = "Points are nonparametric sample mean estimates.\nArrow ends are ridge regression estimates.\nDashed line is the unregularized component of the model.")
@@ -875,7 +923,8 @@ baseball_sample |>
 
 Focusing on the prediction for the Dodgers, we can see how the estimate changes as a function of the penalty parameter $\lambda$.
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 fitted <- predict(
   ridge, 
   newx = model.matrix(~-1 + team_past_record + team, data = baseball_sample)
@@ -893,8 +942,10 @@ tibble(estimate = fitted[baseball_sample$team == "L.A. Dodgers",][1,],
   ggplot(aes(x = lambda, y = estimate)) +
   geom_line() +
   scale_y_continuous(
-    name = "Dodger Mean Salary Estimate",
-    labels = label_millions,
+    name = "Dodger Mean Salary Estimate", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    ),
     expand = expansion(mult = .2)
   ) +
   scale_x_continuous(
@@ -927,7 +978,8 @@ We will discuss how to choose the value of lambda more in two weeks when we disc
 
 The ridge regression estimator has intuitive performance across repeated samples: the variance of the estimates decreases as the value of the penalty parameter $\lambda$ rises. The biase of the estimates also increases as the value of $\lambda$ increases. The optimal value of $\lambda$ is a problem-specific question that requires one to balance the tradeoff between bias and variance.
 
-```{r, echo = F, comment = F, warning = F, message = F}
+```{r, comment = F, warning = F, message = F}
+#| code-fold: true
 many_sample_estimates_ridge <- foreach(
   repetition = 1:100, .combine = "rbind"
 ) %do% {
@@ -963,8 +1015,10 @@ many_sample_estimates_ridge |>
   ggplot(aes(x = estimator, y = estimate)) +
   geom_jitter(width = .2, height = 0) +
   scale_y_continuous(
-    name = "Dodger Mean Salary",
-    labels = label_millions
+    name = "Dodger Mean Salary", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
   ) +
   theme_minimal() +
   scale_x_discrete(
@@ -1009,6 +1063,98 @@ $$
 $$
 which is the same as the multilevel model estimator in the special case when $\lambda = \frac{\hat\sigma^2}{\hat\tau^2}$. Multilevel models and ridge regression are actually accomplishing the same thing!
 
+Below, we use code to check that these two give the same thing. We first fit a multilevel model,
+
+```{r}
+multilevel <- lmer(salary ~ 1 + (1 | team), data = baseball_sample)
+```
+
+Then we make predictions,
+```{r}
+yhat_multilevel <- baseball_sample |>
+  mutate(yhat_multilevel = predict(multilevel)) |>
+  distinct(team, yhat_multilevel)
+```
+and extract the implied value of $\lambda$ for an equivalent ridge regression (from the math above).
+```{r}
+lambda_equivalent <- as_tibble(VarCorr(multilevel)) |>
+  select(grp, vcov) |>
+  pivot_wider(names_from = "grp", values_from = "vcov") |>
+  mutate(lambda_equivalent = Residual / team) |>
+  pull(lambda_equivalent)
+```
+
+Now we estimate ridge regression with that $\lambda$ value. Because `glmnet` internally rescales variables, it is difficult to carry out this check with `glmnet`. Instead, we will write our own ridge regression estimator. We first define our predictor matrix `X` and a mean-centered outcome vector `y_centered`. The reason to mean-center the outcome is to allow an unpenalized grand mean ($\mu_0$ in the math above). We will add this value back to predictions later.
+
+```{r}
+X <- model.matrix(~ -1 + team, data = baseball_sample)
+y_centered <- baseball_sample$salary - mean(baseball_sample$salary)
+```
+
+The ridge regression estimator can be written in matrix form as follows:
+
+$$
+Y - \hat\mu_0 = \mathbf{X}\vec\beta + \epsilon
+$$
+with $\hat{\vec\beta}_\text{Ridge} = (\mathbf{X}'\mathbf{X} + \text{diag}(\lambda))^{-1}\mathbf{X}'\vec{Y}$. The code below estimates $\vec\beta$
+
+```{r}
+beta_ridge <- solve(
+  t(X) %*% X + diag(rep(lambda_equivalent,ncol(X))), 
+  t(X) %*% y_centered
+)
+```
+
+Because there is one $\beta$ value for each team, we convert to predicted values for each team by adding the grand mean to the estimated coefficients.
+
+```{r}
+yhat_ridge <- beta_ridge + mean(baseball_sample$salary)
+```
+
+Finally, we create a `tibble` with both the ridge regression and multilevel model estimates.
+
+```{r}
+both_estimators <- as_tibble(rownames_to_column(data.frame(yhat_ridge))) |>
+  rename(team = rowname) |>
+  mutate(team = str_remove(team,"team")) |>
+  left_join(yhat_multilevel, by = join_by(team))
+```
+
+We can confirm in code that the two predictions are numerically equal.
+```{r}
+both_estimators |>
+  # remove names; it is ok if names are unequal
+  mutate_all(unname) |>
+  # summarize whether the two columns are equal
+  summarize(numerically_equal = all.equal(yhat_ridge, yhat_multilevel))
+```
+
+We produce a plot with one point for each team, with ridge regression predictions on the $x$-axis and multilevel model predictions on the $y$-axis. We can see that these two estimators are equivalent.
+
+```{r}
+#| code-fold: true
+both_estimators |>
+  ggplot(aes(x = yhat_ridge, y = yhat_multilevel, label = team)) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_point() +
+  scale_x_continuous(
+    name = "Ridge Regression",
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
+  ) +
+  scale_y_continuous(
+    name = "Multilevel Model",,
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
+  ) +
+  ggtitle("Ridge regression and multilevel models can yield\nequal estimates for the mean salary on each team") +
+  theme_minimal()
+```
+
+The equivalency of ridge regression and multilevel models may be surprising. Ridge regression is often motivated from a loss function (squared error + penalty), using terms that are common in data science and machine learning. Multilevel models are often motivated from sociological examples where units are clustered in groups, with terminology more common in statistics. Yet the two are mathematically related. An important difference is that multilevel models learn the amount of regularization from the data, whereas ridge regression needs an additional step to learn the penalty parameter (to be discussed in a future class session on [data-driven estimator selection](data_driven_selection.qmd)).
+
 ## LASSO regression
 
 LASSO regression is just like ridge regression except for one key difference: instead of penalizing the sum of squared coefficients, LASSO penalizes the sum of the absolute value of coefficients. As we will see, this change means that some parameters become regularized all the way to zero so that some terms drop out of the model completely.
@@ -1050,7 +1196,8 @@ First, the previous estimators most strongly pulled the large deviations toward 
 
 Second, the multilevel and ridge estimates never pulled any of the estimates all the way to the line; instead, the estimates asymptoted toward the line as the penalty parameter grew. In LASSO, some estimates are pulled all the way to the line.
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 baseball_sample |>
   group_by(team) |>
   mutate(nonparametric = mean(salary)) |>
@@ -1078,7 +1225,12 @@ baseball_sample |>
   geom_point(aes(y = nonparametric)) +
   #ggrepel::geom_text_repel(aes(y = fitted, label = team), size = 2) +
   theme_minimal() +
-  scale_y_continuous(name = "Team Mean Salary in 2023", labels = label_millions) +
+  scale_y_continuous(
+    name = "Team Mean Salary in 2023", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
+  ) +
   scale_x_continuous(name = "Team Past Record: Proportion Wins in 2022") +
   ggtitle("LASSO regression on a sample of 5 players per team",
           subtitle = "Points are nonparametric sample mean estimates.\nArrow ends are ridge regression estimates.\nDashed line is the unregularized component of the model.")
@@ -1086,7 +1238,8 @@ baseball_sample |>
 
 Focusing on the prediction for the Dodgers, we can see how the estimate changes as a function of the penalty parameter $\lambda$. At a very small penalty, the estimate is approximately the same as the mean among the 5 sampled Dodger players. As the penalty parameter $\lambda$ gets larger, the estimates move around. They generally move toward zero, but not always: as some other team-specific deviations are pulled to zero, the unregularized intercept and slope on team past record move around in response. Ultimately, the penalty becomes so large that the Dodger estimate is regularized all the way to the estimate we would get in a model with no team-specific deviations.
 
-```{r, echo = F}
+```{r}
+#| code-fold: true
 fitted <- predict(
   lasso, 
   newx = model.matrix(~-1 + team_past_record + team, data = baseball_sample)
@@ -1104,8 +1257,10 @@ tibble(estimate = fitted[baseball_sample$team == "L.A. Dodgers",][1,],
   ggplot(aes(x = lambda, y = estimate)) +
   geom_line() +
   scale_y_continuous(
-    name = "Dodger Mean Salary Estimate",
-    labels = label_millions,
+    name = "Dodger Mean Salary Estimate", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    ),
     expand = expansion(mult = .2)
   ) +
   scale_x_continuous(
@@ -1138,7 +1293,8 @@ As with ridge regression, we will discuss how to choose the value of lambda more
 
 Similar to the ridge regression estimator, we can visualize the performance of the LASSO regression estimator across repeated samples from the population.
 
-```{r, echo = F, comment = F, warning = F, message = F}
+```{r, comment = F, warning = F, message = F}
+#| code-fold: true
 many_sample_estimates_lasso <- foreach(
   repetition = 1:100, .combine = "rbind"
 ) %do% {
@@ -1174,8 +1330,10 @@ many_sample_estimates_lasso |>
   ggplot(aes(x = estimator, y = estimate)) +
   geom_jitter(width = .2, height = 0) +
   scale_y_continuous(
-    name = "Dodger Mean Salary",
-    labels = label_millions
+    name = "Dodger Mean Salary", 
+    labels = label_currency(
+      scale = 1e-6, accuracy = .1, suffix = " million"
+    )
   ) +
   theme_minimal() +
   scale_x_discrete(
