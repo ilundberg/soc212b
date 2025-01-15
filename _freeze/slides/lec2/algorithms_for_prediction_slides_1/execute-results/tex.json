@@ -1,0 +1,17 @@
+{
+  "hash": "18c3c6460cd5f23318299a0f98ea13bf",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Algorithms for prediction\"\nformat: beamer\n---\n\n\n\n## Data: Baseball salaries {#sec-baseball}\n\n* All 944 Major League Baseball Players, Opening Day 2023.\n* Compiled by [USA Today](https://databases.usatoday.com/major-league-baseball-salaries-2023/)\n* I appended each team's win-loss record from 2022\n* Available in [baseball_population.csv](../../data/baseball_population.csv)\n\n\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n\n\n## Data: Baseball salaries\n\n\n\n::: {.cell}\n::: {.cell-output .cell-output-stdout}\n\n```\n# A tibble: 944 x 5\n  player               salary position team    team_past_record\n  <chr>                 <dbl> <chr>    <chr>              <dbl>\n1 Bumgarner, Madison 21882892 LHP      Arizona            0.457\n2 Marte, Ketel       11600000 2B       Arizona            0.457\n3 Ahmed, Nick        10375000 SS       Arizona            0.457\n# i 941 more rows\n```\n\n\n:::\n:::\n\n\n\n## Data: Baseball salaries\n\n\n\n::: {.cell}\n::: {.cell-output-display}\n![](algorithms_for_prediction_slides_1_files/figure-beamer/unnamed-chunk-5-1.pdf)\n:::\n:::\n\n\n\n## Data: Baseball salaries\n\n\n\n::: {.cell}\n::: {.cell-output-display}\n![](algorithms_for_prediction_slides_1_files/figure-beamer/unnamed-chunk-6-1.pdf)\n:::\n:::\n",
+    "supporting": [
+      "algorithms_for_prediction_slides_1_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": null,
+    "postProcess": false
+  }
+}

@@ -10,6 +10,8 @@ For two sessions, we will cover a few algorithms for prediction. We aim to
 * draw connections between algorithms often viewed as classical statistics (e.g., multilevel models) and those often viewed as machine learning (e.g., penalized regression)
 * by learning a few new methods, become comfortable with the skills to read about additional new methods on your own in the future
 
+This page contains embedded R code. If you are a Stata user, you can download do files that illustrate [Ordinary Least Squares](assets/stata_code/ols.do), [multilevel models](assets/stata_code/multilevel.do), [ridge regression](assets/stata_code/ridge.do), and [LASSO regression](assets/stata_code/lasso.do).
+
 ## Data: Baseball salaries {#sec-baseball}
 
 We will explore algorithms for prediction through a simple example dataset. The data contain the salaries of all 944 Major League Baseball Players who were on active rosters, injured lists, and restricted lists on Opening Day 2023. These data were compiled by [USA Today](https://databases.usatoday.com/major-league-baseball-salaries-2023/). After scraping the data and selecting a few variables, I appended each team's win-loss record from 2022. The data are available in [baseball_population.csv](data/baseball_population.csv).
@@ -138,8 +140,6 @@ The true Dodger mean salary on Opening Day 2023 was `r label_currency()(true_dod
 
 * information on predictors for all players: position, team, team past record
 * information on salary for a random sample of 5 players per team
-
-The function `draw_sample` will draw one such sample.
 
 ```{r, echo = F}
 set.seed(90095)
@@ -1159,20 +1159,20 @@ The equivalency of ridge regression and multilevel models may be surprising. Rid
 
 LASSO regression is just like ridge regression except for one key difference: instead of penalizing the sum of squared coefficients, LASSO penalizes the sum of the absolute value of coefficients. As we will see, this change means that some parameters become regularized all the way to zero so that some terms drop out of the model completely.
 
-As with ridge regressiom, our outcome model is
+As with ridge regression, our outcome model is
 
 $$
-Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
+Y_{ti} = \alpha + \beta X_t + \gamma_{t} + \epsilon_{ti}
 $$
-where $Y_{ij}$ is the salary of player $i$ on team $j$ and $X_i$ is the past win-loss record of that team. In this model, $\gamma_i$ is a team-specific deviation from the linear fit, which corrects for model approximation error that will arise if particular teams have average salaries not well-captured by the linear fit. The error term $\epsilon_ij$ is the deviation for player $j$ from their own team's average salary.
+where $Y_{ti}$ is the salary of player $i$ on team $t$ and $X_t$ is the past win-loss record of that team. In this model, $\gamma_t$ is a team-specific deviation from the linear fit, which corrects for model approximation error that will arise if particular teams have average salaries not well-captured by the linear fit. The error term $\epsilon_{ti}$ is the deviation for player $i$ from their own team's average salary.
 
-To solve the high-variance estimates of $\gamma_i$, LASSO regression uses a different penalty term in its loss function:
+To solve the high-variance estimates of $\gamma_t$, LASSO regression uses a different penalty term in its loss function:
 
 $$
-\{\hat\alpha, \hat\beta, \hat{\vec\gamma}\} = \underset{\alpha,\beta,\vec\gamma}{\text{arg min}} \left[\sum_i\sum_j\left(Y_{ij} - \left(\alpha + \beta X_i + \gamma_{i}\right)\right)^2 + \lambda\sum_i\lvert\gamma_i\rvert\right]
+\{\hat\alpha, \hat\beta, \hat{\vec\gamma}\} = \underset{\alpha,\beta,\vec\gamma}{\text{arg min}} \left[\sum_t\sum_i\left(Y_{ti} - \left(\alpha + \beta X_t + \gamma_{t}\right)\right)^2 + \lambda\sum_t\lvert\gamma_t\rvert\right]
 $$
 
-where $\gamma_i^2$ from the ridge regression penalty has been replaced by the absolute value $\lvert\gamma_i\rvert$. We will first apply this in code and then see how it changes the performance of the estimator.
+where $\gamma_t^2$ from the ridge regression penalty has been replaced by the absolute value $\lvert\gamma_t\rvert$. We will first apply this in code and then see how it changes the performance of the estimator.
 
 ### In code
 

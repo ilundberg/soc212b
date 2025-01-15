@@ -373,6 +373,7 @@ window.Quarto = {
 <li>draw connections between algorithms often viewed as classical statistics (e.g., multilevel models) and those often viewed as machine learning (e.g., penalized regression)</li>
 <li>by learning a few new methods, become comfortable with the skills to read about additional new methods on your own in the future</li>
 </ul>
+<p>This page contains embedded R code. If you are a Stata user, you can download do files that illustrate <a href="assets/stata_code/ols.do">Ordinary Least Squares</a>, <a href="assets/stata_code/multilevel.do">multilevel models</a>, <a href="assets/stata_code/ridge.do">ridge regression</a>, and <a href="assets/stata_code/lasso.do">LASSO regression</a>.</p>
 <section id="sec-baseball" class="level2">
 <h2 class="anchored" data-anchor-id="sec-baseball">Data: Baseball salaries</h2>
 <p>We will explore algorithms for prediction through a simple example dataset. The data contain the salaries of all 944 Major League Baseball Players who were on active rosters, injured lists, and restricted lists on Opening Day 2023. These data were compiled by <a href="https://databases.usatoday.com/major-league-baseball-salaries-2023/">USA Today</a>. After scraping the data and selecting a few variables, I appended each team’s win-loss record from 2022. The data are available in <a href="data/baseball_population.csv">baseball_population.csv</a>.</p>
@@ -500,7 +501,6 @@ window.Quarto = {
 <li>information on predictors for all players: position, team, team past record</li>
 <li>information on salary for a random sample of 5 players per team</li>
 </ul>
-<p>The function <code>draw_sample</code> will draw one such sample.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>baseball_sample <span class="ot">&lt;-</span> baseball_population <span class="sc">|&gt;</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(team) <span class="sc">|&gt;</span></span>
@@ -1548,15 +1548,15 @@ Y - \hat\mu_0 = \mathbf{X}\vec\beta + \epsilon
 <section id="lasso-regression" class="level2">
 <h2 class="anchored" data-anchor-id="lasso-regression">LASSO regression</h2>
 <p>LASSO regression is just like ridge regression except for one key difference: instead of penalizing the sum of squared coefficients, LASSO penalizes the sum of the absolute value of coefficients. As we will see, this change means that some parameters become regularized all the way to zero so that some terms drop out of the model completely.</p>
-<p>As with ridge regressiom, our outcome model is</p>
+<p>As with ridge regression, our outcome model is</p>
 <p><span class="math display">\[
-Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
-\]</span> where <span class="math inline">\(Y_{ij}\)</span> is the salary of player <span class="math inline">\(i\)</span> on team <span class="math inline">\(j\)</span> and <span class="math inline">\(X_i\)</span> is the past win-loss record of that team. In this model, <span class="math inline">\(\gamma_i\)</span> is a team-specific deviation from the linear fit, which corrects for model approximation error that will arise if particular teams have average salaries not well-captured by the linear fit. The error term <span class="math inline">\(\epsilon_ij\)</span> is the deviation for player <span class="math inline">\(j\)</span> from their own team’s average salary.</p>
-<p>To solve the high-variance estimates of <span class="math inline">\(\gamma_i\)</span>, LASSO regression uses a different penalty term in its loss function:</p>
+Y_{ti} = \alpha + \beta X_t + \gamma_{t} + \epsilon_{ti}
+\]</span> where <span class="math inline">\(Y_{ti}\)</span> is the salary of player <span class="math inline">\(i\)</span> on team <span class="math inline">\(t\)</span> and <span class="math inline">\(X_t\)</span> is the past win-loss record of that team. In this model, <span class="math inline">\(\gamma_t\)</span> is a team-specific deviation from the linear fit, which corrects for model approximation error that will arise if particular teams have average salaries not well-captured by the linear fit. The error term <span class="math inline">\(\epsilon_{ti}\)</span> is the deviation for player <span class="math inline">\(i\)</span> from their own team’s average salary.</p>
+<p>To solve the high-variance estimates of <span class="math inline">\(\gamma_t\)</span>, LASSO regression uses a different penalty term in its loss function:</p>
 <p><span class="math display">\[
-\{\hat\alpha, \hat\beta, \hat{\vec\gamma}\} = \underset{\alpha,\beta,\vec\gamma}{\text{arg min}} \left[\sum_i\sum_j\left(Y_{ij} - \left(\alpha + \beta X_i + \gamma_{i}\right)\right)^2 + \lambda\sum_i\lvert\gamma_i\rvert\right]
+\{\hat\alpha, \hat\beta, \hat{\vec\gamma}\} = \underset{\alpha,\beta,\vec\gamma}{\text{arg min}} \left[\sum_t\sum_i\left(Y_{ti} - \left(\alpha + \beta X_t + \gamma_{t}\right)\right)^2 + \lambda\sum_t\lvert\gamma_t\rvert\right]
 \]</span></p>
-<p>where <span class="math inline">\(\gamma_i^2\)</span> from the ridge regression penalty has been replaced by the absolute value <span class="math inline">\(\lvert\gamma_i\rvert\)</span>. We will first apply this in code and then see how it changes the performance of the estimator.</p>
+<p>where <span class="math inline">\(\gamma_t^2\)</span> from the ridge regression penalty has been replaced by the absolute value <span class="math inline">\(\lvert\gamma_t\rvert\)</span>. We will first apply this in code and then see how it changes the performance of the estimator.</p>
 <section id="in-code-1" class="level3">
 <h3 class="anchored" data-anchor-id="in-code-1">In code</h3>
 <div class="cell">
