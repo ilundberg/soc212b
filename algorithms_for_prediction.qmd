@@ -12,6 +12,10 @@ For two sessions, we will cover a few algorithms for prediction. We aim to
 
 This page contains embedded R code. If you are a Stata user, you can download do files that illustrate [Ordinary Least Squares](assets/stata_code/ols.do), [multilevel models](assets/stata_code/multilevel.do), [ridge regression](assets/stata_code/ridge.do), and [LASSO regression](assets/stata_code/lasso.do).
 
+A version of this page in slide format is available here:
+
+* [slides through LASSO regression](slides/lec2/penalized_regression_slides.qmd)
+
 ## Data: Baseball salaries {#sec-baseball}
 
 We will explore algorithms for prediction through a simple example dataset. The data contain the salaries of all 944 Major League Baseball Players who were on active rosters, injured lists, and restricted lists on Opening Day 2023. These data were compiled by [USA Today](https://databases.usatoday.com/major-league-baseball-salaries-2023/). After scraping the data and selecting a few variables, I appended each team's win-loss record from 2022. The data are available in [baseball_population.csv](data/baseball_population.csv).
@@ -491,7 +495,7 @@ estimates_by_w |>
       mutate(
         w = w + c(1,-1) * .13, 
         hjust = c(0,1),
-        label = c("Nonparametric Dodger Samle Mean",
+        label = c("Nonparametric Dodger Sample Mean",
                   "Linear Prediction from OLS")
       ),
     aes(label = label, hjust = hjust)

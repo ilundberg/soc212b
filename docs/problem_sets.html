@@ -252,6 +252,7 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#problem-set-1" id="toc-problem-set-1" class="nav-link active" data-scroll-target="#problem-set-1">Problem Set 1</a></li>
+  <li><a href="#problem-set-2" id="toc-problem-set-2" class="nav-link" data-scroll-target="#problem-set-2">Problem Set 2</a></li>
   </ul>
 </nav>
     </div>
@@ -298,9 +299,21 @@ ul.task-list li input[type="checkbox"] {
 <h4 class="anchored" data-anchor-id="regression-for-a-conditional-mean">2. Regression for a conditional mean</h4>
 <p>(25 points)</p>
 <p>In class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing.</p>
-
-
 </section>
+</section>
+<section id="problem-set-2" class="level2">
+<h2 class="anchored" data-anchor-id="problem-set-2">Problem Set 2</h2>
+<ol type="1">
+<li>(20 points) In your project, do you have something analogous to many groups with a few observations per group? This could more generally be any case where the number of parameters to be estimated is somewhat large for the sample size available. If not in your project, think of an example in your general research area. Write a few sentences about why one might want penalized regression in that setting.</li>
+</ol>
+<p>The remainder of this problem set is based in the idea of multilevel models, though you can alternatively estimate by LASSO or ridge regression if you prefer. You can complete parts (2) and (3) in your own dataset if you can define at least 10 groups with at least 20 units per group. Wherever we say “team”, substitute whatever group is in your dataset. You may also use the <a href="data/baseball_population.csv">baseball_population.csv</a> data, in which the group variable is <code>team</code>.</p>
+<ol start="2" type="1">
+<li><p>(15 points) Draw a sample of 5 units per group. Estimate an unpenalized OLS regression and a penalized regression (multilevel, ridge, or LASSO). Produce a graph that compares the predicted values.</p></li>
+<li><p>(15 points) Repeat the exercise above but with a sample of 20 units per group. Visualize the estimates. How do your results change?</p></li>
+</ol>
+<p>Note that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers.</p>
+
+
 </section>
 
 </main> <!-- /main -->

@@ -374,6 +374,10 @@ window.Quarto = {
 <li>by learning a few new methods, become comfortable with the skills to read about additional new methods on your own in the future</li>
 </ul>
 <p>This page contains embedded R code. If you are a Stata user, you can download do files that illustrate <a href="assets/stata_code/ols.do">Ordinary Least Squares</a>, <a href="assets/stata_code/multilevel.do">multilevel models</a>, <a href="assets/stata_code/ridge.do">ridge regression</a>, and <a href="assets/stata_code/lasso.do">LASSO regression</a>.</p>
+<p>A version of this page in slide format is available here:</p>
+<ul>
+<li><a href="./slides/lec2/penalized_regression_slides.html">slides through LASSO regression</a></li>
+</ul>
 <section id="sec-baseball" class="level2">
 <h2 class="anchored" data-anchor-id="sec-baseball">Data: Baseball salaries</h2>
 <p>We will explore algorithms for prediction through a simple example dataset. The data contain the salaries of all 944 Major League Baseball Players who were on active rosters, injured lists, and restricted lists on Opening Day 2023. These data were compiled by <a href="https://databases.usatoday.com/major-league-baseball-salaries-2023/">USA Today</a>. After scraping the data and selecting a few variables, I appended each team’s win-loss record from 2022. The data are available in <a href="data/baseball_population.csv">baseball_population.csv</a>.</p>
@@ -846,7 +850,7 @@ window.Quarto = {
 <span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(</span>
 <span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">w =</span> w <span class="sc">+</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>) <span class="sc">*</span> .<span class="dv">13</span>, </span>
 <span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">hjust =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"Nonparametric Dodger Samle Mean"</span>,</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"Nonparametric Dodger Sample Mean"</span>,</span>
 <span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Linear Prediction from OLS"</span>)</span>
 <span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>      ),</span>
 <span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> label, <span class="at">hjust =</span> hjust)</span>

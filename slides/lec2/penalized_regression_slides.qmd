@@ -1,9 +1,11 @@
 ---
 title: "Algorithms for prediction"
+subtitle: "Part 1 of 2: Penalized Linear Regression"
 execute:
   echo: TRUE
 format: 
   revealjs:
+    incremental: true
     html-math-method: mathjax
 ---
 
@@ -46,6 +48,7 @@ E(Y\mid X = 0) &= \alpha \\
 E(Y\mid X = 1) &= \alpha + \beta
 \end{aligned}
 $$
+
 . . .
 
 It is not really a "model" at all
@@ -82,6 +85,8 @@ library(tidyverse)
 library(scales)
 library(foreach)
 ```
+
+. . .
 
 Load data:
 
@@ -183,6 +188,8 @@ baseball_population |>
 
 ## Task: Predict Dodger mean salary
 
+. . .
+
 We have the full population:
 
 ```{r}
@@ -204,8 +211,6 @@ Imagine we have
 
 * predictors for everyone
 * salary for a sample of 5 players per team
-
-We want to learn the Dodgers' mean salary
 
 ## Task: Predict Dodger mean salary
 
@@ -229,6 +234,8 @@ We want to learn the Dodgers' mean salary
 ## Task: Predict Dodger mean salary
 
 Draw a sample of 5 players per team.
+
+. . .
 
 ```{r, echo = F}
 set.seed(90095)
@@ -302,6 +309,9 @@ ols_estimate <- ols_predicted |>
 
 * We usually have only one sample
 * In this case, we have the population
+
+. . .
+
 * Plan
     * draw repeated samples
     * evaluate performance over repeated samples
@@ -513,6 +523,8 @@ Two estimators:
 * **linear prediction**: linear fit on team past record\
   (biased by model approximation error)
   
+. . .
+  
 We might **regularize** the nonparametric toward the linear prediction
 
 ## Regularization
@@ -535,7 +547,7 @@ estimates_by_w |>
       mutate(
         w = w + c(1,-1) * .13, 
         hjust = c(0,1),
-        label = c("Nonparametric Dodger Samle Mean",
+        label = c("Nonparametric Dodger Sample Mean",
                   "Linear Prediction from OLS")
       ),
     aes(label = label, hjust = hjust)
@@ -574,6 +586,8 @@ estimates_by_w |>
 ```
 
 ## Regularization: How much?
+
+. . .
 
 Want to minimize expected squared error.
 
@@ -829,11 +843,15 @@ tibble(x = "OLS with\nlinear record", y = many_sample_estimates) |>
 
 ## Multilevel models: In math
 
+. . .
+
 **Person-level model.** For player $i$ on team $t$,
 
 \begin{equation}
 Y_{ti} \sim \text{Normal}\left(\mu_t, \sigma^2\right)
 \end{equation}
+
+. . .
 
 **Group-level model.** There is a model for $\mu_t$, mean salary on team $t$.
 
@@ -853,13 +871,13 @@ Often taught in data science classes
 ## Ridge regression
 
 $$
-Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
+Y_{ti} = \alpha + \beta X_t + \gamma_{t} + \epsilon_{ti}
 $$
 
 Minimize a loss function:
 
 $$
-\underbrace{\sum_i\sum_j\left(Y_{ij} - \left(\alpha + \beta X_i + \gamma_{i}\right)\right)^2}_\text{Sum of Squared Error} + \underbrace{\lambda\sum_i\gamma_i^2}_\text{Penalty}
+\underbrace{\sum_t\sum_i\left(Y_{ti} - \left(\alpha + \beta X_t + \gamma_{t}\right)\right)^2}_\text{Sum of Squared Error} + \underbrace{\lambda\sum_t\gamma_t^2}_\text{Penalty}
 $$
 
 ## Ridge regression: Code
@@ -1108,6 +1126,7 @@ yhat_ridge <- beta_ridge + mean(baseball_sample$salary)
 Finally, we create a `tibble` with both the ridge regression and multilevel model estimates.
 
 ```{r}
+#| code-fold: true
 both_estimators <- as_tibble(rownames_to_column(data.frame(yhat_ridge))) |>
   rename(team = rowname) |>
   mutate(team = str_remove(team,"team")) |>
@@ -1134,7 +1153,9 @@ p <- both_estimators |>
     )
   ) +
   theme_minimal() +
+  geom_point(alpha = 0) +
   theme(text = element_text(size = 18))
+p
 ```
 
 ## Connections: Multilevel model and ridge regression
@@ -1147,7 +1168,7 @@ p +
 
 ## Connections: Multilevel model and ridge regression
 
-What is this special case? \pause Multilevel model:
+Multilevel model:
 
 $$
 \begin{aligned}
@@ -1172,7 +1193,7 @@ Rearranged to:
 $$
 \hat{\vec\mu}^\text{Ridge} = \underset{\vec\mu}{\text{arg min}} \sum_t\left(\sum_i \left(Y_{it}-\mu_t\right)^2 + \lambda\left(\hat\mu_0 - \mu_t\right)^2\right)
 $$
-\pause
+
 
 ## Connections: Multilevel model and ridge regression
 
@@ -1180,7 +1201,8 @@ $$
 $$
 \hat{\vec\mu}^\text{Ridge} = \underset{\vec\mu}{\text{arg min}} \sum_t\left(\sum_i \left(Y_{it}-\mu_t\right)^2 + \lambda\left(\hat\mu_0 - \mu_t\right)^2\right)
 $$
-\pause
+
+. . .
 
 Result:
 
@@ -1394,7 +1416,7 @@ many_sample_estimates_lasso |>
   annotate(geom = "text", x = .4, y = true_dodger_mean, hjust = 0, vjust = .5, label = "Truth in\npopulation", size = 3)
 ```
 
-# Recap
+# Recap + Project Connection
 
 ## Recap
 
@@ -1406,12 +1428,12 @@ A recipe for prediction:
 
 ## Recap
 
-Performance can be defined by **expected squared error**
-
-Performance can suffer from two sources:
+Performance (**expected squared error**) can suffer from two sources:
 
 * bias (model approximation error)
 * variance (too many parameters)
+
+. . .
 
 **Regularization** balances these two concerns
 
@@ -1421,13 +1443,82 @@ Performance can suffer from two sources:
 * Ridge regression: Penalizes sum of squared coefficients
 * LASSO regression: Penalizes sum of absolute coefficients
 
+. . .
+
 Multilevel models regularize group-specific estimates depending on the within-group precision, a special case of ridge regression.
+
+## Generalizations of our estimators
+
+Ridge regression: Applies well to many settings with a large number of parameters, regardless of whether they are groups.
+
+$$
+\hat{\vec\beta}^\text{Ridge} = \underset{\vec\beta}{\text{arg min}} \underbrace{\sum_i \left(Y_i - \left(\alpha + \vec{X}'\vec\beta\right)\right)^2}_\text{Sum of Squared Error} + \underbrace{\lambda\sum_p \beta_p^2}_\text{Penalty}
+$$
+
+## Generalizations of our estimators
+
+LASSO regression: Applies well to many settings with a large number of parameters, regardless of whether they are groups.
+
+$$
+\hat{\vec\beta}^\text{Ridge} = \underset{\vec\beta}{\text{arg min}} \underbrace{\sum_i \left(Y_i - \left(\alpha + \vec{X}'\vec\beta\right)\right)^2}_\text{Sum of Squared Error} + \underbrace{\lambda\sum_p \lvert\beta_p\rvert}_\text{Penalty}
+$$
+
+## Generalizations of our estimators
+
+Multilevel models can have group-specific slopes
+
+$$
+\begin{aligned}
+Y_{gi} &\sim \text{Normal}\left(\alpha_g + \beta_g X_{gi}, \sigma^2\right) \\
+\alpha_g &\sim \text{Normal}\left(\eta_0, \tau^2\right) \\
+\beta_g &\sim \text{Normal}\left(\lambda_0, \delta^2\right)
+\end{aligned}
+$$
+
+## Generalizations of our estimators
+
+Multilevel models can have more than two levels
+
+$$
+\begin{aligned}
+Y_{ijk} &\sim \text{Normal}\left(\alpha_{ij}, \sigma^2\right) \\
+\alpha_{ij} &\sim \text{Normal}\left(\beta_{i}, \tau^2\right) \\
+\beta_{i} &\sim \text{Normal}\left(\lambda, \delta^2\right)
+\end{aligned}
+$$
 
 ## Reading (optional)
 
-[Efron \& Hastie Ch 7.3](https://hastie.su.domains/CASI/)
+Multilevel models
+
+> * [Gelman & Hill 2006](http://www.stat.columbia.edu/~gelman/arm/) for worked examples
+> * [Murphy 2012](https://probml.github.io/pml-book/book0.html) ch 5.6.2 for a succinct mathematical presentation
+
+## Reading (optional)
+
+Ridge \& LASSO: [Hastie, Tibshirani, \& Friedman 2017](https://hastie.su.domains/ElemStatLearn/) Ch 3.4
+
+Ridge regression
+
+> * [Efron \& Hastie 2016](https://hastie.su.domains/CASI/) Ch 7.3 (all of ch 7 is useful)
+> * [Murphy 2012](https://probml.github.io/pml-book/book0.html) ch 7.5 for a Bayes view with lots of math
+
+LASSO regression
+
+> * [Efron \& Hastie 2016](https://hastie.su.domains/CASI/) Ch 16
+
+## Connection to project
+
+In your project, do you have a variable that creates
+
+> * many groups with
+> * few observations per group?
+
+Where else do you have many parameters to estimate?
+
+How could penalized regression apply in your project?
 
 ## Problem Set 2
 
-To discuss on course website.
+Due Monday 9pm: [link](../../problem_sets.qmd#problem-set-2)
 

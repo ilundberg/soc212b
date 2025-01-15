@@ -1,451 +1,493 @@
 [
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#problem-set-1-discussion",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#problem-set-1-discussion",
+    "objectID": "slides/lec2/penalized_regression_slides.html#problem-set-1-discussion",
+    "href": "slides/lec2/penalized_regression_slides.html#problem-set-1-discussion",
     "title": "Algorithms for prediction",
     "section": "Problem Set 1: Discussion",
     "text": "Problem Set 1: Discussion\n\n\n\nTerm\nMeaning\n\n\n\n\nUnit of analysis\nA row of your data\n\n\nUnit-specific quantity\nOutcome or potential outcome(s)\n\n\nTarget population\nSet of units over which to aggregate\n\n\n\n\nWhy? To ask \\(\\hat{Y}\\) questions, not \\(\\hat\\beta\\) questions"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#problem-set-1-discussion-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#problem-set-1-discussion-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#problem-set-1-discussion-1",
+    "href": "slides/lec2/penalized_regression_slides.html#problem-set-1-discussion-1",
     "title": "Algorithms for prediction",
     "section": "Problem Set 1: Discussion",
     "text": "Problem Set 1: Discussion\nSome language notes:\n\nCausal language\n\nX verb Y\n\nNon-causal language\n\ndifferences in Y across X"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#problem-set-1-discussion-2",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#problem-set-1-discussion-2",
+    "objectID": "slides/lec2/penalized_regression_slides.html#problem-set-1-discussion-2",
+    "href": "slides/lec2/penalized_regression_slides.html#problem-set-1-discussion-2",
     "title": "Algorithms for prediction",
     "section": "Problem Set 1: Discussion",
-    "text": "Problem Set 1: Discussion\nMany submitted models like this:\n\\[E(Y \\mid X) = \\alpha + \\beta X\\]\n\nWhen \\(X\\) is binary, this model is like taking subgroup means.\n\n\n\\[\n\\begin{aligned}\nE(Y\\mid X = 0) &= \\alpha \\\\\nE(Y\\mid X = 1) &= \\alpha + \\beta\n\\end{aligned}\n\\] . . .\nIt is not really a “model” at all"
+    "text": "Problem Set 1: Discussion\nMany submitted models like this:\n\\[E(Y \\mid X) = \\alpha + \\beta X\\]\n\nWhen \\(X\\) is binary, this model is like taking subgroup means.\n\n\n\\[\n\\begin{aligned}\nE(Y\\mid X = 0) &= \\alpha \\\\\nE(Y\\mid X = 1) &= \\alpha + \\beta\n\\end{aligned}\n\\]\n\n\nIt is not really a “model” at all"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#problem-set-1-discussion-3",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#problem-set-1-discussion-3",
+    "objectID": "slides/lec2/penalized_regression_slides.html#problem-set-1-discussion-3",
+    "href": "slides/lec2/penalized_regression_slides.html#problem-set-1-discussion-3",
     "title": "Algorithms for prediction",
     "section": "Problem Set 1: Discussion",
     "text": "Problem Set 1: Discussion\nOther things to discuss?"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#goals-for-today",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#goals-for-today",
+    "objectID": "slides/lec2/penalized_regression_slides.html#goals-for-today",
+    "href": "slides/lec2/penalized_regression_slides.html#goals-for-today",
     "title": "Algorithms for prediction",
     "section": "Goals for today",
     "text": "Goals for today\n\nreview OLS to predict\nunderstand regularization to estimate\nmany parameters while avoiding high variance\nwalk through three regularized linear model algorithms\n\nmultilevel models\nridge regression\nLASSO regression"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#data-baseball-salaries",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#data-baseball-salaries",
+    "objectID": "slides/lec2/penalized_regression_slides.html#data-baseball-salaries",
+    "href": "slides/lec2/penalized_regression_slides.html#data-baseball-salaries",
     "title": "Algorithms for prediction",
     "section": "Data: Baseball salaries",
     "text": "Data: Baseball salaries\n\nAll 944 Major League Baseball Players, Opening Day 2023.\nCompiled by USA Today\nI appended each team’s win-loss record from 2022\nAvailable in baseball_population.csv"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#data-baseball-salaries-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#data-baseball-salaries-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#data-baseball-salaries-1",
+    "href": "slides/lec2/penalized_regression_slides.html#data-baseball-salaries-1",
     "title": "Algorithms for prediction",
     "section": "Data: Baseball salaries",
-    "text": "Data: Baseball salaries\nLoad packages:\n\nlibrary(tidyverse)\nlibrary(scales)\nlibrary(foreach)\n\nLoad data:\n\nbaseball_population &lt;- read_csv(\n  \"https://ilundberg.github.io/soc212b/data/baseball_population.csv\"\n)"
+    "text": "Data: Baseball salaries\nLoad packages:\n\nlibrary(tidyverse)\nlibrary(scales)\nlibrary(foreach)\n\n\nLoad data:\n\nbaseball_population &lt;- read_csv(\n  \"https://ilundberg.github.io/soc212b/data/baseball_population.csv\"\n)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#data-baseball-salaries-2",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#data-baseball-salaries-2",
+    "objectID": "slides/lec2/penalized_regression_slides.html#data-baseball-salaries-2",
+    "href": "slides/lec2/penalized_regression_slides.html#data-baseball-salaries-2",
     "title": "Algorithms for prediction",
     "section": "Data: Baseball salaries",
     "text": "Data: Baseball salaries\n\nbaseball_population |&gt; print(n = 3)\n\n# A tibble: 944 × 5\n  player               salary position team    team_past_record\n  &lt;chr&gt;                 &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;              &lt;dbl&gt;\n1 Bumgarner, Madison 21882892 LHP      Arizona            0.457\n2 Marte, Ketel       11600000 2B       Arizona            0.457\n3 Ahmed, Nick        10375000 SS       Arizona            0.457\n# ℹ 941 more rows"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#data-baseball-salaries-3",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#data-baseball-salaries-3",
+    "objectID": "slides/lec2/penalized_regression_slides.html#data-baseball-salaries-3",
+    "href": "slides/lec2/penalized_regression_slides.html#data-baseball-salaries-3",
     "title": "Algorithms for prediction",
     "section": "Data: Baseball salaries",
     "text": "Data: Baseball salaries\n\n\nCode\nbaseball_population |&gt;\n  group_by(position) |&gt;\n  summarize(salary = mean(salary)) |&gt;\n  mutate(position = fct_reorder(position, -salary)) |&gt;\n  ggplot(aes(x = position, y = salary)) +\n  geom_bar(stat = \"identity\") +\n  geom_text(\n    aes(\n      label = label_currency(\n        scale = 1e-6, accuracy = .1, suffix = \" m\"\n      )(salary)\n    ), \n    y = 0, color = \"white\", fontface = \"bold\",\n    vjust = -1\n  ) +\n  scale_y_continuous(\n    name = \"Average Salary\",\n    labels = label_currency(scale = 1e-6, accuracy = 1, suffix = \" million\")\n  ) +\n  scale_x_discrete(\n    name = \"Position\",\n    labels = function(x) {\n      case_when(\n        x == \"C\" ~ \"C\\nCatcher\",\n        x == \"RHP\" ~ \"RHP\\nRight-\\nHanded\\nPitcher\",\n        x == \"LHP\" ~ \"LHP\\nLeft-\\nHanded\\nPitcher\",\n        x == \"1B\" ~ \"1B\\nFirst\\nBase\",\n        x == \"2B\" ~ \"2B\\nSecond\\nBase\",\n        x == \"SS\" ~ \"SS\\nShortstop\",\n        x == \"3B\" ~ \"3B\\nThird\\nBase\",\n        x == \"OF\" ~ \"OF\\nOutfielder\",\n        x == \"DH\" ~ \"DH\\nDesignated\\nHitter\"\n      )\n    }\n  ) +\n  theme_minimal() +\n  theme(text = element_text(size = 18)) +\n  ggtitle(\"Baseball salaries vary across positions\")"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#data-baseball-salaries-4",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#data-baseball-salaries-4",
+    "objectID": "slides/lec2/penalized_regression_slides.html#data-baseball-salaries-4",
+    "href": "slides/lec2/penalized_regression_slides.html#data-baseball-salaries-4",
     "title": "Algorithms for prediction",
     "section": "Data: Baseball salaries",
     "text": "Data: Baseball salaries\n\n\nCode\nbaseball_population |&gt;\n  group_by(team) |&gt;\n  summarize(\n    salary = mean(salary),\n    team_past_record = unique(team_past_record)\n  ) |&gt;\n  ggplot(aes(x = team_past_record, y = salary)) +\n  geom_point() +\n  ggrepel::geom_text_repel(\n    aes(label = team),\n    size = 2\n  ) +\n  scale_x_continuous(\n    name = \"Team Past Record: Proportion Wins in 2022\"\n  ) +\n  scale_y_continuous(\n    name = \"Team Average Salary in 2023\",\n    labels = label_currency(\n      scale = 1e-6, \n      accuracy = 1, \n      suffix = \" million\"\n    )\n  ) +\n  theme_minimal() +\n  theme(text = element_text(size = 18)) +\n  ggtitle(\"Baseball salaries vary across teams\")"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary",
+    "objectID": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary",
+    "href": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary",
     "title": "Algorithms for prediction",
     "section": "Task: Predict Dodger mean salary",
-    "text": "Task: Predict Dodger mean salary\nWe have the full population:\n\ntrue_dodger_mean &lt;- baseball_population |&gt;\n  # Restrict to the Dodgers\n  filter(team == \"L.A. Dodgers\") |&gt;\n  # Record the mean salary\n  summarize(mean_salary = mean(salary)) |&gt;\n  # Pull that estimate out of the data frame to just be a number\n  pull(mean_salary)\n\nThe true Dodger mean salary on Opening Day 2023 was $6,232,196."
+    "text": "Task: Predict Dodger mean salary\n\nWe have the full population:\n\ntrue_dodger_mean &lt;- baseball_population |&gt;\n  # Restrict to the Dodgers\n  filter(team == \"L.A. Dodgers\") |&gt;\n  # Record the mean salary\n  summarize(mean_salary = mean(salary)) |&gt;\n  # Pull that estimate out of the data frame to just be a number\n  pull(mean_salary)\n\nThe true Dodger mean salary on Opening Day 2023 was $6,232,196."
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-1",
+    "href": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-1",
     "title": "Algorithms for prediction",
     "section": "Task: Predict Dodger mean salary",
-    "text": "Task: Predict Dodger mean salary\nImagine we have\n\npredictors for everyone\nsalary for a sample of 5 players per team\n\nWe want to learn the Dodgers’ mean salary"
+    "text": "Task: Predict Dodger mean salary\nImagine we have\n\npredictors for everyone\nsalary for a sample of 5 players per team"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-2",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-2",
-    "title": "Algorithms for prediction",
-    "section": "Task: Predict Dodger mean salary",
-    "text": "Task: Predict Dodger mean salary"
-  },
-  {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-3",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-3",
+    "objectID": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-2",
+    "href": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-2",
     "title": "Algorithms for prediction",
     "section": "Task: Predict Dodger mean salary",
     "text": "Task: Predict Dodger mean salary"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-4",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-4",
+    "objectID": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-3",
+    "href": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-3",
     "title": "Algorithms for prediction",
     "section": "Task: Predict Dodger mean salary",
     "text": "Task: Predict Dodger mean salary"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-5",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-5",
+    "objectID": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-4",
+    "href": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-4",
+    "title": "Algorithms for prediction",
+    "section": "Task: Predict Dodger mean salary",
+    "text": "Task: Predict Dodger mean salary"
+  },
+  {
+    "objectID": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-5",
+    "href": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-5",
     "title": "Algorithms for prediction",
     "section": "Task: Predict Dodger mean salary",
     "text": "Task: Predict Dodger mean salary\n\nlearn model on everyone\ncreate data to predict: the Dodger population\npredict the outcome in this target population\naverage over units"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-6",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-6",
+    "objectID": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-6",
+    "href": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-6",
     "title": "Algorithms for prediction",
     "section": "Task: Predict Dodger mean salary",
-    "text": "Task: Predict Dodger mean salary\nDraw a sample of 5 players per team.\n\nbaseball_sample &lt;- baseball_population |&gt;\n  group_by(team) |&gt;\n  slice_sample(n = 5) |&gt;\n  ungroup() |&gt;\n  print()\n\n# A tibble: 150 × 5\n   player                 salary position team    team_past_record\n   &lt;chr&gt;                   &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;              &lt;dbl&gt;\n 1 Carroll, Corbin       1625000 OF       Arizona            0.457\n 2 Herrera, Jose          724300 C        Arizona            0.457\n 3 Melancon, Mark*       6000000 RHP      Arizona            0.457\n 4 Ahmed, Nick          10375000 SS       Arizona            0.457\n 5 Robinson, Kristian**   720000 OF       Arizona            0.457\n 6 Arcia, Orlando        2300000 SS       Atlanta            0.623\n 7 Lee, Dylan             730000 LHP      Atlanta            0.623\n 8 Pillar, Kevin         3000000 OF       Atlanta            0.623\n 9 Matzek, Tyler*        1200000 LHP      Atlanta            0.623\n10 Hilliard, Sam          750000 OF       Atlanta            0.623\n# ℹ 140 more rows"
+    "text": "Task: Predict Dodger mean salary\nDraw a sample of 5 players per team.\n\n\nbaseball_sample &lt;- baseball_population |&gt;\n  group_by(team) |&gt;\n  slice_sample(n = 5) |&gt;\n  ungroup() |&gt;\n  print()\n\n# A tibble: 150 × 5\n   player                 salary position team    team_past_record\n   &lt;chr&gt;                   &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;              &lt;dbl&gt;\n 1 Carroll, Corbin       1625000 OF       Arizona            0.457\n 2 Herrera, Jose          724300 C        Arizona            0.457\n 3 Melancon, Mark*       6000000 RHP      Arizona            0.457\n 4 Ahmed, Nick          10375000 SS       Arizona            0.457\n 5 Robinson, Kristian**   720000 OF       Arizona            0.457\n 6 Arcia, Orlando        2300000 SS       Atlanta            0.623\n 7 Lee, Dylan             730000 LHP      Atlanta            0.623\n 8 Pillar, Kevin         3000000 OF       Atlanta            0.623\n 9 Matzek, Tyler*        1200000 LHP      Atlanta            0.623\n10 Hilliard, Sam          750000 OF       Atlanta            0.623\n# ℹ 140 more rows"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-7",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#task-predict-dodger-mean-salary-7",
+    "objectID": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-7",
+    "href": "slides/lec2/penalized_regression_slides.html#task-predict-dodger-mean-salary-7",
     "title": "Algorithms for prediction",
     "section": "Task: Predict Dodger mean salary",
     "text": "Task: Predict Dodger mean salary\nOur 5 sampled Dodger players have an average salary of $7,936,238.\n\n\n# A tibble: 5 × 5\n  player           salary position team         team_past_record\n  &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt;\n1 Phillips, Evan  1300000 RHP      L.A. Dodgers            0.685\n2 Miller, Shelby  1500000 RHP      L.A. Dodgers            0.685\n3 Taylor, Chris  15000000 OF       L.A. Dodgers            0.685\n4 Betts, Mookie  21158692 OF       L.A. Dodgers            0.685\n5 Outman, James    722500 OF       L.A. Dodgers            0.685"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#task-create-data-to-predict",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#task-create-data-to-predict",
+    "objectID": "slides/lec2/penalized_regression_slides.html#task-create-data-to-predict",
+    "href": "slides/lec2/penalized_regression_slides.html#task-create-data-to-predict",
     "title": "Algorithms for prediction",
     "section": "Task: Create data to predict",
     "text": "Task: Create data to predict\nWe want to predict salary for all Dodger players:\n\ndodgers_to_predict &lt;- baseball_population |&gt;\n  filter(team == \"L.A. Dodgers\") |&gt;\n  select(-salary)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#ordinary-least-squares-model",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#ordinary-least-squares-model",
+    "objectID": "slides/lec2/penalized_regression_slides.html#ordinary-least-squares-model",
+    "href": "slides/lec2/penalized_regression_slides.html#ordinary-least-squares-model",
     "title": "Algorithms for prediction",
     "section": "Ordinary Least Squares: Model",
     "text": "Ordinary Least Squares: Model\nModel salary as a function of team_past_record\n\nols &lt;- lm(\n  salary ~ team_past_record,\n  data = baseball_sample\n)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#ordinary-least-squares-predict",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#ordinary-least-squares-predict",
+    "objectID": "slides/lec2/penalized_regression_slides.html#ordinary-least-squares-predict",
+    "href": "slides/lec2/penalized_regression_slides.html#ordinary-least-squares-predict",
     "title": "Algorithms for prediction",
     "section": "Ordinary Least Squares: Predict",
     "text": "Ordinary Least Squares: Predict\n\nols_predicted &lt;- dodgers_to_predict |&gt;\n  mutate(predicted_salary = predict(ols, newdata = dodgers_to_predict)) |&gt;\n  print(n = 3)\n\n# A tibble: 35 × 5\n  player           position team         team_past_record predicted_salary\n  &lt;chr&gt;            &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt;            &lt;dbl&gt;\n1 Freeman, Freddie 1B       L.A. Dodgers            0.685         5552999.\n2 Heyward, Jason   OF       L.A. Dodgers            0.685         5552999.\n3 Betts, Mookie    OF       L.A. Dodgers            0.685         5552999.\n# ℹ 32 more rows"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#ordinary-least-squares-average",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#ordinary-least-squares-average",
+    "objectID": "slides/lec2/penalized_regression_slides.html#ordinary-least-squares-average",
+    "href": "slides/lec2/penalized_regression_slides.html#ordinary-least-squares-average",
     "title": "Algorithms for prediction",
     "section": "Ordinary Least Squares: Average",
     "text": "Ordinary Least Squares: Average\nAverage predictions over the target population\n\nols_estimate &lt;- ols_predicted |&gt;\n  summarize(ols_estimate = mean(predicted_salary)) |&gt;\n  print()\n\n# A tibble: 1 × 1\n  ols_estimate\n         &lt;dbl&gt;\n1     5552999."
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#performance-of-ols",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#performance-of-ols",
+    "objectID": "slides/lec2/penalized_regression_slides.html#performance-of-ols",
+    "href": "slides/lec2/penalized_regression_slides.html#performance-of-ols",
     "title": "Algorithms for prediction",
     "section": "Performance of OLS",
-    "text": "Performance of OLS\n\nWe usually have only one sample\nIn this case, we have the population\nPlan\n\ndraw repeated samples\nevaluate performance over repeated samples"
+    "text": "Performance of OLS\n\nWe usually have only one sample\nIn this case, we have the population\n\n\n\nPlan\n\ndraw repeated samples\nevaluate performance over repeated samples"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#performance-of-ols-estimator-function",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#performance-of-ols-estimator-function",
+    "objectID": "slides/lec2/penalized_regression_slides.html#performance-of-ols-estimator-function",
+    "href": "slides/lec2/penalized_regression_slides.html#performance-of-ols-estimator-function",
     "title": "Algorithms for prediction",
     "section": "Performance of OLS: Estimator function",
     "text": "Performance of OLS: Estimator function\nA function that\n\ntakes in a sample\nreturns an estimate"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#performance-of-ols-estimator-function-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#performance-of-ols-estimator-function-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#performance-of-ols-estimator-function-1",
+    "href": "slides/lec2/penalized_regression_slides.html#performance-of-ols-estimator-function-1",
     "title": "Algorithms for prediction",
     "section": "Performance of OLS: Estimator function",
     "text": "Performance of OLS: Estimator function\n\nols_estimator &lt;- function(\n    sample = baseball_sample, \n    to_predict = dodgers_to_predict\n) {\n  # Learn a model in the sample\n  ols &lt;- lm(\n    salary ~ team_past_record,\n    data = sample\n  )\n  # Predict for our target population\n  ols_predicted &lt;- to_predict |&gt;\n    mutate(predicted_salary = predict(ols, newdata = to_predict))\n  # Average over the target population\n  ols_estimate_star &lt;- ols_predicted |&gt;\n    summarize(ols_estimate = mean(predicted_salary)) |&gt;\n    pull(ols_estimate)\n  # Return the estimate\n  return(ols_estimate_star)\n}"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#performance-of-ols-estimator-function-2",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#performance-of-ols-estimator-function-2",
+    "objectID": "slides/lec2/penalized_regression_slides.html#performance-of-ols-estimator-function-2",
+    "href": "slides/lec2/penalized_regression_slides.html#performance-of-ols-estimator-function-2",
     "title": "Algorithms for prediction",
     "section": "Performance of OLS: Estimator function",
     "text": "Performance of OLS: Estimator function\nApply the estimator in repeated samples.\n\n\nCode\nmany_sample_estimates &lt;- foreach(\n  repetition = 1:100, .combine = \"c\"\n) %do% {\n  # Draw a sample from the population\n  baseball_sample &lt;- baseball_population |&gt;\n    group_by(team) |&gt;\n    slice_sample(n = 5) |&gt;\n    ungroup()\n  # Apply the estimator to the sample\n  estimate &lt;- ols_estimator(baseball_sample)\n  return(estimate)\n}"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#performance-of-ols-estimator-function-3",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#performance-of-ols-estimator-function-3",
+    "objectID": "slides/lec2/penalized_regression_slides.html#performance-of-ols-estimator-function-3",
+    "href": "slides/lec2/penalized_regression_slides.html#performance-of-ols-estimator-function-3",
     "title": "Algorithms for prediction",
     "section": "Performance of OLS: Estimator function",
     "text": "Performance of OLS: Estimator function\n\n\nCode\ntibble(y = many_sample_estimates) |&gt;\n  # Random jitter for x\n  mutate(x = runif(n(), -.1, .1)) |&gt;\n  ggplot(aes(x = x, y = many_sample_estimates)) +\n  geom_point() +\n  scale_y_continuous(\n    name = \"Dodger Mean Salary\",\n    labels = label_millions\n  ) +\n  theme_minimal() +\n  theme(text = element_text(size = 18)) +\n  scale_x_continuous(\n    breaks = NULL, limits = c(-.5,.5),\n    name = \"Each dot is an OLS estimate\\nin one sample from the population\"\n  ) +\n  geom_hline(yintercept = true_dodger_mean, linetype = \"dashed\") +\n  annotate(geom = \"text\", x = -.5, y = true_dodger_mean, hjust = 0, vjust = -.5, label = \"True mean in\\nDodger subpopulation\", size = 3)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#model-approximation-error",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#model-approximation-error",
+    "objectID": "slides/lec2/penalized_regression_slides.html#model-approximation-error",
+    "href": "slides/lec2/penalized_regression_slides.html#model-approximation-error",
     "title": "Algorithms for prediction",
     "section": "Model approximation error",
     "text": "Model approximation error\n\n\nCode\npopulation_ols &lt;- lm(salary ~ team_past_record, data = baseball_population)\nforplot &lt;- baseball_population |&gt;\n  mutate(fitted = predict(population_ols)) |&gt;\n  group_by(team) |&gt;\n  summarize(\n    truth = mean(salary),\n    fitted = unique(fitted),\n    team_past_record = unique(team_past_record)\n  )\nforplot_dodgers &lt;- forplot |&gt; filter(team == \"L.A. Dodgers\")\nforplot |&gt;\n  ggplot(aes(x = team_past_record)) +\n  geom_point(aes(y = truth, color = team == \"L.A. Dodgers\")) +\n  geom_line(aes(y = fitted)) +\n  geom_segment(\n    data = forplot_dodgers,\n    aes(\n      yend = fitted - 3e5, y = truth + 3e5,\n    ), \n    arrow = arrow(length = unit(.05,\"in\"), ends = \"both\"), color = \"dodgerblue\"\n  ) +\n  geom_text(\n    data = forplot_dodgers,\n    aes(\n      x = team_past_record + .02, \n      y = .5 * (fitted + truth), \n      label = \"model\\napproximation\\nerror\"\n    ),\n    size = 2, color = \"dodgerblue\", hjust = 0\n  ) +\n  geom_text(\n    data = forplot_dodgers, \n    aes(y = truth, label = \"L.A.\\nDodgers\"),\n    color = \"dodgerblue\",\n    vjust = 1.8, size = 2\n  ) +\n  scale_color_manual(\n    values = c(\"gray\",\"dodgerblue\")\n  ) +\n  scale_y_continuous(\n    name = \"Team Mean Salary in 2023\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  scale_x_continuous(limits = c(.3,.8), name = \"Team Past Record: Proportion Wins in 2022\") +\n  theme_classic() +\n  theme(legend.position = \"none\", text = element_text(size = 18))"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#model-approximation-error-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#model-approximation-error-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#model-approximation-error-1",
+    "href": "slides/lec2/penalized_regression_slides.html#model-approximation-error-1",
     "title": "Algorithms for prediction",
     "section": "Model approximation error",
     "text": "Model approximation error\nHow to solve model approximation error? \nA model with more parameters \n\nols_team_categories &lt;- lm(\n  salary ~ team,\n  data = baseball_sample\n)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#ols-with-many-parameters",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#ols-with-many-parameters",
+    "objectID": "slides/lec2/penalized_regression_slides.html#ols-with-many-parameters",
+    "href": "slides/lec2/penalized_regression_slides.html#ols-with-many-parameters",
     "title": "Algorithms for prediction",
     "section": "OLS with many parameters",
     "text": "OLS with many parameters\n\n\nCode\n# Create many sample estimates with categorical teams\nmany_sample_estimates_categories &lt;- foreach(\n  repetition = 1:100, .combine = \"c\"\n) %do% {\n  # Draw a sample from the population\n  baseball_sample &lt;- baseball_population |&gt;\n    group_by(team) |&gt;\n    slice_sample(n = 5) |&gt;\n    ungroup()\n  # Apply the estimator to the sample# Learn a model in the sample\n  ols &lt;- lm(\n    salary ~ team,\n    data = baseball_sample\n  )\n  # Predict for our target population\n  ols_predicted &lt;- dodgers_to_predict |&gt;\n    mutate(predicted_salary = predict(ols, newdata = dodgers_to_predict))\n  # Average over the target population\n  ols_estimate &lt;- ols_predicted |&gt;\n    summarize(ols_estimate = mean(predicted_salary)) |&gt;\n    pull(ols_estimate)\n  # Return the estimate\n  return(ols_estimate)\n}\n# Visualize\ntibble(x = \"OLS linear in\\nteam past record\", y = many_sample_estimates) |&gt;\n  bind_rows(\n    tibble(x = \"OLS with categorical\\nteam indicators\", y = many_sample_estimates_categories)\n  ) |&gt;\n  ggplot(aes(x = x, y = y)) +\n  geom_jitter(width = .2, height = 0) +\n  scale_y_continuous(\n    name = \"Dodger Mean Salary\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  theme_minimal() +\n  theme(text = element_text(size = 18)) +\n  scale_x_discrete(\n    name = \"Estimator\"\n  ) +\n  ggtitle(NULL, subtitle = \"Each dot is an estimate in one sample from the population\") +\n  geom_hline(yintercept = true_dodger_mean, linetype = \"dashed\") +\n  annotate(geom = \"text\", x = .4, y = true_dodger_mean, hjust = 0, vjust = .5, label = \"Truth in\\npopulation\", size = 3)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#regularization-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#regularization-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#regularization-1",
+    "href": "slides/lec2/penalized_regression_slides.html#regularization-1",
     "title": "Algorithms for prediction",
     "section": "Regularization",
-    "text": "Regularization\nTwo estimators:\n\nnonparametric mean of 5 sampled players on each team\n(high variance)\n\nlinear prediction: linear fit on team past record\n(biased by model approximation error)\n\nWe might regularize the nonparametric toward the linear prediction"
+    "text": "Regularization\nTwo estimators:\n\nnonparametric mean of 5 sampled players on each team\n(high variance)\n\nlinear prediction: linear fit on team past record\n(biased by model approximation error)\n\n\nWe might regularize the nonparametric toward the linear prediction"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#regularization-2",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#regularization-2",
+    "objectID": "slides/lec2/penalized_regression_slides.html#regularization-2",
+    "href": "slides/lec2/penalized_regression_slides.html#regularization-2",
     "title": "Algorithms for prediction",
     "section": "Regularization",
-    "text": "Regularization\n\n\nCode\nestimates_by_w &lt;- foreach(w_value = seq(0,1,.05), .combine = \"rbind\") %do% {\n  tibble(\n    w = w_value,\n    estimate = (1 - w) * dodger_sample_mean + w * ols_estimate\n  )\n}\nestimates_by_w |&gt;\n  ggplot(aes(x = w, y = estimate)) +\n  geom_point() +\n  geom_line() +\n  geom_text(\n    data = estimates_by_w |&gt;\n      filter(w %in% c(0,1)) |&gt;\n      mutate(\n        w = w + c(1,-1) * .13, \n        hjust = c(0,1),\n        label = c(\"Nonparametric Dodger Samle Mean\",\n                  \"Linear Prediction from OLS\")\n      ),\n    aes(label = label, hjust = hjust)\n  ) +\n  geom_segment(\n     data = estimates_by_w |&gt;\n      filter(w %in% c(0,1)) |&gt;\n       mutate(x = w + c(1,-1) * .12,\n              xend = w + c(1,-1) * .04),\n     aes(x = x, xend = xend),\n     arrow = arrow(length = unit(.08,\"in\"))\n  ) +\n  annotate(\n    geom = \"text\", x = .3, y = estimates_by_w$estimate[12],\n    label = \"Partial\\nPooling\\nEstimates\",\n    vjust = 1\n  ) +\n  annotate(\n    geom = \"segment\", \n    x = c(.3,.4), \n    xend = c(.3,.55),\n    y = estimates_by_w$estimate[c(11,14)],\n    yend = estimates_by_w$estimate[c(8,14)],\n    arrow = arrow(length = unit(.08,\"in\"))\n  ) +\n  scale_x_continuous(\"Weight: Amount of Shrinkage Toward Linear Fit\") +\n  scale_y_continuous(\n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    ),\n    name = \"Dodger Mean Salary Estimates\",\n    expand = expansion(mult =.1)\n  ) +\n  theme_minimal() +\n  theme(text = element_text(size = 18))"
+    "text": "Regularization\n\n\nCode\nestimates_by_w &lt;- foreach(w_value = seq(0,1,.05), .combine = \"rbind\") %do% {\n  tibble(\n    w = w_value,\n    estimate = (1 - w) * dodger_sample_mean + w * ols_estimate\n  )\n}\nestimates_by_w |&gt;\n  ggplot(aes(x = w, y = estimate)) +\n  geom_point() +\n  geom_line() +\n  geom_text(\n    data = estimates_by_w |&gt;\n      filter(w %in% c(0,1)) |&gt;\n      mutate(\n        w = w + c(1,-1) * .13, \n        hjust = c(0,1),\n        label = c(\"Nonparametric Dodger Sample Mean\",\n                  \"Linear Prediction from OLS\")\n      ),\n    aes(label = label, hjust = hjust)\n  ) +\n  geom_segment(\n     data = estimates_by_w |&gt;\n      filter(w %in% c(0,1)) |&gt;\n       mutate(x = w + c(1,-1) * .12,\n              xend = w + c(1,-1) * .04),\n     aes(x = x, xend = xend),\n     arrow = arrow(length = unit(.08,\"in\"))\n  ) +\n  annotate(\n    geom = \"text\", x = .3, y = estimates_by_w$estimate[12],\n    label = \"Partial\\nPooling\\nEstimates\",\n    vjust = 1\n  ) +\n  annotate(\n    geom = \"segment\", \n    x = c(.3,.4), \n    xend = c(.3,.55),\n    y = estimates_by_w$estimate[c(11,14)],\n    yend = estimates_by_w$estimate[c(8,14)],\n    arrow = arrow(length = unit(.08,\"in\"))\n  ) +\n  scale_x_continuous(\"Weight: Amount of Shrinkage Toward Linear Fit\") +\n  scale_y_continuous(\n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    ),\n    name = \"Dodger Mean Salary Estimates\",\n    expand = expansion(mult =.1)\n  ) +\n  theme_minimal() +\n  theme(text = element_text(size = 18))"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#regularization-how-much",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#regularization-how-much",
+    "objectID": "slides/lec2/penalized_regression_slides.html#regularization-how-much",
+    "href": "slides/lec2/penalized_regression_slides.html#regularization-how-much",
     "title": "Algorithms for prediction",
     "section": "Regularization: How much?",
-    "text": "Regularization: How much?\nWant to minimize expected squared error.\n\\[\n\\text{Expected Squared Error}(\\hat\\mu_\\text{Dodgers}) = \\text{E}_S\\left(\\left(\\hat\\mu_\\text{Dodgers}(S) - \\mu_\\text{Dodgers}\\right)^2\\right)\n\\]"
+    "text": "Regularization: How much?\n\nWant to minimize expected squared error.\n\\[\n\\text{Expected Squared Error}(\\hat\\mu_\\text{Dodgers}) = \\text{E}_S\\left(\\left(\\hat\\mu_\\text{Dodgers}(S) - \\mu_\\text{Dodgers}\\right)^2\\right)\n\\]"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#regularization-how-much-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#regularization-how-much-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#regularization-how-much-1",
+    "href": "slides/lec2/penalized_regression_slides.html#regularization-how-much-1",
     "title": "Algorithms for prediction",
     "section": "Regularization: How much?",
     "text": "Regularization: How much?\n\n\nCode\nrepeated_simulations &lt;- foreach(rep = 1:100, .combine = \"rbind\") %do% {\n  \n  a_sample &lt;- baseball_population |&gt;\n    group_by(team) |&gt;\n    slice_sample(n = 5) |&gt;\n    ungroup()\n  \n  ols_fit &lt;- lm(salary ~ team_past_record, data = a_sample)\n  \n  ols_estimate &lt;- predict(\n    ols_fit, \n    newdata = baseball_population |&gt; \n      filter(team == \"L.A. Dodgers\") |&gt;\n      distinct(team_past_record)\n  )\n  \n  nonparametric_estimate &lt;- a_sample |&gt;\n    filter(team == \"L.A. Dodgers\") |&gt;\n    summarize(salary = mean(salary)) |&gt;\n    pull(salary)\n  \n  foreach(w_value = seq(0,1,.05), .combine = \"rbind\") %do% {\n    tibble(\n      w = w_value,\n      estimate = w * ols_estimate + (1 - w) * nonparametric_estimate\n    )\n  }\n}\n\naggregated &lt;- repeated_simulations |&gt;\n  group_by(w) |&gt;\n  summarize(mse = mean((estimate - true_dodger_mean) ^ 2)) |&gt;\n  mutate(best = mse == min(mse))\n\naggregated |&gt;\n  ggplot(aes(x = w, y = mse, color = best)) +\n  geom_line() +\n  geom_point() +\n  scale_y_continuous(name = \"Expected Squared Error\\nfor Dodger Mean Salary\") +\n  scale_x_continuous(name = \"Weight: Amount of Shrinkage Toward Linear Fit\") +\n  scale_color_manual(values = c(\"black\",\"dodgerblue\")) +\n  geom_vline(xintercept = c(0,1), linetype = \"dashed\") +\n  theme_minimal() +\n  theme(legend.position = \"none\", text = element_text(size = 18)) +\n  annotate(\n    geom = \"text\", \n    x = c(0.02,.98), \n    y = range(aggregated$mse),\n    hjust = c(0,1), vjust = c(0,1),\n    size = 3,\n    label = c(\n      \"Nonparametric estimator:\\nDodger mean salary\",\n      \"Model-based estimator:\\nOLS linear prediction\"\n    )\n  ) +\n  annotate(\n    geom = \"text\", \n    x = aggregated$w[aggregated$best], \n    y = min(aggregated$mse) + .2 * diff(range(aggregated$mse)),\n    vjust = -.1,\n    label = \"Best-Performing\\nEstimator\",\n    size = 3,\n    color = \"dodgerblue\"\n  ) +\n  annotate(\n    geom = \"segment\",\n    x = aggregated$w[aggregated$best], \n    y = min(aggregated$mse) + .18 * diff(range(aggregated$mse)),\n    yend = min(aggregated$mse) + .05 * diff(range(aggregated$mse)),\n    arrow = arrow(length = unit(.08,\"in\")),\n    color = \"dodgerblue\"\n  )"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-idea",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-idea",
+    "objectID": "slides/lec2/penalized_regression_slides.html#multilevel-models-idea",
+    "href": "slides/lec2/penalized_regression_slides.html#multilevel-models-idea",
     "title": "Algorithms for prediction",
     "section": "Multilevel models: Idea",
     "text": "Multilevel models: Idea\n\nmany groups\na few observations per group\npartially pool between\n\ngroup-specific mean estimates (high variance)\na model pooled across groups (potentially biased)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-code",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-code",
+    "objectID": "slides/lec2/penalized_regression_slides.html#multilevel-models-code",
+    "href": "slides/lec2/penalized_regression_slides.html#multilevel-models-code",
     "title": "Algorithms for prediction",
     "section": "Multilevel models: Code",
     "text": "Multilevel models: Code\n\nlibrary(lme4)\n\n\nmultilevel &lt;- lmer(\n  salary ~ team_past_record + (1 | team), \n  data = baseball_sample\n)\n\nMake predictions\n\nmultilevel_predicted &lt;- dodgers_to_predict |&gt;\n  mutate(\n    fitted = predict(multilevel, newdata = dodgers_to_predict)\n  )"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-intuition",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-intuition",
+    "objectID": "slides/lec2/penalized_regression_slides.html#multilevel-models-intuition",
+    "href": "slides/lec2/penalized_regression_slides.html#multilevel-models-intuition",
     "title": "Algorithms for prediction",
     "section": "Multilevel models: Intuition",
     "text": "Multilevel models: Intuition\n\n\nCode\np &lt;- baseball_sample |&gt;\n  group_by(team) |&gt;\n  mutate(nonparametric = mean(salary)) |&gt;\n  ungroup() |&gt;\n  mutate(\n    fitted = predict(multilevel)\n  ) |&gt;\n  distinct(team, team_past_record, fitted, nonparametric) |&gt;\n  ungroup() |&gt;\n  ggplot(aes(x = team_past_record)) +\n  geom_point(aes(y = nonparametric)) +\n  geom_abline(\n    intercept = fixef(multilevel)[1], \n    slope = fixef(multilevel)[2], \n    linetype = \"dashed\"\n  ) +\n  geom_segment(\n    aes(y = nonparametric, yend = fitted),\n    arrow = arrow(length = unit(.05,\"in\"))\n  ) +\n  geom_point(aes(y = nonparametric)) +\n  theme_minimal() +\n  theme(text = element_text(size = 18)) +\n  scale_y_continuous(\n    name = \"Team Mean Salary in 2023\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  scale_x_continuous(name = \"Team Past Record: Proportion Wins in 2022\") +\n  ggtitle(\"Multilevel model on a sample of 5 players per team\",\n          subtitle = \"Points are nonparametric sample mean estimates.\\nArrow ends are multilevel model estimates.\\nDashed line is an unregularized fixed effect.\")\np"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-intuition-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-intuition-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#multilevel-models-intuition-1",
+    "href": "slides/lec2/penalized_regression_slides.html#multilevel-models-intuition-1",
     "title": "Algorithms for prediction",
     "section": "Multilevel models: Intuition",
     "text": "Multilevel models: Intuition\n\n\nCode\nbigger_sample &lt;- baseball_population |&gt;\n  group_by(team) |&gt;\n  slice_sample(n = 20) |&gt;\n  ungroup()\nmultilevel_big &lt;- lmer(formula(multilevel), data = bigger_sample)\nbigger_sample |&gt;\n  group_by(team) |&gt;\n  mutate(nonparametric = mean(salary)) |&gt;\n  ungroup() |&gt;\n  mutate(\n    fitted = predict(multilevel_big)\n  ) |&gt;\n  distinct(team, team_past_record, fitted, nonparametric) |&gt;\n  ungroup() |&gt;\n  ggplot(aes(x = team_past_record)) +\n  geom_point(aes(y = nonparametric)) +\n  geom_abline(\n    intercept = fixef(multilevel_big)[1], \n    slope = fixef(multilevel_big)[2], \n    linetype = \"dashed\"\n  ) +\n  geom_segment(\n    aes(y = nonparametric, yend = fitted),\n    arrow = arrow(length = unit(.05,\"in\"))\n  ) +\n  geom_point(aes(y = nonparametric)) +\n  #ggrepel::geom_text_repel(aes(y = fitted, label = team), size = 2) +\n  theme_minimal() +\n  theme(text = element_text(size = 18)) +\n  scale_y_continuous(\n    name = \"Team Mean Salary in 2023\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    ),\n    limits = layer_scales(p)$y$range$range\n  ) +\n  scale_x_continuous(name = \"Team Past Record: Proportion Wins in 2022\") +\n  ggtitle(\"Multilevel model on a sample of 20 players per team\",\n          subtitle = \"Points are nonparametric sample mean estimates.\\nArrow ends are multilevel model estimates.\\nDashed line is an unregularized fixed effect.\")"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-performance",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-performance",
+    "objectID": "slides/lec2/penalized_regression_slides.html#multilevel-models-performance",
+    "href": "slides/lec2/penalized_regression_slides.html#multilevel-models-performance",
     "title": "Algorithms for prediction",
     "section": "Multilevel models: Performance",
     "text": "Multilevel models: Performance\n\n\nCode\nmany_sample_estimates_multilevel &lt;- foreach(\n  repetition = 1:100, .combine = \"c\"\n) %do% {\n  # Draw a sample from the population\n  baseball_sample &lt;- baseball_population |&gt;\n    group_by(team) |&gt;\n    slice_sample(n = 5) |&gt;\n    ungroup()\n  # Apply the estimator to the sample# Learn a model in the sample\n  multilevel &lt;- lmer(\n    salary ~ team_past_record + (1 | team),\n    data = baseball_sample\n  )\n  # Predict for our target population\n  mutilevel_predicted &lt;- dodgers_to_predict |&gt;\n    mutate(predicted_salary = predict(multilevel, newdata = dodgers_to_predict))\n  # Average over the target population\n  mutilevel_estimate &lt;- mutilevel_predicted |&gt;\n    summarize(mutilevel_estimate = mean(predicted_salary)) |&gt;\n    pull(mutilevel_estimate)\n  # Return the estimate\n  return(mutilevel_estimate)\n}\n# Visualize\ntibble(x = \"OLS with\\nlinear record\", y = many_sample_estimates) |&gt;\n  bind_rows(\n    tibble(x = \"OLS with\\nteam indicators\", y = many_sample_estimates_categories)\n  ) |&gt;\n  bind_rows(\n    tibble(x = \"Multilevel\\nmodel\", y = many_sample_estimates_multilevel)\n  ) |&gt;\n  ggplot(aes(x = x, y = y)) +\n  geom_jitter(width = .2, height = 0) +\n  scale_y_continuous(\n    name = \"Dodger Mean Salary\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  theme_minimal() +\n  scale_x_discrete(\n    name = \"Estimator\"\n  ) +\n  ggtitle(NULL, subtitle = \"Each dot is an estimate in one sample from the population\") +\n  geom_hline(yintercept = true_dodger_mean, linetype = \"dashed\") +\n  annotate(geom = \"text\", x = .4, y = true_dodger_mean, hjust = 0, vjust = .5, label = \"Truth in\\npopulation\", size = 3)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-in-math",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#multilevel-models-in-math",
+    "objectID": "slides/lec2/penalized_regression_slides.html#multilevel-models-in-math",
+    "href": "slides/lec2/penalized_regression_slides.html#multilevel-models-in-math",
     "title": "Algorithms for prediction",
     "section": "Multilevel models: In math",
-    "text": "Multilevel models: In math\nPerson-level model. For player \\(i\\) on team \\(t\\),\n\\[\\begin{equation}\nY_{ti} \\sim \\text{Normal}\\left(\\mu_t, \\sigma^2\\right)\n\\end{equation}\\]\nGroup-level model. There is a model for \\(\\mu_t\\), mean salary on team \\(t\\).\n\\[\\mu_t \\sim \\text{Normal}(\\alpha + X_t\\beta, \\tau^2)\\] where \\(X_t\\) is team past record"
+    "text": "Multilevel models: In math\n\nPerson-level model. For player \\(i\\) on team \\(t\\),\n\\[\\begin{equation}\nY_{ti} \\sim \\text{Normal}\\left(\\mu_t, \\sigma^2\\right)\n\\end{equation}\\]\n\n\nGroup-level model. There is a model for \\(\\mu_t\\), mean salary on team \\(t\\).\n\\[\\mu_t \\sim \\text{Normal}(\\alpha + X_t\\beta, \\tau^2)\\] where \\(X_t\\) is team past record"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#ridge-regression-1",
+    "href": "slides/lec2/penalized_regression_slides.html#ridge-regression-1",
     "title": "Algorithms for prediction",
     "section": "Ridge regression",
     "text": "Ridge regression\nOften taught in data science classes\n\nmany coefficients\npenalize large coefficients\nminimize a loss function"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-2",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-2",
+    "objectID": "slides/lec2/penalized_regression_slides.html#ridge-regression-2",
+    "href": "slides/lec2/penalized_regression_slides.html#ridge-regression-2",
     "title": "Algorithms for prediction",
     "section": "Ridge regression",
-    "text": "Ridge regression\n\\[\nY_{ij} = \\alpha + \\beta X_i + \\gamma_{i} + \\epsilon_{ij}\n\\]\nMinimize a loss function:\n\\[\n\\underbrace{\\sum_i\\sum_j\\left(Y_{ij} - \\left(\\alpha + \\beta X_i + \\gamma_{i}\\right)\\right)^2}_\\text{Sum of Squared Error} + \\underbrace{\\lambda\\sum_i\\gamma_i^2}_\\text{Penalty}\n\\]"
+    "text": "Ridge regression\n\\[\nY_{ti} = \\alpha + \\beta X_t + \\gamma_{t} + \\epsilon_{ti}\n\\]\nMinimize a loss function:\n\\[\n\\underbrace{\\sum_t\\sum_i\\left(Y_{ti} - \\left(\\alpha + \\beta X_t + \\gamma_{t}\\right)\\right)^2}_\\text{Sum of Squared Error} + \\underbrace{\\lambda\\sum_t\\gamma_t^2}_\\text{Penalty}\n\\]"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-code",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-code",
+    "objectID": "slides/lec2/penalized_regression_slides.html#ridge-regression-code",
+    "href": "slides/lec2/penalized_regression_slides.html#ridge-regression-code",
     "title": "Algorithms for prediction",
     "section": "Ridge regression: Code",
     "text": "Ridge regression: Code\n\nlibrary(glmnet)\n\n\nridge &lt;- glmnet(\n  x = model.matrix(~ -1 + team_past_record + team, data = baseball_sample),\n  y = baseball_sample$salary,\n  penalty.factor = c(0,rep(1,30)),\n  # Choose the ridge penalty (alpha = 0).\n  # Later, we will learn about the LASSO penalty (alpha = 1)\n  alpha = 0\n)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-estimates",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-estimates",
+    "objectID": "slides/lec2/penalized_regression_slides.html#ridge-regression-estimates",
+    "href": "slides/lec2/penalized_regression_slides.html#ridge-regression-estimates",
     "title": "Algorithms for prediction",
     "section": "Ridge regression: Estimates",
     "text": "Ridge regression: Estimates\n\n\nCode\np_ridge &lt;- baseball_sample |&gt;\n  group_by(team) |&gt;\n  mutate(nonparametric = mean(salary)) |&gt;\n  ungroup() |&gt;\n  mutate(\n    fitted = predict(\n      ridge, \n      s = ridge$lambda[50],\n      newx = model.matrix(~-1 + team_past_record + team, data = baseball_sample)\n    )\n  ) |&gt;\n  distinct(team, team_past_record, fitted, nonparametric) |&gt;\n  ungroup() |&gt;\n  ggplot(aes(x = team_past_record)) +\n  geom_point(aes(y = nonparametric)) +\n  geom_abline(\n    intercept = coef(ridge, s = ridge$lambda[20])[1], \n    slope = coef(ridge, s = ridge$lambda[20])[2], \n    linetype = \"dashed\"\n  ) +\n  geom_segment(\n    aes(y = nonparametric, yend = fitted),\n    arrow = arrow(length = unit(.05,\"in\"))\n  ) +\n  geom_point(aes(y = nonparametric)) +\n  #ggrepel::geom_text_repel(aes(y = fitted, label = team), size = 2) +\n  theme_minimal() +\n  theme(text = element_text(size = 18)) +\n  scale_y_continuous(\n    name = \"Team Mean Salary in 2023\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  scale_x_continuous(name = \"Team Past Record: Proportion Wins in 2022\") +\n  ggtitle(\"Ridge regression on a sample of 5 players per team\",\n          subtitle = \"Points are nonparametric sample mean estimates.\\nArrow ends are ridge regression estimates.\\nDashed line is the unregularized component of the model.\")\np_ridge"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-penalty-parameter-lambda-controls-shrinkage",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-penalty-parameter-lambda-controls-shrinkage",
+    "objectID": "slides/lec2/penalized_regression_slides.html#ridge-regression-penalty-parameter-lambda-controls-shrinkage",
+    "href": "slides/lec2/penalized_regression_slides.html#ridge-regression-penalty-parameter-lambda-controls-shrinkage",
     "title": "Algorithms for prediction",
     "section": "Ridge regression: Penalty parameter \\(\\lambda\\) controls shrinkage",
     "text": "Ridge regression: Penalty parameter \\(\\lambda\\) controls shrinkage\n\n\nCode\nfitted &lt;- predict(\n  ridge, \n  s = ridge$lambda[c(20,60,80)],\n  newx = model.matrix(~-1 + team_past_record + team, data = baseball_sample)\n)\ncolnames(fitted) &lt;- c(\"Large Lambda Value\",\"Medium Lambda Value\",\"Small Lambda Value\")\nbaseball_sample |&gt;\n  group_by(team) |&gt;\n  mutate(nonparametric = mean(salary)) |&gt;\n  ungroup() |&gt;\n  bind_cols(fitted) |&gt;\n  select(team, team_past_record, nonparametric, contains(\"Lambda\")) |&gt;\n  pivot_longer(cols = contains('Lambda')) |&gt;\n  distinct() |&gt;\n  mutate(name = fct_rev(name)) |&gt;\n  ggplot(aes(x = team_past_record)) +\n  geom_point(aes(y = nonparametric), size = .8) +\n  geom_segment(\n    aes(y = nonparametric, yend = value),\n    arrow = arrow(length = unit(.04,\"in\"))\n  ) +\n  facet_wrap(~name) +\n  #ggrepel::geom_text_repel(aes(y = fitted, label = team), size = 2) +\n  theme_minimal() +\n  theme(text = element_text(size = 18)) +\n  scale_y_continuous(\n    name = \"Team Mean Salary in 2023\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  scale_x_continuous(name = \"Team Past Record: Proportion Wins in 2022\") +\n  ggtitle(\"Ridge regression on a sample of 5 players per team\",\n          subtitle = \"Points are nonparametric sample mean estimates.\\nArrow ends are ridge regression estimates.\\nDashed line is the unregularized component of the model.\")"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-penalty-parameter-lambda-controls-shrinkage-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#ridge-regression-penalty-parameter-lambda-controls-shrinkage-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#ridge-regression-penalty-parameter-lambda-controls-shrinkage-1",
+    "href": "slides/lec2/penalized_regression_slides.html#ridge-regression-penalty-parameter-lambda-controls-shrinkage-1",
     "title": "Algorithms for prediction",
     "section": "Ridge regression: Penalty parameter \\(\\lambda\\) controls shrinkage",
     "text": "Ridge regression: Penalty parameter \\(\\lambda\\) controls shrinkage\n\n\nCode\nfitted &lt;- predict(\n  ridge, \n  newx = model.matrix(~-1 + team_past_record + team, data = baseball_sample)\n)\ndodgers_sample_mean &lt;- baseball_sample |&gt;\n  filter(team == \"L.A. Dodgers\") |&gt;\n  summarize(salary = mean(salary)) |&gt;\n  pull(salary)\nols_estimate &lt;- predict(\n  lm(salary ~ team_past_record, data = baseball_sample),\n  newdata = baseball_sample |&gt; filter(team == \"L.A. Dodgers\") |&gt; slice_head(n = 1)\n)\ntibble(estimate = fitted[baseball_sample$team == \"L.A. Dodgers\",][1,],\n       lambda = ridge$lambda) |&gt;\n  ggplot(aes(x = lambda, y = estimate)) +\n  geom_line() +\n  scale_y_continuous(\n    name = \"Dodger Mean Salary Estimate\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    ),\n    expand = expansion(mult = .2)\n  ) +\n  scale_x_continuous(\n    name = \"Ridge Regression Penalty Term\",\n    limits = c(0,1e8)\n  ) +\n  annotate(\n    geom = \"point\", x = 0, y = dodgers_sample_mean\n  ) +\n  annotate(geom = \"segment\", x = .85e7, xend = .2e7, y = dodgers_sample_mean,\n           arrow = arrow(length = unit(.05,\"in\"))) +\n  annotate(\n    geom = \"text\", x = 1e7, y = dodgers_sample_mean,\n    label = \"Mean salary of 5 sampled Dodgers\",\n    hjust = 0, size = 3\n  ) +\n  geom_hline(yintercept = ols_estimate, linetype = \"dashed\") +\n  annotate(\n    geom = \"text\",\n    x = 0, y = ols_estimate, \n    label = \"Dashed line = Prediction that does not allow any team-specific deviations\", \n    vjust = -.8, size = 3, hjust = 0\n  ) +\n  theme_minimal() +\n  theme(text = element_text(size = 18))\n\n\n\n\n\n\n\n\n\nWe will discuss how to choose the value of lambda more in two weeks when we discuss data-driven selection of an estimator.\nPerformance over repeated samples\nThe ridge regression estimator has intuitive performance across repeated samples: the variance of the estimates decreases as the value of the penalty parameter \\(\\lambda\\) rises. The biase of the estimates also increases as the value of \\(\\lambda\\) increases. The optimal value of \\(\\lambda\\) is a problem-specific question that requires one to balance the tradeoff between bias and variance.\n\n\nCode\nmany_sample_estimates_ridge &lt;- foreach(\n  repetition = 1:100, .combine = \"rbind\"\n) %do% {\n  # Draw a sample from the population\n  baseball_sample &lt;- baseball_population |&gt;\n    group_by(team) |&gt;\n    slice_sample(n = 5) |&gt;\n    ungroup()\n  # Apply the estimator to the sample# Learn a model in the sample\n  ridge &lt;- glmnet(\n    x = model.matrix(~ -1 + team_past_record + team, data = baseball_sample),\n    y = baseball_sample$salary,\n    penalty.factor = c(0,rep(1,30)),\n    alpha = 0\n  )\n  # Predict for our target population\n  fitted &lt;- predict(\n    ridge, \n    s = ridge$lambda[c(20,60,80)],\n    newx = model.matrix(~-1 + team_past_record + team, data = baseball_sample)\n  )\n  colnames(fitted) &lt;- c(\"Large Lambda Value\",\"Medium Lambda Value\",\"Small Lambda Value\")\n  \n  as_tibble(\n    as.matrix(fitted[baseball_sample$team == \"L.A. Dodgers\",][1,]),\n    rownames = \"estimator\"\n  ) |&gt;\n    rename(estimate = V1)\n}\n# Visualize\nmany_sample_estimates_ridge |&gt;\n  mutate(estimator = fct_rev(estimator)) |&gt;\n  ggplot(aes(x = estimator, y = estimate)) +\n  geom_jitter(width = .2, height = 0) +\n  scale_y_continuous(\n    name = \"Dodger Mean Salary\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  theme_minimal() +\n  scale_x_discrete(\n    name = \"Estimator\"\n  ) +\n  ggtitle(NULL, subtitle = \"Each dot is an estimate in one sample from the population\") +\n  geom_hline(yintercept = true_dodger_mean, linetype = \"dashed\") +\n  annotate(geom = \"text\", x = .4, y = true_dodger_mean, hjust = 0, vjust = .5, label = \"Truth in\\npopulation\", size = 3)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-1",
+    "href": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-1",
     "title": "Algorithms for prediction",
     "section": "Connections: Multilevel model and ridge regression",
-    "text": "Connections: Multilevel model and ridge regression\n\nmultilevel &lt;- lmer(salary ~ 1 + (1 | team), data = baseball_sample)\n\n\n\nCode\nyhat_multilevel &lt;- baseball_sample |&gt;\n  mutate(yhat_multilevel = predict(multilevel)) |&gt;\n  distinct(team, yhat_multilevel)\nlambda_equivalent &lt;- as_tibble(VarCorr(multilevel)) |&gt;\n  select(grp, vcov) |&gt;\n  pivot_wider(names_from = \"grp\", values_from = \"vcov\") |&gt;\n  mutate(lambda_equivalent = Residual / team) |&gt;\n  pull(lambda_equivalent)\n\n\nI will also fit ridge regression with \\(\\lambda\\) set to 9.\n\n\nCode\nX &lt;- model.matrix(~ -1 + team, data = baseball_sample)\ny_centered &lt;- baseball_sample$salary - mean(baseball_sample$salary)\nbeta_ridge &lt;- solve(\n  t(X) %*% X + diag(rep(lambda_equivalent,ncol(X))), \n  t(X) %*% y_centered\n)\nyhat_ridge &lt;- beta_ridge + mean(baseball_sample$salary)\n\n\nFinally, we create a tibble with both the ridge regression and multilevel model estimates.\n\nboth_estimators &lt;- as_tibble(rownames_to_column(data.frame(yhat_ridge))) |&gt;\n  rename(team = rowname) |&gt;\n  mutate(team = str_remove(team,\"team\")) |&gt;\n  left_join(yhat_multilevel, by = join_by(team))"
+    "text": "Connections: Multilevel model and ridge regression\n\nmultilevel &lt;- lmer(salary ~ 1 + (1 | team), data = baseball_sample)\n\n\n\nCode\nyhat_multilevel &lt;- baseball_sample |&gt;\n  mutate(yhat_multilevel = predict(multilevel)) |&gt;\n  distinct(team, yhat_multilevel)\nlambda_equivalent &lt;- as_tibble(VarCorr(multilevel)) |&gt;\n  select(grp, vcov) |&gt;\n  pivot_wider(names_from = \"grp\", values_from = \"vcov\") |&gt;\n  mutate(lambda_equivalent = Residual / team) |&gt;\n  pull(lambda_equivalent)\n\n\nI will also fit ridge regression with \\(\\lambda\\) set to 9.\n\n\nCode\nX &lt;- model.matrix(~ -1 + team, data = baseball_sample)\ny_centered &lt;- baseball_sample$salary - mean(baseball_sample$salary)\nbeta_ridge &lt;- solve(\n  t(X) %*% X + diag(rep(lambda_equivalent,ncol(X))), \n  t(X) %*% y_centered\n)\nyhat_ridge &lt;- beta_ridge + mean(baseball_sample$salary)\n\n\nFinally, we create a tibble with both the ridge regression and multilevel model estimates.\n\n\nCode\nboth_estimators &lt;- as_tibble(rownames_to_column(data.frame(yhat_ridge))) |&gt;\n  rename(team = rowname) |&gt;\n  mutate(team = str_remove(team,\"team\")) |&gt;\n  left_join(yhat_multilevel, by = join_by(team))"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-2",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-2",
+    "objectID": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-2",
+    "href": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-2",
     "title": "Algorithms for prediction",
     "section": "Connections: Multilevel model and ridge regression",
-    "text": "Connections: Multilevel model and ridge regression\n\n\nCode\np &lt;- both_estimators |&gt;\n  ggplot(aes(x = yhat_ridge, y = yhat_multilevel, label = team)) +\n  geom_abline(intercept = 0, slope = 1) +\n  scale_x_continuous(\n    name = \"Ridge Regression\",\n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  scale_y_continuous(\n    name = \"Multilevel Model\",,\n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  theme_minimal() +\n  theme(text = element_text(size = 18))"
+    "text": "Connections: Multilevel model and ridge regression\n\n\nCode\np &lt;- both_estimators |&gt;\n  ggplot(aes(x = yhat_ridge, y = yhat_multilevel, label = team)) +\n  geom_abline(intercept = 0, slope = 1) +\n  scale_x_continuous(\n    name = \"Ridge Regression\",\n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  scale_y_continuous(\n    name = \"Multilevel Model\",,\n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  theme_minimal() +\n  geom_point(alpha = 0) +\n  theme(text = element_text(size = 18))\np"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-3",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-3",
+    "objectID": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-3",
+    "href": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-3",
     "title": "Algorithms for prediction",
     "section": "Connections: Multilevel model and ridge regression",
     "text": "Connections: Multilevel model and ridge regression\n\n\nCode\np + \n  geom_point()"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-4",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-4",
+    "objectID": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-4",
+    "href": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-4",
     "title": "Algorithms for prediction",
     "section": "Connections: Multilevel model and ridge regression",
-    "text": "Connections: Multilevel model and ridge regression\nWhat is this special case? Multilevel model:\n\\[\n\\begin{aligned}\nY_{ti} &\\sim \\text{Normal}(\\mu_t,\\sigma^2) \\\\\n\\mu_t &\\sim \\text{Normal}(\\mu_0, \\tau^2)\n\\end{aligned}\n\\] Estimates of \\(\\mu_t\\) given \\(\\hat\\mu_0\\), \\(\\hat\\tau^2\\), and \\(\\hat\\sigma^2\\):\n\\[\n\\hat\\mu_t^\\text{Multilevel} = \\frac{\\sum_{i}Y_{ti} + \\frac{\\hat\\sigma^2}{\\hat\\tau^2}\\hat\\mu_0}{n_t + \\frac{\\hat\\sigma^2}{\\hat\\tau^2}}\n\\]"
+    "text": "Connections: Multilevel model and ridge regression\nMultilevel model:\n\\[\n\\begin{aligned}\nY_{ti} &\\sim \\text{Normal}(\\mu_t,\\sigma^2) \\\\\n\\mu_t &\\sim \\text{Normal}(\\mu_0, \\tau^2)\n\\end{aligned}\n\\] Estimates of \\(\\mu_t\\) given \\(\\hat\\mu_0\\), \\(\\hat\\tau^2\\), and \\(\\hat\\sigma^2\\):\n\\[\n\\hat\\mu_t^\\text{Multilevel} = \\frac{\\sum_{i}Y_{ti} + \\frac{\\hat\\sigma^2}{\\hat\\tau^2}\\hat\\mu_0}{n_t + \\frac{\\hat\\sigma^2}{\\hat\\tau^2}}\n\\]"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-5",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-5",
+    "objectID": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-5",
+    "href": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-5",
     "title": "Algorithms for prediction",
     "section": "Connections: Multilevel model and ridge regression",
     "text": "Connections: Multilevel model and ridge regression\n\\[\n\\hat{\\vec\\mu}^\\text{Ridge} = \\underset{\\vec\\mu}{\\text{arg min}} \\underbrace{\\sum_t\\sum_i \\left(Y_{it}-\\mu_t\\right)^2}_\\text{Sum of Squared Error} + \\underbrace{\\lambda\\sum_t \\left(\\mu_t - \\hat\\mu_0\\right)^2}_\\text{Penalty}\n\\]\nRearranged to:\n\\[\n\\hat{\\vec\\mu}^\\text{Ridge} = \\underset{\\vec\\mu}{\\text{arg min}} \\sum_t\\left(\\sum_i \\left(Y_{it}-\\mu_t\\right)^2 + \\lambda\\left(\\hat\\mu_0 - \\mu_t\\right)^2\\right)\n\\]"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-6",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-6",
+    "objectID": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-6",
+    "href": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-6",
     "title": "Algorithms for prediction",
     "section": "Connections: Multilevel model and ridge regression",
-    "text": "Connections: Multilevel model and ridge regression\n\\[\n\\hat{\\vec\\mu}^\\text{Ridge} = \\underset{\\vec\\mu}{\\text{arg min}} \\sum_t\\left(\\sum_i \\left(Y_{it}-\\mu_t\\right)^2 + \\lambda\\left(\\hat\\mu_0 - \\mu_t\\right)^2\\right)\n\\] \nResult:\n\\[\n\\hat\\mu_t^\\text{Ridge} = \\frac{\\sum_i Y_{it} + \\lambda\\hat\\mu_0}{n_t + \\lambda}\n\\]"
+    "text": "Connections: Multilevel model and ridge regression\n\\[\n\\hat{\\vec\\mu}^\\text{Ridge} = \\underset{\\vec\\mu}{\\text{arg min}} \\sum_t\\left(\\sum_i \\left(Y_{it}-\\mu_t\\right)^2 + \\lambda\\left(\\hat\\mu_0 - \\mu_t\\right)^2\\right)\n\\]\n\nResult:\n\\[\n\\hat\\mu_t^\\text{Ridge} = \\frac{\\sum_i Y_{it} + \\lambda\\hat\\mu_0}{n_t + \\lambda}\n\\]"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-7",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#connections-multilevel-model-and-ridge-regression-7",
+    "objectID": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-7",
+    "href": "slides/lec2/penalized_regression_slides.html#connections-multilevel-model-and-ridge-regression-7",
     "title": "Algorithms for prediction",
     "section": "Connections: Multilevel model and ridge regression",
     "text": "Connections: Multilevel model and ridge regression\nMultilevel:\n\\[\n\\hat\\mu_t^\\text{Multilevel} = \\frac{\\sum_{i}Y_{ti} + \\frac{\\hat\\sigma^2}{\\hat\\tau^2}\\hat\\mu_0}{n_t + \\frac{\\hat\\sigma^2}{\\hat\\tau^2}}\n\\]\nRidge:\n\\[\n\\hat\\mu_t^\\text{Ridge} = \\frac{\\sum_i Y_{it} + \\lambda\\hat\\mu_0}{n_t + \\lambda}\n\\]"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-regression",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-regression",
+    "objectID": "slides/lec2/penalized_regression_slides.html#lasso-regression",
+    "href": "slides/lec2/penalized_regression_slides.html#lasso-regression",
     "title": "Algorithms for prediction",
     "section": "LASSO regression",
     "text": "LASSO regression\nOutcome model similar to ridge:\n\\[\nY_{ti} = \\alpha + \\beta X_t + \\gamma_{t} + \\epsilon_{ti}\n\\]\nLoss function penalty has absolute value:\n\\[\n\\underbrace{\\sum_t\\sum_i\\left(Y_{ti} - \\left(\\alpha + \\beta X_t + \\gamma_{t}\\right)\\right)^2}_\\text{Sum of Squared Error} + \\underbrace{\\lambda\\sum_t\\lvert\\gamma_t\\rvert}_\\text{Penalty}\n\\]"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-in-code",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-in-code",
+    "objectID": "slides/lec2/penalized_regression_slides.html#lasso-in-code",
+    "href": "slides/lec2/penalized_regression_slides.html#lasso-in-code",
     "title": "Algorithms for prediction",
     "section": "LASSO: In code",
     "text": "LASSO: In code\n\nlibrary(glmnet)\n\n\nlasso &lt;- glmnet(\n  x = model.matrix(~ -1 + team_past_record + team, data = baseball_sample),\n  y = baseball_sample$salary,\n  penalty.factor = c(0,rep(1,30)),\n  # Choose LASSO (alpha = 1) instead of ridge (alpha = 0)\n  alpha = 1\n)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-estimates",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-estimates",
+    "objectID": "slides/lec2/penalized_regression_slides.html#lasso-estimates",
+    "href": "slides/lec2/penalized_regression_slides.html#lasso-estimates",
     "title": "Algorithms for prediction",
     "section": "LASSO estimates",
     "text": "LASSO estimates\n\n\nCode\np_lasso &lt;- baseball_sample |&gt;\n  group_by(team) |&gt;\n  mutate(nonparametric = mean(salary)) |&gt;\n  ungroup() |&gt;\n  mutate(\n    fitted = predict(\n      lasso, \n      s = lasso$lambda[20],\n      newx = model.matrix(~-1 + team_past_record + team, data = baseball_sample)\n    )\n  ) |&gt;\n  distinct(team, team_past_record, fitted, nonparametric) |&gt;\n  ungroup() |&gt;\n  ggplot(aes(x = team_past_record)) +\n  geom_point(aes(y = nonparametric)) +\n  geom_abline(\n    intercept = coef(lasso, s = lasso$lambda[20])[1], \n    slope = coef(lasso, s = lasso$lambda[20])[2], \n    linetype = \"dashed\"\n  ) +\n  geom_segment(\n    aes(y = nonparametric, yend = fitted),\n    arrow = arrow(length = unit(.05,\"in\"))\n  ) +\n  geom_point(aes(y = nonparametric)) +\n  #ggrepel::geom_text_repel(aes(y = fitted, label = team), size = 2) +\n  theme_minimal() +\n  theme(text = element_text(size = 18)) +\n  scale_y_continuous(\n    name = \"Team Mean Salary in 2023\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  scale_x_continuous(name = \"Team Past Record: Proportion Wins in 2022\") +\n  ggtitle(\"LASSO regression on a sample of 5 players per team\",\n          subtitle = \"Points are nonparametric sample mean estimates.\\nArrow ends are ridge regression estimates.\\nDashed line is the unregularized component of the model.\")\np_lasso"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-estimates-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-estimates-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#lasso-estimates-1",
+    "href": "slides/lec2/penalized_regression_slides.html#lasso-estimates-1",
     "title": "Algorithms for prediction",
     "section": "LASSO estimates",
     "text": "LASSO estimates"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-estimates-2",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-estimates-2",
+    "objectID": "slides/lec2/penalized_regression_slides.html#lasso-estimates-2",
+    "href": "slides/lec2/penalized_regression_slides.html#lasso-estimates-2",
     "title": "Algorithms for prediction",
     "section": "LASSO estimates",
     "text": "LASSO estimates\n\n\nCode\nfitted &lt;- predict(\n  lasso, \n  newx = model.matrix(~-1 + team_past_record + team, data = baseball_sample)\n)\ndodgers_sample_mean &lt;- baseball_sample |&gt;\n  filter(team == \"L.A. Dodgers\") |&gt;\n  summarize(salary = mean(salary)) |&gt;\n  pull(salary)\nols_estimate &lt;- predict(\n  lm(salary ~ team_past_record, data = baseball_sample),\n  newdata = baseball_sample |&gt; filter(team == \"L.A. Dodgers\") |&gt; slice_head(n = 1)\n)\ntibble(estimate = fitted[baseball_sample$team == \"L.A. Dodgers\",][1,],\n       lambda = lasso$lambda) |&gt;\n  ggplot(aes(x = lambda, y = estimate)) +\n  geom_line() +\n  scale_y_continuous(\n    name = \"Dodger Mean Salary Estimate\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    ),\n    expand = expansion(mult = .2)\n  ) +\n  scale_x_continuous(\n    name = \"LASSO Regression Penalty Term\",\n    limits = c(0,2.5e6)\n  ) +\n  annotate(\n    geom = \"point\", x = 0, y = dodgers_sample_mean\n  ) +\n  annotate(geom = \"segment\", x = 2.5e5, xend = 1e5, y = dodgers_sample_mean,\n           arrow = arrow(length = unit(.05,\"in\"))) +\n  annotate(\n    geom = \"text\", x = 3e5, y = dodgers_sample_mean,\n    label = \"Mean salary of 5 sampled Dodgers\",\n    hjust = 0, size = 3\n  ) +\n  geom_hline(yintercept = ols_estimate, linetype = \"dashed\") +\n  annotate(\n    geom = \"text\",\n    x = 0, y = ols_estimate, \n    label = \"Dashed line = Prediction that does not allow any team-specific deviations\", \n    vjust = -.8, size = 3, hjust = 0\n  ) +\n  theme_minimal() +\n  theme(text = element_text(size = 18))"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-performance",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#lasso-performance",
+    "objectID": "slides/lec2/penalized_regression_slides.html#lasso-performance",
+    "href": "slides/lec2/penalized_regression_slides.html#lasso-performance",
     "title": "Algorithms for prediction",
     "section": "LASSO: Performance",
     "text": "LASSO: Performance\n\n\nCode\nmany_sample_estimates_lasso &lt;- foreach(\n  repetition = 1:100, .combine = \"rbind\"\n) %do% {\n  # Draw a sample from the population\n  baseball_sample &lt;- baseball_population |&gt;\n    group_by(team) |&gt;\n    slice_sample(n = 5) |&gt;\n    ungroup()\n  # Apply the estimator to the sample# Learn a model in the sample\n  lasso &lt;- glmnet(\n    x = model.matrix(~ -1 + team_past_record + team, data = baseball_sample),\n    y = baseball_sample$salary,\n    penalty.factor = c(0,rep(1,30)),\n    alpha = 1\n  )\n  # Predict for our target population\n  fitted &lt;- predict(\n    lasso, \n    s = lasso$lambda[c(15,30,45)],\n    newx = model.matrix(~-1 + team_past_record + team, data = baseball_sample)\n  )\n  colnames(fitted) &lt;- c(\"Large Lambda Value\",\"Medium Lambda Value\",\"Small Lambda Value\")\n  \n  as_tibble(\n    as.matrix(fitted[baseball_sample$team == \"L.A. Dodgers\",][1,]),\n    rownames = \"estimator\"\n  ) |&gt;\n    rename(estimate = V1)\n}\n# Visualize\nmany_sample_estimates_lasso |&gt;\n  mutate(estimator = fct_rev(estimator)) |&gt;\n  ggplot(aes(x = estimator, y = estimate)) +\n  geom_jitter(width = .2, height = 0) +\n  scale_y_continuous(\n    name = \"Dodger Mean Salary\", \n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    )\n  ) +\n  theme_minimal() +\n  theme(text = element_text(size = 18)) +\n  scale_x_discrete(\n    name = \"Estimator\"\n  ) +\n  ggtitle(NULL, subtitle = \"Each dot is an estimate in one sample from the population\") +\n  geom_hline(yintercept = true_dodger_mean, linetype = \"dashed\") +\n  annotate(geom = \"text\", x = .4, y = true_dodger_mean, hjust = 0, vjust = .5, label = \"Truth in\\npopulation\", size = 3)"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#recap-1",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#recap-1",
+    "objectID": "slides/lec2/penalized_regression_slides.html#recap",
+    "href": "slides/lec2/penalized_regression_slides.html#recap",
     "title": "Algorithms for prediction",
     "section": "Recap",
     "text": "Recap\nA recipe for prediction:\n\nmodel in learning data\npredict in target population\naverage"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#recap-2",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#recap-2",
+    "objectID": "slides/lec2/penalized_regression_slides.html#recap-1",
+    "href": "slides/lec2/penalized_regression_slides.html#recap-1",
     "title": "Algorithms for prediction",
     "section": "Recap",
-    "text": "Recap\nPerformance can be defined by expected squared error\nPerformance can suffer from two sources:\n\nbias (model approximation error)\nvariance (too many parameters)\n\nRegularization balances these two concerns"
+    "text": "Recap\nPerformance (expected squared error) can suffer from two sources:\n\nbias (model approximation error)\nvariance (too many parameters)\n\n\nRegularization balances these two concerns"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#recap-3",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#recap-3",
+    "objectID": "slides/lec2/penalized_regression_slides.html#recap-2",
+    "href": "slides/lec2/penalized_regression_slides.html#recap-2",
     "title": "Algorithms for prediction",
     "section": "Recap",
-    "text": "Recap\n\nOLS: No regularization\nRidge regression: Penalizes sum of squared coefficients\nLASSO regression: Penalizes sum of absolute coefficients\n\nMultilevel models regularize group-specific estimates depending on the within-group precision, a special case of ridge regression."
+    "text": "Recap\n\nOLS: No regularization\nRidge regression: Penalizes sum of squared coefficients\nLASSO regression: Penalizes sum of absolute coefficients\n\n\nMultilevel models regularize group-specific estimates depending on the within-group precision, a special case of ridge regression."
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#reading-optional",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#reading-optional",
+    "objectID": "slides/lec2/penalized_regression_slides.html#generalizations-of-our-estimators",
+    "href": "slides/lec2/penalized_regression_slides.html#generalizations-of-our-estimators",
+    "title": "Algorithms for prediction",
+    "section": "Generalizations of our estimators",
+    "text": "Generalizations of our estimators\nRidge regression: Applies well to many settings with a large number of parameters, regardless of whether they are groups.\n\\[\n\\hat{\\vec\\beta}^\\text{Ridge} = \\underset{\\vec\\beta}{\\text{arg min}} \\underbrace{\\sum_i \\left(Y_i - \\left(\\alpha + \\vec{X}'\\vec\\beta\\right)\\right)^2}_\\text{Sum of Squared Error} + \\underbrace{\\lambda\\sum_p \\beta_p^2}_\\text{Penalty}\n\\]"
+  },
+  {
+    "objectID": "slides/lec2/penalized_regression_slides.html#generalizations-of-our-estimators-1",
+    "href": "slides/lec2/penalized_regression_slides.html#generalizations-of-our-estimators-1",
+    "title": "Algorithms for prediction",
+    "section": "Generalizations of our estimators",
+    "text": "Generalizations of our estimators\nLASSO regression: Applies well to many settings with a large number of parameters, regardless of whether they are groups.\n\\[\n\\hat{\\vec\\beta}^\\text{Ridge} = \\underset{\\vec\\beta}{\\text{arg min}} \\underbrace{\\sum_i \\left(Y_i - \\left(\\alpha + \\vec{X}'\\vec\\beta\\right)\\right)^2}_\\text{Sum of Squared Error} + \\underbrace{\\lambda\\sum_p \\lvert\\beta_p\\rvert}_\\text{Penalty}\n\\]"
+  },
+  {
+    "objectID": "slides/lec2/penalized_regression_slides.html#generalizations-of-our-estimators-2",
+    "href": "slides/lec2/penalized_regression_slides.html#generalizations-of-our-estimators-2",
+    "title": "Algorithms for prediction",
+    "section": "Generalizations of our estimators",
+    "text": "Generalizations of our estimators\nMultilevel models can have group-specific slopes\n\\[\n\\begin{aligned}\nY_{gi} &\\sim \\text{Normal}\\left(\\alpha_g + \\beta_g X_{gi}, \\sigma^2\\right) \\\\\n\\alpha_g &\\sim \\text{Normal}\\left(\\eta_0, \\tau^2\\right) \\\\\n\\beta_g &\\sim \\text{Normal}\\left(\\lambda_0, \\delta^2\\right)\n\\end{aligned}\n\\]"
+  },
+  {
+    "objectID": "slides/lec2/penalized_regression_slides.html#generalizations-of-our-estimators-3",
+    "href": "slides/lec2/penalized_regression_slides.html#generalizations-of-our-estimators-3",
+    "title": "Algorithms for prediction",
+    "section": "Generalizations of our estimators",
+    "text": "Generalizations of our estimators\nMultilevel models can have more than two levels\n\\[\n\\begin{aligned}\nY_{ijk} &\\sim \\text{Normal}\\left(\\alpha_{ij}, \\sigma^2\\right) \\\\\n\\alpha_{ij} &\\sim \\text{Normal}\\left(\\beta_{i}, \\tau^2\\right) \\\\\n\\beta_{i} &\\sim \\text{Normal}\\left(\\lambda, \\delta^2\\right)\n\\end{aligned}\n\\]"
+  },
+  {
+    "objectID": "slides/lec2/penalized_regression_slides.html#reading-optional",
+    "href": "slides/lec2/penalized_regression_slides.html#reading-optional",
     "title": "Algorithms for prediction",
     "section": "Reading (optional)",
-    "text": "Reading (optional)\nEfron & Hastie Ch 7.3"
+    "text": "Reading (optional)\nMultilevel models\n\nGelman & Hill 2006 for worked examples\nMurphy 2012 ch 5.6.2 for a succinct mathematical presentation"
   },
   {
-    "objectID": "slides/lec2/algorithms_for_prediction_slides_1.html#problem-set-2",
-    "href": "slides/lec2/algorithms_for_prediction_slides_1.html#problem-set-2",
+    "objectID": "slides/lec2/penalized_regression_slides.html#reading-optional-1",
+    "href": "slides/lec2/penalized_regression_slides.html#reading-optional-1",
+    "title": "Algorithms for prediction",
+    "section": "Reading (optional)",
+    "text": "Reading (optional)\nRidge & LASSO: Hastie, Tibshirani, & Friedman 2017 Ch 3.4\nRidge regression\n\nEfron & Hastie 2016 Ch 7.3 (all of ch 7 is useful)\nMurphy 2012 ch 7.5 for a Bayes view with lots of math\n\nLASSO regression\n\nEfron & Hastie 2016 Ch 16"
+  },
+  {
+    "objectID": "slides/lec2/penalized_regression_slides.html#connection-to-project",
+    "href": "slides/lec2/penalized_regression_slides.html#connection-to-project",
+    "title": "Algorithms for prediction",
+    "section": "Connection to project",
+    "text": "Connection to project\nIn your project, do you have a variable that creates\n\nmany groups with\nfew observations per group?\n\nWhere else do you have many parameters to estimate?\nHow could penalized regression apply in your project?"
+  },
+  {
+    "objectID": "slides/lec2/penalized_regression_slides.html#problem-set-2",
+    "href": "slides/lec2/penalized_regression_slides.html#problem-set-2",
     "title": "Algorithms for prediction",
     "section": "Problem Set 2",
-    "text": "Problem Set 2\nTo discuss on course website."
+    "text": "Problem Set 2\nDue Monday 9pm: link"
   },
   {
     "objectID": "who_we_are.html",
@@ -479,6 +521,13 @@
     "title": "Problem Sets",
     "section": "Problem Set 1",
     "text": "Problem Set 1\n\n1. Your ongoing paper.\n1.1. (15 points) Write an abstract of your research paper.\n1.2. (5 points) What is one unit-specific quantity in your paper?\n1.3. (5 points) What is one target population in your paper?\n\n\n2. Regression for a conditional mean\n(25 points)\nIn class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-2",
+    "href": "problem_sets.html#problem-set-2",
+    "title": "Problem Sets",
+    "section": "Problem Set 2",
+    "text": "Problem Set 2\n\n(20 points) In your project, do you have something analogous to many groups with a few observations per group? This could more generally be any case where the number of parameters to be estimated is somewhat large for the sample size available. If not in your project, think of an example in your general research area. Write a few sentences about why one might want penalized regression in that setting.\n\nThe remainder of this problem set is based in the idea of multilevel models, though you can alternatively estimate by LASSO or ridge regression if you prefer. You can complete parts (2) and (3) in your own dataset if you can define at least 10 groups with at least 20 units per group. Wherever we say “team”, substitute whatever group is in your dataset. You may also use the baseball_population.csv data, in which the group variable is team.\n\n(15 points) Draw a sample of 5 units per group. Estimate an unpenalized OLS regression and a penalized regression (multilevel, ridge, or LASSO). Produce a graph that compares the predicted values.\n(15 points) Repeat the exercise above but with a sample of 20 units per group. Visualize the estimates. How do your results change?\n\nNote that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers."
   },
   {
     "objectID": "panel_data.html",
@@ -672,7 +721,7 @@
     "href": "algorithms_for_prediction.html",
     "title": "Algorithms for prediction",
     "section": "",
-    "text": "For two sessions, we will cover a few algorithms for prediction. We aim to\nThis page contains embedded R code. If you are a Stata user, you can download do files that illustrate Ordinary Least Squares, multilevel models, ridge regression, and LASSO regression.",
+    "text": "For two sessions, we will cover a few algorithms for prediction. We aim to\nThis page contains embedded R code. If you are a Stata user, you can download do files that illustrate Ordinary Least Squares, multilevel models, ridge regression, and LASSO regression.\nA version of this page in slide format is available here:",
     "crumbs": [
       "Problem Sets",
       "Descriptive Data Science with Probability Samples",
@@ -720,7 +769,7 @@
     "href": "algorithms_for_prediction.html#a-big-idea-regularization",
     "title": "Algorithms for prediction",
     "section": "A big idea: Regularization",
-    "text": "A big idea: Regularization\nRegularization encompasses a broad class of approaches designed for models that have many parameters, such as a unique intercept for every team in Major League Baseball. Regularization allows us to estimate many parameters while pulling them toward some common value in order to reduce the high variance that tends to results.\nAs one concrete example of regularization, we might want a middle ground between two extremes:\n\nour OLS linear prediction: \\(\\hat{Y}^\\text{Linear}_\\text{Dodgers} = \\hat\\alpha + \\hat\\beta\\text{(Past Record)}_\\text{Dodgers}={}\\) $3.9 million\nthe mean of the 5 sampled Dodger salaries: \\(\\hat{Y}^\\text{Nonparametric}_\\text{Dodgers} = {}\\) $7.9 million\n\nA regularized estimator could be a weighted average of these two, with weight \\(w\\) placed on the nonparametric mean and weight \\(1 - w\\) placed on the linear prediction.\n\\[\n\\hat\\tau = w \\hat{Y}^\\text{Nonparametric}_\\text{Dodgers} + (1 - w)\\hat{Y}^\\text{Linear}_\\text{Dodgers}\n\\] The graph below visualizes the resulting estimate at various values of \\(w\\). The regularized estimates are partially pooled toward the linear model prediction, with the amount of pooling controlled by \\(w\\).\n\n\nCode\nestimates_by_w &lt;- foreach(w_value = seq(0,1,.05), .combine = \"rbind\") %do% {\n  tibble(\n    w = w_value,\n    estimate = (1 - w) * dodger_sample_mean + w * ols_estimate\n  )\n}\nestimates_by_w |&gt;\n  ggplot(aes(x = w, y = estimate)) +\n  geom_point() +\n  geom_line() +\n  geom_text(\n    data = estimates_by_w |&gt;\n      filter(w %in% c(0,1)) |&gt;\n      mutate(\n        w = w + c(1,-1) * .13, \n        hjust = c(0,1),\n        label = c(\"Nonparametric Dodger Samle Mean\",\n                  \"Linear Prediction from OLS\")\n      ),\n    aes(label = label, hjust = hjust)\n  ) +\n  geom_segment(\n     data = estimates_by_w |&gt;\n      filter(w %in% c(0,1)) |&gt;\n       mutate(x = w + c(1,-1) * .12,\n              xend = w + c(1,-1) * .04),\n     aes(x = x, xend = xend),\n     arrow = arrow(length = unit(.08,\"in\"))\n  ) +\n  annotate(\n    geom = \"text\", x = .3, y = estimates_by_w$estimate[12],\n    label = \"Partial\\nPooling\\nEstimates\",\n    vjust = 1\n  ) +\n  annotate(\n    geom = \"segment\", \n    x = c(.3,.4), \n    xend = c(.3,.55),\n    y = estimates_by_w$estimate[c(11,14)],\n    yend = estimates_by_w$estimate[c(8,14)],\n    arrow = arrow(length = unit(.08,\"in\"))\n  ) +\n  scale_x_continuous(\"Weight: Amount of Shrinkage Toward Linear Fit\") +\n  scale_y_continuous(\n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    ),\n    name = \"Dodger Mean Salary Estimates\",\n    expand = expansion(mult =.1)\n  ) +\n  theme_minimal()\n\n\n\n\n\n\n\n\n\nPartial pooling is one way to navigate the bias-variance tradeoff: it allows us to have a flexible model while reducing the high amount of variance that such a model can create. In our case, the best estimator lies somewhere between the fully-pooled estimator (linear regression) and the fully-separate estimator (unique intercepts for each team).\nOne way to formally investigate the properties of our estimator is by defining a concept known as expected squared error. Let \\(\\hat\\mu_\\text{Dodgers}\\) be an estimator: a function that when applied to a sample \\(S\\) returns an estimate \\(\\hat\\mu_\\text{Dodgers}(S)\\). The squared error of this estimator in a particular sample \\(S\\) is \\((\\hat\\mu_\\text{Dodgers}(S) - \\mu_\\text{Dodgers})^2\\). Expected squared error is the expected value of this performance taken across repeated samples \\(S\\) from the population.\n\\[\n\\text{Expected Squared Error}(\\hat\\mu_\\text{Dodgers}) = \\text{E}_S\\left(\\left(\\hat\\mu_\\text{Dodgers}(S) - \\mu_\\text{Dodgers}\\right)^2\\right)\n\\]\nOrdinarily, one has only one sample and cannot directly calculate expected squared error. But our setting is useful for pedagogical purposes because we have the full population of baseball players and can repeatedly draw samples to evaluate performance. Below, we simulate \\(r = 1,\\dots,100\\) repeated samples and estimated expected squared error by the mean squared error of the estimates \\(\\hat\\mu_\\text{Dodgers}(S_r)\\) that we get from each simulated sample \\(S_r\\).\n\\[\n\\widehat{\\text{Expected Squared Error}}(\\hat\\mu_\\text{Dodgers}) = \\frac{1}{100}\\sum_{r=1}^{100}\\left(\\hat\\mu_\\text{Dodgers}(S_r) - \\mu_\\text{Dodgers}\\right)^2\n\\]\n\n\nCode\nrepeated_simulations &lt;- foreach(rep = 1:100, .combine = \"rbind\") %do% {\n  \n  a_sample &lt;- baseball_population |&gt;\n    group_by(team) |&gt;\n    slice_sample(n = 5) |&gt;\n    ungroup()\n  \n  ols_fit &lt;- lm(salary ~ team_past_record, data = a_sample)\n  \n  ols_estimate &lt;- predict(\n    ols_fit, \n    newdata = baseball_population |&gt; \n      filter(team == \"L.A. Dodgers\") |&gt;\n      distinct(team_past_record)\n  )\n  \n  nonparametric_estimate &lt;- a_sample |&gt;\n    filter(team == \"L.A. Dodgers\") |&gt;\n    summarize(salary = mean(salary)) |&gt;\n    pull(salary)\n  \n  foreach(w_value = seq(0,1,.05), .combine = \"rbind\") %do% {\n    tibble(\n      w = w_value,\n      estimate = w * ols_estimate + (1 - w) * nonparametric_estimate\n    )\n  }\n}\n\naggregated &lt;- repeated_simulations |&gt;\n  group_by(w) |&gt;\n  summarize(mse = mean((estimate - true_dodger_mean) ^ 2)) |&gt;\n  mutate(best = mse == min(mse))\n\naggregated |&gt;\n  ggplot(aes(x = w, y = mse, color = best)) +\n  geom_line() +\n  geom_point() +\n  scale_y_continuous(name = \"Expected Squared Error\\nfor Dodger Mean Salary\") +\n  scale_x_continuous(name = \"Weight: Amount of Shrinkage Toward Linear Fit\") +\n  scale_color_manual(values = c(\"black\",\"dodgerblue\")) +\n  geom_vline(xintercept = c(0,1), linetype = \"dashed\") +\n  theme_minimal() +\n  theme(legend.position = \"none\") +\n  annotate(\n    geom = \"text\", \n    x = c(0.02,.98), \n    y = range(aggregated$mse),\n    hjust = c(0,1), vjust = c(0,1),\n    size = 3,\n    label = c(\n      \"Nonparametric estimator:\\nDodger mean salary\",\n      \"Model-based estimator:\\nOLS linear prediction\"\n    )\n  ) +\n  annotate(\n    geom = \"text\", \n    x = aggregated$w[aggregated$best], \n    y = min(aggregated$mse) + .2 * diff(range(aggregated$mse)),\n    vjust = -.1,\n    label = \"Best-Performing\\nEstimator\",\n    size = 3,\n    color = \"dodgerblue\"\n  ) +\n  annotate(\n    geom = \"segment\",\n    x = aggregated$w[aggregated$best], \n    y = min(aggregated$mse) + .18 * diff(range(aggregated$mse)),\n    yend = min(aggregated$mse) + .05 * diff(range(aggregated$mse)),\n    arrow = arrow(length = unit(.08,\"in\")),\n    color = \"dodgerblue\"\n  )\n\n\n\n\n\n\n\n\n\nIn this illustration, the best performance is an estimator that puts 75% of the weight on the linear fit and 25% of the weight on the mean among the 5 sampled Dodgers.\nThe example above illustrates an idea known as regularization, shrinkage, or partial pooling: we may often want to combine an estimate on a subgroup (the Dodger mean) with an estimate made on the full population (the linear fit). We will consider various methods to accomplish regularization, and we will return at the end to consider connections among them.",
+    "text": "A big idea: Regularization\nRegularization encompasses a broad class of approaches designed for models that have many parameters, such as a unique intercept for every team in Major League Baseball. Regularization allows us to estimate many parameters while pulling them toward some common value in order to reduce the high variance that tends to results.\nAs one concrete example of regularization, we might want a middle ground between two extremes:\n\nour OLS linear prediction: \\(\\hat{Y}^\\text{Linear}_\\text{Dodgers} = \\hat\\alpha + \\hat\\beta\\text{(Past Record)}_\\text{Dodgers}={}\\) $3.9 million\nthe mean of the 5 sampled Dodger salaries: \\(\\hat{Y}^\\text{Nonparametric}_\\text{Dodgers} = {}\\) $7.9 million\n\nA regularized estimator could be a weighted average of these two, with weight \\(w\\) placed on the nonparametric mean and weight \\(1 - w\\) placed on the linear prediction.\n\\[\n\\hat\\tau = w \\hat{Y}^\\text{Nonparametric}_\\text{Dodgers} + (1 - w)\\hat{Y}^\\text{Linear}_\\text{Dodgers}\n\\] The graph below visualizes the resulting estimate at various values of \\(w\\). The regularized estimates are partially pooled toward the linear model prediction, with the amount of pooling controlled by \\(w\\).\n\n\nCode\nestimates_by_w &lt;- foreach(w_value = seq(0,1,.05), .combine = \"rbind\") %do% {\n  tibble(\n    w = w_value,\n    estimate = (1 - w) * dodger_sample_mean + w * ols_estimate\n  )\n}\nestimates_by_w |&gt;\n  ggplot(aes(x = w, y = estimate)) +\n  geom_point() +\n  geom_line() +\n  geom_text(\n    data = estimates_by_w |&gt;\n      filter(w %in% c(0,1)) |&gt;\n      mutate(\n        w = w + c(1,-1) * .13, \n        hjust = c(0,1),\n        label = c(\"Nonparametric Dodger Sample Mean\",\n                  \"Linear Prediction from OLS\")\n      ),\n    aes(label = label, hjust = hjust)\n  ) +\n  geom_segment(\n     data = estimates_by_w |&gt;\n      filter(w %in% c(0,1)) |&gt;\n       mutate(x = w + c(1,-1) * .12,\n              xend = w + c(1,-1) * .04),\n     aes(x = x, xend = xend),\n     arrow = arrow(length = unit(.08,\"in\"))\n  ) +\n  annotate(\n    geom = \"text\", x = .3, y = estimates_by_w$estimate[12],\n    label = \"Partial\\nPooling\\nEstimates\",\n    vjust = 1\n  ) +\n  annotate(\n    geom = \"segment\", \n    x = c(.3,.4), \n    xend = c(.3,.55),\n    y = estimates_by_w$estimate[c(11,14)],\n    yend = estimates_by_w$estimate[c(8,14)],\n    arrow = arrow(length = unit(.08,\"in\"))\n  ) +\n  scale_x_continuous(\"Weight: Amount of Shrinkage Toward Linear Fit\") +\n  scale_y_continuous(\n    labels = label_currency(\n      scale = 1e-6, accuracy = .1, suffix = \" million\"\n    ),\n    name = \"Dodger Mean Salary Estimates\",\n    expand = expansion(mult =.1)\n  ) +\n  theme_minimal()\n\n\n\n\n\n\n\n\n\nPartial pooling is one way to navigate the bias-variance tradeoff: it allows us to have a flexible model while reducing the high amount of variance that such a model can create. In our case, the best estimator lies somewhere between the fully-pooled estimator (linear regression) and the fully-separate estimator (unique intercepts for each team).\nOne way to formally investigate the properties of our estimator is by defining a concept known as expected squared error. Let \\(\\hat\\mu_\\text{Dodgers}\\) be an estimator: a function that when applied to a sample \\(S\\) returns an estimate \\(\\hat\\mu_\\text{Dodgers}(S)\\). The squared error of this estimator in a particular sample \\(S\\) is \\((\\hat\\mu_\\text{Dodgers}(S) - \\mu_\\text{Dodgers})^2\\). Expected squared error is the expected value of this performance taken across repeated samples \\(S\\) from the population.\n\\[\n\\text{Expected Squared Error}(\\hat\\mu_\\text{Dodgers}) = \\text{E}_S\\left(\\left(\\hat\\mu_\\text{Dodgers}(S) - \\mu_\\text{Dodgers}\\right)^2\\right)\n\\]\nOrdinarily, one has only one sample and cannot directly calculate expected squared error. But our setting is useful for pedagogical purposes because we have the full population of baseball players and can repeatedly draw samples to evaluate performance. Below, we simulate \\(r = 1,\\dots,100\\) repeated samples and estimated expected squared error by the mean squared error of the estimates \\(\\hat\\mu_\\text{Dodgers}(S_r)\\) that we get from each simulated sample \\(S_r\\).\n\\[\n\\widehat{\\text{Expected Squared Error}}(\\hat\\mu_\\text{Dodgers}) = \\frac{1}{100}\\sum_{r=1}^{100}\\left(\\hat\\mu_\\text{Dodgers}(S_r) - \\mu_\\text{Dodgers}\\right)^2\n\\]\n\n\nCode\nrepeated_simulations &lt;- foreach(rep = 1:100, .combine = \"rbind\") %do% {\n  \n  a_sample &lt;- baseball_population |&gt;\n    group_by(team) |&gt;\n    slice_sample(n = 5) |&gt;\n    ungroup()\n  \n  ols_fit &lt;- lm(salary ~ team_past_record, data = a_sample)\n  \n  ols_estimate &lt;- predict(\n    ols_fit, \n    newdata = baseball_population |&gt; \n      filter(team == \"L.A. Dodgers\") |&gt;\n      distinct(team_past_record)\n  )\n  \n  nonparametric_estimate &lt;- a_sample |&gt;\n    filter(team == \"L.A. Dodgers\") |&gt;\n    summarize(salary = mean(salary)) |&gt;\n    pull(salary)\n  \n  foreach(w_value = seq(0,1,.05), .combine = \"rbind\") %do% {\n    tibble(\n      w = w_value,\n      estimate = w * ols_estimate + (1 - w) * nonparametric_estimate\n    )\n  }\n}\n\naggregated &lt;- repeated_simulations |&gt;\n  group_by(w) |&gt;\n  summarize(mse = mean((estimate - true_dodger_mean) ^ 2)) |&gt;\n  mutate(best = mse == min(mse))\n\naggregated |&gt;\n  ggplot(aes(x = w, y = mse, color = best)) +\n  geom_line() +\n  geom_point() +\n  scale_y_continuous(name = \"Expected Squared Error\\nfor Dodger Mean Salary\") +\n  scale_x_continuous(name = \"Weight: Amount of Shrinkage Toward Linear Fit\") +\n  scale_color_manual(values = c(\"black\",\"dodgerblue\")) +\n  geom_vline(xintercept = c(0,1), linetype = \"dashed\") +\n  theme_minimal() +\n  theme(legend.position = \"none\") +\n  annotate(\n    geom = \"text\", \n    x = c(0.02,.98), \n    y = range(aggregated$mse),\n    hjust = c(0,1), vjust = c(0,1),\n    size = 3,\n    label = c(\n      \"Nonparametric estimator:\\nDodger mean salary\",\n      \"Model-based estimator:\\nOLS linear prediction\"\n    )\n  ) +\n  annotate(\n    geom = \"text\", \n    x = aggregated$w[aggregated$best], \n    y = min(aggregated$mse) + .2 * diff(range(aggregated$mse)),\n    vjust = -.1,\n    label = \"Best-Performing\\nEstimator\",\n    size = 3,\n    color = \"dodgerblue\"\n  ) +\n  annotate(\n    geom = \"segment\",\n    x = aggregated$w[aggregated$best], \n    y = min(aggregated$mse) + .18 * diff(range(aggregated$mse)),\n    yend = min(aggregated$mse) + .05 * diff(range(aggregated$mse)),\n    arrow = arrow(length = unit(.08,\"in\")),\n    color = \"dodgerblue\"\n  )\n\n\n\n\n\n\n\n\n\nIn this illustration, the best performance is an estimator that puts 75% of the weight on the linear fit and 25% of the weight on the mean among the 5 sampled Dodgers.\nThe example above illustrates an idea known as regularization, shrinkage, or partial pooling: we may often want to combine an estimate on a subgroup (the Dodger mean) with an estimate made on the full population (the linear fit). We will consider various methods to accomplish regularization, and we will return at the end to consider connections among them.",
     "crumbs": [
       "Problem Sets",
       "Descriptive Data Science with Probability Samples",

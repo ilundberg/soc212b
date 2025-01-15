@@ -391,6 +391,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Algorithms for prediction</h1>
+  <p class="subtitle">Part 1 of 2: Penalized Linear Regression</p>
 
 <div class="quarto-title-authors">
 </div>
@@ -428,13 +429,13 @@
 <h2>Problem Set 1: Discussion</h2>
 <p>Some language notes:</p>
 <ul>
-<li>Causal language
+<li class="fragment">Causal language
 <ul>
-<li>X verb Y</li>
+<li class="fragment">X verb Y</li>
 </ul></li>
-<li>Non-causal language
+<li class="fragment">Non-causal language
 <ul>
-<li>differences in Y across X</li>
+<li class="fragment">differences in Y across X</li>
 </ul></li>
 </ul>
 </section>
@@ -451,7 +452,9 @@
 E(Y\mid X = 0) &amp;= \alpha \\
 E(Y\mid X = 1) &amp;= \alpha + \beta
 \end{aligned}
-\]</span> . . .</p>
+\]</span></p>
+</div>
+<div class="fragment">
 <p>It is not really a “model” at all</p>
 </div>
 </section>
@@ -462,14 +465,14 @@ E(Y\mid X = 1) &amp;= \alpha + \beta
 <section id="goals-for-today" class="slide level2">
 <h2>Goals for today</h2>
 <ul>
-<li>review OLS to predict</li>
-<li>understand regularization to estimate<br>
+<li class="fragment">review OLS to predict</li>
+<li class="fragment">understand regularization to estimate<br>
 many parameters while avoiding high variance</li>
-<li>walk through three regularized linear model algorithms
+<li class="fragment">walk through three regularized linear model algorithms
 <ul>
-<li>multilevel models</li>
-<li>ridge regression</li>
-<li>LASSO regression</li>
+<li class="fragment">multilevel models</li>
+<li class="fragment">ridge regression</li>
+<li class="fragment">LASSO regression</li>
 </ul></li>
 </ul>
 </section>
@@ -481,10 +484,10 @@ many parameters while avoiding high variance</li>
 <section id="data-baseball-salaries" class="slide level2">
 <h2>Data: Baseball salaries</h2>
 <ul>
-<li>All 944 Major League Baseball Players, Opening Day 2023.</li>
-<li>Compiled by <a href="https://databases.usatoday.com/major-league-baseball-salaries-2023/">USA Today</a></li>
-<li>I appended each team’s win-loss record from 2022</li>
-<li>Available in <a href="../../data/baseball_population.csv">baseball_population.csv</a></li>
+<li class="fragment">All 944 Major League Baseball Players, Opening Day 2023.</li>
+<li class="fragment">Compiled by <a href="https://databases.usatoday.com/major-league-baseball-salaries-2023/">USA Today</a></li>
+<li class="fragment">I appended each team’s win-loss record from 2022</li>
+<li class="fragment">Available in <a href="../../data/baseball_population.csv">baseball_population.csv</a></li>
 </ul>
 </section>
 <section id="data-baseball-salaries-1" class="slide level2">
@@ -495,11 +498,13 @@ many parameters while avoiding high variance</li>
 <span id="cb1-2"><a></a><span class="fu">library</span>(scales)</span>
 <span id="cb1-3"><a></a><span class="fu">library</span>(foreach)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<div class="fragment">
 <p>Load data:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>baseball_population <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
 <span id="cb2-2"><a></a>  <span class="st">"https://ilundberg.github.io/soc212b/data/baseball_population.csv"</span></span>
 <span id="cb2-3"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </div>
 </section>
 <section id="data-baseball-salaries-2" class="slide level2">
@@ -563,7 +568,7 @@ many parameters while avoiding high variance</li>
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
 <section id="data-baseball-salaries-4" class="slide level2">
 <h2>Data: Baseball salaries</h2>
 <div class="cell">
@@ -598,7 +603,7 @@ many parameters while avoiding high variance</li>
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section></section>
 <section>
 <section id="task" class="title-slide slide level1 center">
 <h1>Task</h1>
@@ -606,6 +611,7 @@ many parameters while avoiding high variance</li>
 </section>
 <section id="task-predict-dodger-mean-salary" class="slide level2">
 <h2>Task: Predict Dodger mean salary</h2>
+<div class="fragment">
 <p>We have the full population:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>true_dodger_mean <span class="ot">&lt;-</span> baseball_population <span class="sc">|&gt;</span></span>
@@ -617,15 +623,15 @@ many parameters while avoiding high variance</li>
 <span id="cb7-7"><a></a>  <span class="fu">pull</span>(mean_salary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The true Dodger mean salary on Opening Day 2023 was $6,232,196.</p>
+</div>
 </section>
 <section id="task-predict-dodger-mean-salary-1" class="slide level2">
 <h2>Task: Predict Dodger mean salary</h2>
 <p>Imagine we have</p>
 <ul>
-<li>predictors for everyone</li>
-<li>salary for a sample of 5 players per team</li>
+<li class="fragment">predictors for everyone</li>
+<li class="fragment">salary for a sample of 5 players per team</li>
 </ul>
-<p>We want to learn the Dodgers’ mean salary</p>
 </section>
 <section id="task-predict-dodger-mean-salary-2" class="slide level2">
 <h2>Task: Predict Dodger mean salary</h2>
@@ -642,15 +648,16 @@ many parameters while avoiding high variance</li>
 <section id="task-predict-dodger-mean-salary-5" class="slide level2">
 <h2>Task: Predict Dodger mean salary</h2>
 <ul>
-<li>learn model on everyone</li>
-<li>create data to predict: the Dodger population</li>
-<li>predict the outcome in this target population</li>
-<li>average over units</li>
+<li class="fragment">learn model on everyone</li>
+<li class="fragment">create data to predict: the Dodger population</li>
+<li class="fragment">predict the outcome in this target population</li>
+<li class="fragment">average over units</li>
 </ul>
 </section>
 <section id="task-predict-dodger-mean-salary-6" class="slide level2">
 <h2>Task: Predict Dodger mean salary</h2>
 <p>Draw a sample of 5 players per team.</p>
+<div class="fragment">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>baseball_sample <span class="ot">&lt;-</span> baseball_population <span class="sc">|&gt;</span></span>
 <span id="cb8-2"><a></a>  <span class="fu">group_by</span>(team) <span class="sc">|&gt;</span></span>
@@ -672,6 +679,7 @@ many parameters while avoiding high variance</li>
  9 Matzek, Tyler*        1200000 LHP      Atlanta            0.623
 10 Hilliard, Sam          750000 OF       Atlanta            0.623
 # ℹ 140 more rows</code></pre>
+</div>
 </div>
 </div>
 </section>
@@ -750,21 +758,25 @@ many parameters while avoiding high variance</li>
 <section id="performance-of-ols" class="slide level2">
 <h2>Performance of OLS</h2>
 <ul>
-<li>We usually have only one sample</li>
-<li>In this case, we have the population</li>
-<li>Plan
+<li class="fragment">We usually have only one sample</li>
+<li class="fragment">In this case, we have the population</li>
+</ul>
+<div class="fragment">
 <ul>
-<li>draw repeated samples</li>
-<li>evaluate performance over repeated samples</li>
+<li class="fragment">Plan
+<ul>
+<li class="fragment">draw repeated samples</li>
+<li class="fragment">evaluate performance over repeated samples</li>
 </ul></li>
 </ul>
+</div>
 </section>
 <section id="performance-of-ols-estimator-function" class="slide level2">
 <h2>Performance of OLS: Estimator function</h2>
 <p>A function that</p>
 <ul>
-<li>takes in a sample</li>
-<li>returns an estimate</li>
+<li class="fragment">takes in a sample</li>
+<li class="fragment">returns an estimate</li>
 </ul>
 </section>
 <section id="performance-of-ols-estimator-function-1" class="slide level2">
@@ -837,7 +849,7 @@ many parameters while avoiding high variance</li>
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"></section></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"></section></section>
 <section>
 <section id="approximation-error" class="title-slide slide level1 center">
 <h1>Approximation Error</h1>
@@ -899,7 +911,7 @@ many parameters while avoiding high variance</li>
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"></section>
 <section id="model-approximation-error-1" class="slide level2">
 <h2>Model approximation error</h2>
 <p>How to solve model approximation error? </p>
@@ -964,7 +976,7 @@ many parameters while avoiding high variance</li>
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch"></section></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch"></section></section>
 <section>
 <section id="regularization" class="title-slide slide level1 center">
 <h1>Regularization</h1>
@@ -974,13 +986,15 @@ many parameters while avoiding high variance</li>
 <h2>Regularization</h2>
 <p>Two estimators:</p>
 <ul>
-<li><p><strong>nonparametric</strong> mean of 5 sampled players on each team<br>
+<li class="fragment"><p><strong>nonparametric</strong> mean of 5 sampled players on each team<br>
 (high variance)<br>
 </p></li>
-<li><p><strong>linear prediction</strong>: linear fit on team past record<br>
+<li class="fragment"><p><strong>linear prediction</strong>: linear fit on team past record<br>
 (biased by model approximation error)</p></li>
 </ul>
+<div class="fragment">
 <p>We might <strong>regularize</strong> the nonparametric toward the linear prediction</p>
+</div>
 </section>
 <section id="regularization-2" class="slide level2">
 <h2>Regularization</h2>
@@ -1003,7 +1017,7 @@ many parameters while avoiding high variance</li>
 <span id="cb23-14"><a></a>      <span class="fu">mutate</span>(</span>
 <span id="cb23-15"><a></a>        <span class="at">w =</span> w <span class="sc">+</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>) <span class="sc">*</span> .<span class="dv">13</span>, </span>
 <span id="cb23-16"><a></a>        <span class="at">hjust =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
-<span id="cb23-17"><a></a>        <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"Nonparametric Dodger Samle Mean"</span>,</span>
+<span id="cb23-17"><a></a>        <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"Nonparametric Dodger Sample Mean"</span>,</span>
 <span id="cb23-18"><a></a>                  <span class="st">"Linear Prediction from OLS"</span>)</span>
 <span id="cb23-19"><a></a>      ),</span>
 <span id="cb23-20"><a></a>    <span class="fu">aes</span>(<span class="at">label =</span> label, <span class="at">hjust =</span> hjust)</span>
@@ -1042,13 +1056,15 @@ many parameters while avoiding high variance</li>
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch"></section>
 <section id="regularization-how-much" class="slide level2">
 <h2>Regularization: How much?</h2>
+<div class="fragment">
 <p>Want to minimize expected squared error.</p>
 <p><span class="math display">\[
 \text{Expected Squared Error}(\hat\mu_\text{Dodgers}) = \text{E}_S\left(\left(\hat\mu_\text{Dodgers}(S) - \mu_\text{Dodgers}\right)^2\right)
 \]</span></p>
+</div>
 </section>
 <section id="regularization-how-much-1" class="slide level2">
 <h2>Regularization: How much?</h2>
@@ -1130,7 +1146,7 @@ many parameters while avoiding high variance</li>
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch"></section></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch"></section></section>
 <section>
 <section id="multilevel-models" class="title-slide slide level1 center">
 <h1>Multilevel models</h1>
@@ -1139,12 +1155,12 @@ many parameters while avoiding high variance</li>
 <section id="multilevel-models-idea" class="slide level2">
 <h2>Multilevel models: Idea</h2>
 <ul>
-<li>many groups</li>
-<li>a few observations per group</li>
-<li>partially pool between
+<li class="fragment">many groups</li>
+<li class="fragment">a few observations per group</li>
+<li class="fragment">partially pool between
 <ul>
-<li>group-specific mean estimates (high variance)</li>
-<li>a model pooled across groups (potentially biased)</li>
+<li class="fragment">group-specific mean estimates (high variance)</li>
+<li class="fragment">a model pooled across groups (potentially biased)</li>
 </ul></li>
 </ul>
 </section>
@@ -1208,7 +1224,7 @@ many parameters while avoiding high variance</li>
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-27-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-27-1.png" width="960" class="r-stretch"></section>
 <section id="multilevel-models-intuition-1" class="slide level2">
 <h2>Multilevel models: Intuition</h2>
 <div class="cell">
@@ -1256,7 +1272,7 @@ many parameters while avoiding high variance</li>
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-28-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-28-1.png" width="960" class="r-stretch"></section>
 <section id="multilevel-models-performance" class="slide level2">
 <h2>Multilevel models: Performance</h2>
 <div class="cell">
@@ -1311,15 +1327,19 @@ many parameters while avoiding high variance</li>
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-29-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-29-1.png" width="960" class="r-stretch"></section>
 <section id="multilevel-models-in-math" class="slide level2">
 <h2>Multilevel models: In math</h2>
+<div class="fragment">
 <p><strong>Person-level model.</strong> For player <span class="math inline">\(i\)</span> on team <span class="math inline">\(t\)</span>,</p>
 <p><span class="math display">\[\begin{equation}
 Y_{ti} \sim \text{Normal}\left(\mu_t, \sigma^2\right)
 \end{equation}\]</span></p>
+</div>
+<div class="fragment">
 <p><strong>Group-level model.</strong> There is a model for <span class="math inline">\(\mu_t\)</span>, mean salary on team <span class="math inline">\(t\)</span>.</p>
 <p><span class="math display">\[\mu_t \sim \text{Normal}(\alpha + X_t\beta, \tau^2)\]</span> where <span class="math inline">\(X_t\)</span> is team past record</p>
+</div>
 </section></section>
 <section>
 <section id="ridge-regression" class="title-slide slide level1 center">
@@ -1330,19 +1350,19 @@ Y_{ti} \sim \text{Normal}\left(\mu_t, \sigma^2\right)
 <h2>Ridge regression</h2>
 <p>Often taught in data science classes</p>
 <ul>
-<li>many coefficients</li>
-<li>penalize large coefficients</li>
-<li>minimize a loss function</li>
+<li class="fragment">many coefficients</li>
+<li class="fragment">penalize large coefficients</li>
+<li class="fragment">minimize a loss function</li>
 </ul>
 </section>
 <section id="ridge-regression-2" class="slide level2">
 <h2>Ridge regression</h2>
 <p><span class="math display">\[
-Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
+Y_{ti} = \alpha + \beta X_t + \gamma_{t} + \epsilon_{ti}
 \]</span></p>
 <p>Minimize a loss function:</p>
 <p><span class="math display">\[
-\underbrace{\sum_i\sum_j\left(Y_{ij} - \left(\alpha + \beta X_i + \gamma_{i}\right)\right)^2}_\text{Sum of Squared Error} + \underbrace{\lambda\sum_i\gamma_i^2}_\text{Penalty}
+\underbrace{\sum_t\sum_i\left(Y_{ti} - \left(\alpha + \beta X_t + \gamma_{t}\right)\right)^2}_\text{Sum of Squared Error} + \underbrace{\lambda\sum_t\gamma_t^2}_\text{Penalty}
 \]</span></p>
 </section>
 <section id="ridge-regression-code" class="slide level2">
@@ -1407,7 +1427,7 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-32-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-32-1.png" width="960" class="r-stretch"></section>
 <section id="ridge-regression-penalty-parameter-lambda-controls-shrinkage" class="slide level2">
 <h2>Ridge regression: Penalty parameter <span class="math inline">\(\lambda\)</span> controls shrinkage</h2>
 <div class="cell">
@@ -1450,7 +1470,7 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-33-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-33-1.png" width="960" class="r-stretch"></section>
 <section id="ridge-regression-penalty-parameter-lambda-controls-shrinkage-1" class="slide level2">
 <h2>Ridge regression: Penalty parameter <span class="math inline">\(\lambda\)</span> controls shrinkage</h2>
 <div class="cell">
@@ -1506,7 +1526,7 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-34-1.png" width="960"></p>
+<p><img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-34-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1568,7 +1588,7 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-35-1.png" width="960"></p>
+<p><img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-35-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1612,10 +1632,13 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 </div>
 <p>Finally, we create a <code>tibble</code> with both the ridge regression and multilevel model estimates.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a>both_estimators <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">rownames_to_column</span>(<span class="fu">data.frame</span>(yhat_ridge))) <span class="sc">|&gt;</span></span>
 <span id="cb40-2"><a></a>  <span class="fu">rename</span>(<span class="at">team =</span> rowname) <span class="sc">|&gt;</span></span>
 <span id="cb40-3"><a></a>  <span class="fu">mutate</span>(<span class="at">team =</span> <span class="fu">str_remove</span>(team,<span class="st">"team"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb40-4"><a></a>  <span class="fu">left_join</span>(yhat_multilevel, <span class="at">by =</span> <span class="fu">join_by</span>(team))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
 <section id="connections-multilevel-model-and-ridge-regression-2" class="slide level2">
@@ -1639,10 +1662,13 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 <span id="cb41-14"><a></a>    )</span>
 <span id="cb41-15"><a></a>  ) <span class="sc">+</span></span>
 <span id="cb41-16"><a></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb41-17"><a></a>  <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">18</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb41-17"><a></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb41-18"><a></a>  <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">18</span>))</span>
+<span id="cb41-19"><a></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+
 </div>
-</section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-40-1.png" width="960" class="r-stretch"></section>
 <section id="connections-multilevel-model-and-ridge-regression-3" class="slide level2">
 <h2>Connections: Multilevel model and ridge regression</h2>
 <div class="cell">
@@ -1653,10 +1679,10 @@ Y_{ij} = \alpha + \beta X_i + \gamma_{i} + \epsilon_{ij}
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-41-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-41-1.png" width="960" class="r-stretch"></section>
 <section id="connections-multilevel-model-and-ridge-regression-4" class="slide level2">
 <h2>Connections: Multilevel model and ridge regression</h2>
-<p>What is this special case? Multilevel model:</p>
+<p>Multilevel model:</p>
 <p><span class="math display">\[
 \begin{aligned}
 Y_{ti} &amp;\sim \text{Normal}(\mu_t,\sigma^2) \\
@@ -1675,17 +1701,19 @@ Y_{ti} &amp;\sim \text{Normal}(\mu_t,\sigma^2) \\
 <p>Rearranged to:</p>
 <p><span class="math display">\[
 \hat{\vec\mu}^\text{Ridge} = \underset{\vec\mu}{\text{arg min}} \sum_t\left(\sum_i \left(Y_{it}-\mu_t\right)^2 + \lambda\left(\hat\mu_0 - \mu_t\right)^2\right)
-\]</span> </p>
+\]</span></p>
 </section>
 <section id="connections-multilevel-model-and-ridge-regression-6" class="slide level2">
 <h2>Connections: Multilevel model and ridge regression</h2>
 <p><span class="math display">\[
 \hat{\vec\mu}^\text{Ridge} = \underset{\vec\mu}{\text{arg min}} \sum_t\left(\sum_i \left(Y_{it}-\mu_t\right)^2 + \lambda\left(\hat\mu_0 - \mu_t\right)^2\right)
-\]</span> </p>
+\]</span></p>
+<div class="fragment">
 <p>Result:</p>
 <p><span class="math display">\[
 \hat\mu_t^\text{Ridge} = \frac{\sum_i Y_{it} + \lambda\hat\mu_0}{n_t + \lambda}
 \]</span></p>
+</div>
 </section>
 <section id="connections-multilevel-model-and-ridge-regression-7" class="slide level2">
 <h2>Connections: Multilevel model and ridge regression</h2>
@@ -1775,11 +1803,11 @@ Y_{ti} = \alpha + \beta X_t + \gamma_{t} + \epsilon_{ti}
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-44-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-44-1.png" width="960" class="r-stretch"></section>
 <section id="lasso-estimates-1" class="slide level2">
 <h2>LASSO estimates</h2>
 
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-45-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-45-1.png" width="960" class="r-stretch"></section>
 <section id="lasso-estimates-2" class="slide level2">
 <h2>LASSO estimates</h2>
 <div class="cell">
@@ -1834,7 +1862,7 @@ Y_{ti} = \alpha + \beta X_t + \gamma_{t} + \epsilon_{ti}
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-46-1.png" width="960" class="r-stretch"></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-46-1.png" width="960" class="r-stretch"></section>
 <section id="lasso-performance" class="slide level2">
 <h2>LASSO: Performance</h2>
 <div class="cell">
@@ -1891,47 +1919,113 @@ Y_{ti} = \alpha + \beta X_t + \gamma_{t} + \epsilon_{ti}
 </details>
 
 </div>
-<img data-src="algorithms_for_prediction_slides_1_files/figure-revealjs/unnamed-chunk-47-1.png" width="960" class="r-stretch"></section></section>
+<img data-src="penalized_regression_slides_files/figure-revealjs/unnamed-chunk-47-1.png" width="960" class="r-stretch"></section></section>
 <section>
-<section id="recap" class="title-slide slide level1 center">
-<h1>Recap</h1>
+<section id="recap-project-connection" class="title-slide slide level1 center">
+<h1>Recap + Project Connection</h1>
 
 </section>
-<section id="recap-1" class="slide level2">
+<section id="recap" class="slide level2">
 <h2>Recap</h2>
 <p>A recipe for prediction:</p>
 <ul>
-<li>model in learning data</li>
-<li>predict in target population</li>
-<li>average</li>
+<li class="fragment">model in learning data</li>
+<li class="fragment">predict in target population</li>
+<li class="fragment">average</li>
 </ul>
+</section>
+<section id="recap-1" class="slide level2">
+<h2>Recap</h2>
+<p>Performance (<strong>expected squared error</strong>) can suffer from two sources:</p>
+<ul>
+<li class="fragment">bias (model approximation error)</li>
+<li class="fragment">variance (too many parameters)</li>
+</ul>
+<div class="fragment">
+<p><strong>Regularization</strong> balances these two concerns</p>
+</div>
 </section>
 <section id="recap-2" class="slide level2">
 <h2>Recap</h2>
-<p>Performance can be defined by <strong>expected squared error</strong></p>
-<p>Performance can suffer from two sources:</p>
 <ul>
-<li>bias (model approximation error)</li>
-<li>variance (too many parameters)</li>
+<li class="fragment">OLS: No regularization</li>
+<li class="fragment">Ridge regression: Penalizes sum of squared coefficients</li>
+<li class="fragment">LASSO regression: Penalizes sum of absolute coefficients</li>
 </ul>
-<p><strong>Regularization</strong> balances these two concerns</p>
-</section>
-<section id="recap-3" class="slide level2">
-<h2>Recap</h2>
-<ul>
-<li>OLS: No regularization</li>
-<li>Ridge regression: Penalizes sum of squared coefficients</li>
-<li>LASSO regression: Penalizes sum of absolute coefficients</li>
-</ul>
+<div class="fragment">
 <p>Multilevel models regularize group-specific estimates depending on the within-group precision, a special case of ridge regression.</p>
+</div>
+</section>
+<section id="generalizations-of-our-estimators" class="slide level2">
+<h2>Generalizations of our estimators</h2>
+<p>Ridge regression: Applies well to many settings with a large number of parameters, regardless of whether they are groups.</p>
+<p><span class="math display">\[
+\hat{\vec\beta}^\text{Ridge} = \underset{\vec\beta}{\text{arg min}} \underbrace{\sum_i \left(Y_i - \left(\alpha + \vec{X}'\vec\beta\right)\right)^2}_\text{Sum of Squared Error} + \underbrace{\lambda\sum_p \beta_p^2}_\text{Penalty}
+\]</span></p>
+</section>
+<section id="generalizations-of-our-estimators-1" class="slide level2">
+<h2>Generalizations of our estimators</h2>
+<p>LASSO regression: Applies well to many settings with a large number of parameters, regardless of whether they are groups.</p>
+<p><span class="math display">\[
+\hat{\vec\beta}^\text{Ridge} = \underset{\vec\beta}{\text{arg min}} \underbrace{\sum_i \left(Y_i - \left(\alpha + \vec{X}'\vec\beta\right)\right)^2}_\text{Sum of Squared Error} + \underbrace{\lambda\sum_p \lvert\beta_p\rvert}_\text{Penalty}
+\]</span></p>
+</section>
+<section id="generalizations-of-our-estimators-2" class="slide level2">
+<h2>Generalizations of our estimators</h2>
+<p>Multilevel models can have group-specific slopes</p>
+<p><span class="math display">\[
+\begin{aligned}
+Y_{gi} &amp;\sim \text{Normal}\left(\alpha_g + \beta_g X_{gi}, \sigma^2\right) \\
+\alpha_g &amp;\sim \text{Normal}\left(\eta_0, \tau^2\right) \\
+\beta_g &amp;\sim \text{Normal}\left(\lambda_0, \delta^2\right)
+\end{aligned}
+\]</span></p>
+</section>
+<section id="generalizations-of-our-estimators-3" class="slide level2">
+<h2>Generalizations of our estimators</h2>
+<p>Multilevel models can have more than two levels</p>
+<p><span class="math display">\[
+\begin{aligned}
+Y_{ijk} &amp;\sim \text{Normal}\left(\alpha_{ij}, \sigma^2\right) \\
+\alpha_{ij} &amp;\sim \text{Normal}\left(\beta_{i}, \tau^2\right) \\
+\beta_{i} &amp;\sim \text{Normal}\left(\lambda, \delta^2\right)
+\end{aligned}
+\]</span></p>
 </section>
 <section id="reading-optional" class="slide level2">
 <h2>Reading (optional)</h2>
-<p><a href="https://hastie.su.domains/CASI/">Efron &amp; Hastie Ch 7.3</a></p>
+<p>Multilevel models</p>
+<ul>
+<li><a href="http://www.stat.columbia.edu/~gelman/arm/">Gelman &amp; Hill 2006</a> for worked examples</li>
+<li><a href="https://probml.github.io/pml-book/book0.html">Murphy 2012</a> ch 5.6.2 for a succinct mathematical presentation</li>
+</ul>
+</section>
+<section id="reading-optional-1" class="slide level2">
+<h2>Reading (optional)</h2>
+<p>Ridge &amp; LASSO: <a href="https://hastie.su.domains/ElemStatLearn/">Hastie, Tibshirani, &amp; Friedman 2017</a> Ch 3.4</p>
+<p>Ridge regression</p>
+<ul>
+<li><a href="https://hastie.su.domains/CASI/">Efron &amp; Hastie 2016</a> Ch 7.3 (all of ch 7 is useful)</li>
+<li><a href="https://probml.github.io/pml-book/book0.html">Murphy 2012</a> ch 7.5 for a Bayes view with lots of math</li>
+</ul>
+<p>LASSO regression</p>
+<ul>
+<li><a href="https://hastie.su.domains/CASI/">Efron &amp; Hastie 2016</a> Ch 16</li>
+</ul>
+</section>
+<section id="connection-to-project" class="slide level2">
+<h2>Connection to project</h2>
+<p>In your project, do you have a variable that creates</p>
+<ul>
+<li>many groups with</li>
+<li>few observations per group?</li>
+</ul>
+<p>Where else do you have many parameters to estimate?</p>
+<p>How could penalized regression apply in your project?</p>
 </section>
 <section id="problem-set-2" class="slide level2">
 <h2>Problem Set 2</h2>
-<p>To discuss on course website.</p>
+<p>Due Monday 9pm: <a href="../../problem_sets.html#problem-set-2">link</a></p>
 
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
