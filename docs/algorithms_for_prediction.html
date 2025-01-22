@@ -340,9 +340,21 @@ window.Quarto = {
   <li><a href="#in-code-1" id="toc-in-code-1" class="nav-link" data-scroll-target="#in-code-1">In code</a></li>
   <li><a href="#performance-over-repeated-samples-3" id="toc-performance-over-repeated-samples-3" class="nav-link" data-scroll-target="#performance-over-repeated-samples-3">Performance over repeated samples</a></li>
   </ul></li>
-  <li><a href="#trees" id="toc-trees" class="nav-link" data-scroll-target="#trees">Trees</a></li>
-  <li><a href="#forests" id="toc-forests" class="nav-link" data-scroll-target="#forests">Forests</a></li>
-  <li><a href="#gradient-boosting" id="toc-gradient-boosting" class="nav-link" data-scroll-target="#gradient-boosting">Gradient boosting</a></li>
+  <li><a href="#trees" id="toc-trees" class="nav-link" data-scroll-target="#trees">Trees</a>
+  <ul class="collapse">
+  <li><a href="#a-simulation-to-illustrate-trees" id="toc-a-simulation-to-illustrate-trees" class="nav-link" data-scroll-target="#a-simulation-to-illustrate-trees">A simulation to illustrate trees</a></li>
+  <li><a href="#trees-repeatedly-split-the-data" id="toc-trees-repeatedly-split-the-data" class="nav-link" data-scroll-target="#trees-repeatedly-split-the-data">Trees repeatedly split the data</a></li>
+  <li><a href="#your-turn-fit-a-regression-tree" id="toc-your-turn-fit-a-regression-tree" class="nav-link" data-scroll-target="#your-turn-fit-a-regression-tree">Your turn: Fit a regression tree</a></li>
+  <li><a href="#choosing-the-depth-of-the-tree" id="toc-choosing-the-depth-of-the-tree" class="nav-link" data-scroll-target="#choosing-the-depth-of-the-tree">Choosing the depth of the tree</a></li>
+  </ul></li>
+  <li><a href="#forests" id="toc-forests" class="nav-link" data-scroll-target="#forests">Forests</a>
+  <ul class="collapse">
+  <li><a href="#illustration-with-bagged-forest" id="toc-illustration-with-bagged-forest" class="nav-link" data-scroll-target="#illustration-with-bagged-forest">Illustration with bagged forest</a></li>
+  <li><a href="#your-turn-a-random-forest-with-grf" id="toc-your-turn-a-random-forest-with-grf" class="nav-link" data-scroll-target="#your-turn-a-random-forest-with-grf">Your turn: A random forest with <code>grf</code></a></li>
+  <li><a href="#forests-as-adaptive-nearest-neighbors" id="toc-forests-as-adaptive-nearest-neighbors" class="nav-link" data-scroll-target="#forests-as-adaptive-nearest-neighbors">Forests as adaptive nearest neighbors</a></li>
+  </ul></li>
+  <li><a href="#gradient-boosted-trees" id="toc-gradient-boosted-trees" class="nav-link" data-scroll-target="#gradient-boosted-trees">Gradient boosted trees</a></li>
+  <li><a href="#closing-thoughts" id="toc-closing-thoughts" class="nav-link" data-scroll-target="#closing-thoughts">Closing thoughts</a></li>
   </ul>
 </nav>
     </div>
@@ -1752,12 +1764,637 @@ Y_{ti} = \alpha + \beta X_t + \gamma_{t} + \epsilon_{ti}
 </section>
 <section id="trees" class="level2">
 <h2 class="anchored" data-anchor-id="trees">Trees</h2>
+<blockquote class="blockquote">
+<p>To read more on this topic, see Ch 8.4 of <a href="https://hastie.su.domains/CASI/">Efron &amp; Hastie (2016)</a></p>
+</blockquote>
+<p>Penalized regression performs well when the the response surface <span class="math inline">\(E(Y\mid\vec{X})\)</span> is well-approximated by the functional form of a particular assumed model. In some settings, however, the response surface may be more complex, with nonlinearities and interaction terms that the researcher may not know about in advance. In these settings, one might desire an estimator that adaptively learns the functional form from the data.</p>
+<section id="a-simulation-to-illustrate-trees" class="level3">
+<h3 class="anchored" data-anchor-id="a-simulation-to-illustrate-trees">A simulation to illustrate trees</h3>
+<p>As an example, the figure below presents some hypothetical data with a binary predictor <span class="math inline">\(Z\)</span>, a numeric predictor <span class="math inline">\(X\)</span>, and a numeric outcome <span class="math inline">\(Y\)</span>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>true_conditional_mean <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">z =</span> F, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(<span class="fu">tibble</span>(<span class="at">z =</span> T, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mu =</span> z <span class="sc">*</span> <span class="fu">plogis</span>(<span class="dv">10</span> <span class="sc">*</span> (x <span class="sc">-</span> .<span class="dv">5</span>)))</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>simulate <span class="ot">&lt;-</span> <span class="cf">function</span>(sample_size) {</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">z =</span> F, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(<span class="fu">tibble</span>(<span class="at">z =</span> T, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">mu =</span> z <span class="sc">*</span> <span class="fu">plogis</span>(<span class="dv">10</span> <span class="sc">*</span> (x <span class="sc">-</span> .<span class="dv">5</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice_sample</span>(<span class="at">n =</span> sample_size, <span class="at">replace =</span> T) <span class="sc">|&gt;</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">y =</span> mu <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="at">sd =</span> .<span class="dv">1</span>))</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>simulated_data <span class="ot">&lt;-</span> <span class="fu">simulate</span>(<span class="dv">1000</span>)</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>p_no_points <span class="ot">&lt;-</span> true_conditional_mean <span class="sc">|&gt;</span></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">color =</span> z, <span class="at">y =</span> mu)) <span class="sc">+</span></span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Numeric Predictor X"</span>,</span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Numeric Outcome Y"</span>,</span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Binary Predictor Z"</span></span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p_no_points <span class="sc">+</span></span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> simulated_data, <span class="fu">aes</span>(<span class="at">y =</span> y), <span class="at">size =</span> .<span class="dv">2</span>, <span class="at">alpha =</span> .<span class="dv">3</span>)</span>
+<span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-51-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>If we tried to approximate these conditional means with an additive linear model, <span class="math display">\[\hat{E}_\text{Linear}(Y\mid X,Z) = \hat\alpha + \hat\beta X + \hat\gamma Z\]</span> then the model approximation error would be very large.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>best_linear_fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(mu <span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> true_conditional_mean)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> true_conditional_mean <span class="sc">|&gt;</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">mu =</span> <span class="fu">predict</span>(best_linear_fit))</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"An additive linear model (solid lines) poorly approximates</span><span class="sc">\n</span><span class="st">the true conditional mean function (dashed lines)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-53-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="trees-repeatedly-split-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="trees-repeatedly-split-the-data">Trees repeatedly split the data</h3>
+<p>Regression trees begin from a radically different place. With no model at all, suppose we were to <strong>split</strong> the sample into two subgroups. For example, we might choose to split on <span class="math inline">\(Z\)</span> and say that all units with <code>z = TRUE</code> are one subgroup while all units with <code>z = FALSE</code> are another subgroup. Or we might split on <span class="math inline">\(X\)</span> and say that all units with <code>x &lt;= .23</code> are one subgroup and all units with <code>x &gt; .23</code> are another subgroup. After choosing a way to split the dataset into two subgroups, we would then make a prediction rule: for each unit, predict the mean value of all sampled units who fall in their subgroup. This rule would produce only two predicted values: one prediction per resulting subgroup.</p>
+<p>If you were designing an algorithm to predict this way, how would you choose to define the split?</p>
+<p>In regression trees to estimate conditional means, the split is often chosen to minimize the resulting sum of squared prediction errors. Suppose we choose this rule. Suppose we consider splitting on <span class="math inline">\(X\)</span> being above or below each decile of its empirical distribution. Suppose we consider splitting on <span class="math inline">\(Z\)</span> being <code>FALSE</code> or <code>TRUE</code>. The graph below shows the sum of squared prediction error resulting from each rule.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>x_split_candidates <span class="ot">&lt;-</span> <span class="fu">quantile</span>(simulated_data<span class="sc">$</span>x, <span class="fu">seq</span>(.<span class="dv">1</span>,.<span class="dv">9</span>,.<span class="dv">1</span>))</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>z_split_candidates <span class="ot">&lt;-</span> .<span class="dv">5</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>by_z <span class="ot">&lt;-</span> simulated_data <span class="sc">|&gt;</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(z) <span class="sc">|&gt;</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yhat =</span> <span class="fu">mean</span>(y)) <span class="sc">|&gt;</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">sum_squared_error =</span> <span class="fu">sum</span>((yhat <span class="sc">-</span> y) <span class="sc">^</span> <span class="dv">2</span>))</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>by_x <span class="ot">&lt;-</span> <span class="fu">foreach</span>(<span class="at">x_split =</span> x_split_candidates, <span class="at">.combine =</span> <span class="st">"rbind"</span>) <span class="sc">%do%</span> {</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  simulated_data <span class="sc">|&gt;</span></span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">left =</span> x <span class="sc">&lt;=</span> x_split) <span class="sc">|&gt;</span></span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(left) <span class="sc">|&gt;</span></span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">yhat =</span> <span class="fu">mean</span>(y)) <span class="sc">|&gt;</span></span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">sum_squared_error =</span> <span class="fu">sum</span>((yhat <span class="sc">-</span> y) <span class="sc">^</span> <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">x_split =</span> x_split)</span>
+<span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb52-17"><a href="#cb52-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-18"><a href="#cb52-18" aria-hidden="true" tabindex="-1"></a>by_x <span class="sc">|&gt;</span></span>
+<span id="cb52-19"><a href="#cb52-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">split =</span> <span class="st">"If Splitting on X"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb52-20"><a href="#cb52-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">split_value =</span> x_split) <span class="sc">|&gt;</span></span>
+<span id="cb52-21"><a href="#cb52-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb52-22"><a href="#cb52-22" aria-hidden="true" tabindex="-1"></a>    by_z <span class="sc">|&gt;</span></span>
+<span id="cb52-23"><a href="#cb52-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">split =</span> <span class="st">"If Splitting on Z"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb52-24"><a href="#cb52-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">split_value =</span> .<span class="dv">5</span>)</span>
+<span id="cb52-25"><a href="#cb52-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb52-26"><a href="#cb52-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> split_value, <span class="at">y =</span> sum_squared_error)) <span class="sc">+</span></span>
+<span id="cb52-27"><a href="#cb52-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb52-28"><a href="#cb52-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb52-29"><a href="#cb52-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>split) <span class="sc">+</span></span>
+<span id="cb52-30"><a href="#cb52-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb52-31"><a href="#cb52-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Value on Which to Split into Two Subgroups"</span>,</span>
+<span id="cb52-32"><a href="#cb52-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Resulting Sum of Squared Error"</span></span>
+<span id="cb52-33"><a href="#cb52-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb52-34"><a href="#cb52-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-54-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>With the results above, we would choose to split on <span class="math inline">\(Z\)</span>, creating a subpopulation with <span class="math inline">\(Z \leq .5\)</span> and a subgroup with <span class="math inline">\(Z\geq .5\)</span>. Our prediction function would look like this. Our split very well approximates the true conditional mean function when <code>Z = FALSE</code>, but is still a poor approximator when <code>Z = TRUE</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> simulated_data <span class="sc">|&gt;</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(z) <span class="sc">|&gt;</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">mu =</span> <span class="fu">mean</span>(y))</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Solid lines represent predicted values</span><span class="sc">\n</span><span class="st">after one split on Z"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>What if we make a second split? A regression tree repeats the process and considers making a further split within each subpopulation. The graph below shows the sum of squared error in the each subpopulation of <code>Z</code> when further split at various candidate values of <code>X</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split 2: After splitting by Z, only X remains on which to split</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>left_side <span class="ot">&lt;-</span> simulated_data <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span>z)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>right_side <span class="ot">&lt;-</span> simulated_data <span class="sc">|&gt;</span> <span class="fu">filter</span>(z)</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>left_split_candidates <span class="ot">&lt;-</span> <span class="fu">quantile</span>(left_side<span class="sc">$</span>x, <span class="fu">seq</span>(.<span class="dv">1</span>,.<span class="dv">9</span>,.<span class="dv">1</span>))</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>right_split_candidates <span class="ot">&lt;-</span> <span class="fu">quantile</span>(right_side<span class="sc">$</span>x, <span class="fu">seq</span>(.<span class="dv">1</span>,.<span class="dv">9</span>,.<span class="dv">1</span>))</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>left_split_results <span class="ot">&lt;-</span> <span class="fu">foreach</span>(<span class="at">x_split =</span> left_split_candidates, <span class="at">.combine =</span> <span class="st">"rbind"</span>) <span class="sc">%do%</span> {</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>  left_side <span class="sc">|&gt;</span></span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">left =</span> x <span class="sc">&lt;=</span> x_split) <span class="sc">|&gt;</span></span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(z,left) <span class="sc">|&gt;</span></span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">yhat =</span> <span class="fu">mean</span>(y)) <span class="sc">|&gt;</span></span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">sum_squared_error =</span> <span class="fu">sum</span>((yhat <span class="sc">-</span> y) <span class="sc">^</span> <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb54-15"><a href="#cb54-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">x_split =</span> x_split)</span>
+<span id="cb54-16"><a href="#cb54-16" aria-hidden="true" tabindex="-1"></a>} <span class="sc">|&gt;</span></span>
+<span id="cb54-17"><a href="#cb54-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">chosen =</span> sum_squared_error <span class="sc">==</span> <span class="fu">min</span>(sum_squared_error))</span>
+<span id="cb54-18"><a href="#cb54-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-19"><a href="#cb54-19" aria-hidden="true" tabindex="-1"></a>right_split_results <span class="ot">&lt;-</span> <span class="fu">foreach</span>(<span class="at">x_split =</span> right_split_candidates, <span class="at">.combine =</span> <span class="st">"rbind"</span>) <span class="sc">%do%</span> {</span>
+<span id="cb54-20"><a href="#cb54-20" aria-hidden="true" tabindex="-1"></a>  right_side <span class="sc">|&gt;</span></span>
+<span id="cb54-21"><a href="#cb54-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">left =</span> x <span class="sc">&lt;=</span> x_split) <span class="sc">|&gt;</span></span>
+<span id="cb54-22"><a href="#cb54-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(z,left) <span class="sc">|&gt;</span></span>
+<span id="cb54-23"><a href="#cb54-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">yhat =</span> <span class="fu">mean</span>(y)) <span class="sc">|&gt;</span></span>
+<span id="cb54-24"><a href="#cb54-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb54-25"><a href="#cb54-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">sum_squared_error =</span> <span class="fu">sum</span>((yhat <span class="sc">-</span> y) <span class="sc">^</span> <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb54-26"><a href="#cb54-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">x_split =</span> x_split)</span>
+<span id="cb54-27"><a href="#cb54-27" aria-hidden="true" tabindex="-1"></a>} <span class="sc">|&gt;</span></span>
+<span id="cb54-28"><a href="#cb54-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">chosen =</span> sum_squared_error <span class="sc">==</span> <span class="fu">min</span>(sum_squared_error))</span>
+<span id="cb54-29"><a href="#cb54-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-30"><a href="#cb54-30" aria-hidden="true" tabindex="-1"></a>split2_results <span class="ot">&lt;-</span> left_split_results <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">split1 =</span> <span class="st">"Among Z = FALSE"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb54-31"><a href="#cb54-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(right_split_results <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">split1 =</span> <span class="st">"Among Z = TRUE"</span>))</span>
+<span id="cb54-32"><a href="#cb54-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-33"><a href="#cb54-33" aria-hidden="true" tabindex="-1"></a>split2_results <span class="sc">|&gt;</span></span>
+<span id="cb54-34"><a href="#cb54-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x_split, <span class="at">y =</span> sum_squared_error)) <span class="sc">+</span></span>
+<span id="cb54-35"><a href="#cb54-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">'gray'</span>) <span class="sc">+</span></span>
+<span id="cb54-36"><a href="#cb54-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> chosen)) <span class="sc">+</span></span>
+<span id="cb54-37"><a href="#cb54-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"gray"</span>,<span class="st">"blue"</span>)) <span class="sc">+</span></span>
+<span id="cb54-38"><a href="#cb54-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>split1) <span class="sc">+</span></span>
+<span id="cb54-39"><a href="#cb54-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb54-40"><a href="#cb54-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb54-41"><a href="#cb54-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"X Value on Which to Split into Two Subgroups"</span>,</span>
+<span id="cb54-42"><a href="#cb54-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Resulting Sum of Squared Error"</span></span>
+<span id="cb54-43"><a href="#cb54-43" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-56-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The resulting prediction function is a step function that begins to more closely approximate the truth.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>split2_for_graph <span class="ot">&lt;-</span> split2_results <span class="sc">|&gt;</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(chosen) <span class="sc">|&gt;</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">z =</span> <span class="fu">as.logical</span>(<span class="fu">str_remove</span>(split1,<span class="st">"Among Z = "</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(z, x_split) <span class="sc">|&gt;</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">right_join</span>(simulated_data, <span class="at">by =</span> <span class="fu">join_by</span>(z)) <span class="sc">|&gt;</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">x_left =</span> x <span class="sc">&lt;=</span> x_split) <span class="sc">|&gt;</span></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(z, x_left) <span class="sc">|&gt;</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yhat =</span> <span class="fu">mean</span>(y))</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> split2_for_graph,</span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">y =</span> yhat)</span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Solid lines represent predicted values</span><span class="sc">\n</span><span class="st">after two splits on (Z,X)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-57-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Having made one and then two splits, the figure below shows what happens when each subgroup is the created by 4 sequential splits of the data.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>rpart.out <span class="ot">&lt;-</span> <span class="fu">rpart</span>(</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> simulated_data, </span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">rpart.control</span>(<span class="at">minsplit =</span> <span class="dv">2</span>, <span class="at">cp =</span> <span class="dv">0</span>, <span class="at">maxdepth =</span> <span class="dv">4</span>)</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_step</span>(</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> true_conditional_mean <span class="sc">|&gt;</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">mu_hat =</span> <span class="fu">predict</span>(rpart.out, <span class="at">newdata =</span> true_conditional_mean)),</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">y =</span> mu_hat)</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Prediction from regression tree grown to depth 4"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-58-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This prediction function is called a <strong>regression tree</strong> because of how it looks when visualized a different way. One begins with a full sample which then “branches” into a left and right part, which further “branch” off in subsequent splits. The terminal nodes of the tree—subgroups defined by all prior splits—are referred to as “leaves.” Below is the prediction function from above, visualized as a tree. This visualization is made possible with the <a href="https://cran.r-project.org/web/packages/rpart.plot"><code>rpart.plot</code></a> package which we practice further down the page.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>rpart.plot<span class="sc">::</span><span class="fu">rpart.plot</span>(rpart.out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-59-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="your-turn-fit-a-regression-tree" class="level3">
+<h3 class="anchored" data-anchor-id="your-turn-fit-a-regression-tree">Your turn: Fit a regression tree</h3>
+<p>Using the <code>rpart</code> package, fit a regression tree like the one above. First, load the package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then use this code to simulate data. If you are a Stata user, download this <a href="data/simulated_data_for_trees.dta">simulated data file</a> from the website.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>simulate <span class="ot">&lt;-</span> <span class="cf">function</span>(sample_size) {</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">z =</span> F, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(<span class="fu">tibble</span>(<span class="at">z =</span> T, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">mu =</span> z <span class="sc">*</span> <span class="fu">plogis</span>(<span class="dv">10</span> <span class="sc">*</span> (x <span class="sc">-</span> .<span class="dv">5</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice_sample</span>(<span class="at">n =</span> sample_size, <span class="at">replace =</span> T) <span class="sc">|&gt;</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">y =</span> mu <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="at">sd =</span> .<span class="dv">1</span>))</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>simulated_data <span class="ot">&lt;-</span> <span class="fu">simulate</span>(<span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Use the <code>rpart</code> function to grow a tree.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>rpart.out <span class="ot">&lt;-</span> <span class="fu">rpart</span>(y <span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> simulated_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we can define a series of predictor values at which to make predictions,</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>to_predict <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">z =</span> F, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(<span class="fu">tibble</span>(<span class="at">z =</span> T, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and then make predictions</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>predicted <span class="ot">&lt;-</span> <span class="fu">predict</span>(rpart.out, <span class="at">newdata =</span> to_predict)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and visualize in a plot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>to_predict <span class="sc">|&gt;</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yhat =</span> predicted) <span class="sc">|&gt;</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> yhat, <span class="at">color =</span> z)) <span class="sc">+</span></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_step</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-65-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>When you succeed, there are a few things you can try:</p>
+<ul>
+<li>Visualize the tree using the <code>rpart.plot()</code> function applied to your <code>rpart.out</code> object</li>
+<li>Attempt a regression tree using the <a href="https://ilundberg.github.io/soc212b/data/baseball_population.csv"><code>baseball_population.csv</code></a> data</li>
+<li>Try different specifications of the tuning parameters. See the <code>control</code> argument of <code>rpart</code>, explained at <code>?rpart.control</code>. To produce a model with depth 4, we previously used the argument <code>control = rpart.control(minsplit = 2, cp = 0, maxdepth = 4)</code>.</li>
+</ul>
+</section>
+<section id="choosing-the-depth-of-the-tree" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-the-depth-of-the-tree">Choosing the depth of the tree</h3>
+<p>How deep should one make a tree? Recall that the depth of the tree is the number of sequential splits that define a leaf. The figure below shows relatively shallow trees (depth = 2) and relatively deep trees (depth = 4) learned over repeated samples. What do you notice about performance with each choice?</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>estimator <span class="ot">&lt;-</span> <span class="cf">function</span>(maxdepth) {</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">foreach</span>(<span class="at">rep =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">.combine =</span> <span class="st">"rbind"</span>) <span class="sc">%do%</span> {</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>    this_sample <span class="ot">&lt;-</span> <span class="fu">simulate</span>(<span class="dv">100</span>)</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>    rpart.out <span class="ot">&lt;-</span> <span class="fu">rpart</span>(y <span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> this_sample, <span class="at">control =</span> <span class="fu">rpart.control</span>(<span class="at">minsplit =</span> <span class="dv">2</span>, <span class="at">cp =</span> <span class="dv">0</span>, <span class="at">maxdepth =</span> maxdepth))</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>    true_conditional_mean <span class="sc">|&gt;</span></span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">yhat =</span> <span class="fu">predict</span>(rpart.out, <span class="at">newdata =</span> true_conditional_mean),</span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">maxdepth =</span> maxdepth,</span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">rep =</span> rep)</span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">foreach</span>(<span class="at">maxdepth_value =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">5</span>), <span class="at">.combine =</span> <span class="st">"rbind"</span>) <span class="sc">%do%</span> <span class="fu">estimator</span>(<span class="at">maxdepth =</span> maxdepth_value)</span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a>p_no_points <span class="sc">+</span></span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb64-14"><a href="#cb64-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> results <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">maxdepth =</span> <span class="fu">case_when</span>(maxdepth <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">"Shallow Trees</span><span class="sc">\n</span><span class="st">Depth = 2"</span>, maxdepth <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">"Deep Trees</span><span class="sc">\n</span><span class="st">Depth = 5"</span>)),</span>
+<span id="cb64-15"><a href="#cb64-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">group =</span> <span class="fu">interaction</span>(z,rep), <span class="at">y =</span> yhat)</span>
+<span id="cb64-16"><a href="#cb64-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb64-17"><a href="#cb64-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(</span>
+<span id="cb64-18"><a href="#cb64-18" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>maxdepth</span>
+<span id="cb64-19"><a href="#cb64-19" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-66-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Shallow trees yield predictions that tend to be more biased because the terminal nodes are large. At the far right when <code>z = TRUE</code> and <code>x</code> is large, the predictions from the shallow trees are systematically lower than the true conditional mean.</p>
+<p>Deep trees yield predictions that tend to be high variance because the terminal nodes are small. While the flexibility of deep trees yields predictions that are less biased, the high variance can make deep trees poor predictors.</p>
+<p>The balance between shallow and deep trees can be chosen by various rules of thumb or out-of-sample performance metrics, many of which are built into functions like <code>rpart</code>. Another way out is to move beyond trees to forests, which involve a simple extension that yields substantial improvements in performance.</p>
+</section>
 </section>
 <section id="forests" class="level2">
 <h2 class="anchored" data-anchor-id="forests">Forests</h2>
+<blockquote class="blockquote">
+<p>To read more on this topic, see Ch 17.1 of <a href="https://hastie.su.domains/CASI/">Efron &amp; Hastie (2016)</a></p>
+</blockquote>
+<p>We saw previously that a deep tree is a highly flexible learner, but one that may have poor predictive performance due to its high sampling variance. Random forests (<a href="https://link.springer.com/article/10.1023/a:1010933404324">Breiman 2001</a>) resolve this problem in a simple but powerful way: reduce the variance by averaging the predictions from many trees. The forest is the average of the trees.</p>
+<p>If one simply estimated a regression tree many times on the same data, every tree would be the same. Instead, each time a random forest grows a tree it proceeds by:</p>
+<ol type="1">
+<li>bootstrap a sample <span class="math inline">\(n\)</span> of the <span class="math inline">\(n\)</span> observations chosen with replacement</li>
+<li>randomly sample some number <span class="math inline">\(m\)</span> of the variables to consider for splitting</li>
+</ol>
+<p>There is an art to selection of the tuning parameter <span class="math inline">\(m\)</span>, as well as the parameters of the tree-growing algorithm. But most packages can select these tuning parameters automatically. The more trees you grow, the less the forest-based predictions will be sensitive to the stochastic variability that comes from the random sampling of data for each tree.</p>
+<section id="illustration-with-bagged-forest" class="level3">
+<h3 class="anchored" data-anchor-id="illustration-with-bagged-forest">Illustration with bagged forest</h3>
+<p>For illustration, we will first consider a simple version of random forest that is a bagging estimator: all predictors are included in every tree and variance is created through bagging, or <strong>b</strong>ootstrap <strong>aggregating</strong>. The code below builds intuition, and the code later using the <code>regression_forest</code> function from the <code>grf</code> package is one way we would actually recommend learning a forest in practice.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>tree_estimates <span class="ot">&lt;-</span> <span class="fu">foreach</span>(<span class="at">tree_index =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="at">.combine =</span> <span class="st">"rbind"</span>) <span class="sc">%do%</span> {</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Draw a bootstrap sample of the data</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  simulated_data_star <span class="ot">&lt;-</span> simulated_data <span class="sc">|&gt;</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice_sample</span>(<span class="at">prop =</span> <span class="dv">1</span>, <span class="at">replace =</span> T)</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Learn the tree</span></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>  rpart.out <span class="ot">&lt;-</span> <span class="fu">rpart</span>(</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>    y <span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> simulated_data_star, </span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set tuning parameters to grow a deep tree</span></span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">control =</span> <span class="fu">rpart.control</span>(<span class="at">minsplit =</span> <span class="dv">2</span>, <span class="at">cp =</span> <span class="dv">0</span>, <span class="at">maxdepth =</span> <span class="dv">4</span>)</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Define data to predict</span></span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a>  to_predict <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">z =</span> F, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(<span class="fu">tibble</span>(<span class="at">z =</span> T, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)))</span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make predictions</span></span>
+<span id="cb65-15"><a href="#cb65-15" aria-hidden="true" tabindex="-1"></a>  predicted <span class="ot">&lt;-</span> to_predict <span class="sc">|&gt;</span></span>
+<span id="cb65-16"><a href="#cb65-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb65-17"><a href="#cb65-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">yhat =</span> <span class="fu">predict</span>(rpart.out, <span class="at">newdata =</span> to_predict),</span>
+<span id="cb65-18"><a href="#cb65-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">tree_index =</span> tree_index</span>
+<span id="cb65-19"><a href="#cb65-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb65-20"><a href="#cb65-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(predicted)</span>
+<span id="cb65-21"><a href="#cb65-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can then aggregate the tree estimates into a forest prediction by averaging over trees.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>forest_estimate <span class="ot">&lt;-</span> tree_estimates <span class="sc">|&gt;</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(z,x) <span class="sc">|&gt;</span></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">yhat =</span> <span class="fu">mean</span>(yhat), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The forest is very good at approximating the true conditional mean.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>p_no_points <span class="sc">+</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> forest_estimate,</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">y =</span> yhat)</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Solid lines are forest predictions.</span><span class="sc">\n</span><span class="st">Dashed lines are the true conditional mean."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-69-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
-<section id="gradient-boosting" class="level2">
-<h2 class="anchored" data-anchor-id="gradient-boosting">Gradient boosting</h2>
+<section id="your-turn-a-random-forest-with-grf" class="level3">
+<h3 class="anchored" data-anchor-id="your-turn-a-random-forest-with-grf">Your turn: A random forest with <code>grf</code></h3>
+<p>In practice, it is helpful to work with a function that can choose the tuning parameters of the forest for you. One such function is the <code>regression_forest()</code> function in the <a href="https://grf-labs.github.io/grf/"><code>grf</code></a> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(grf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To illustrate its use, we first produce a matrix <code>X</code> of predictors and a vector <code>Y</code> of outcome values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> simulated_data)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> simulated_data <span class="sc">|&gt;</span> <span class="fu">pull</span>(y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We then estimate the forest with the <code>regression_forest()</code> function, here using the <code>tune.parameters = "all"</code> argument to allow automated tuning of all parameters.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>forest <span class="ot">&lt;-</span> <span class="fu">regression_forest</span>(</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> X, <span class="at">Y =</span> Y, <span class="at">tune.parameters =</span> <span class="st">"all"</span></span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can extract one tree from the forest with the <code>get_tree()</code> function and then visualize with the <code>plot()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>first_tree <span class="ot">&lt;-</span> <span class="fu">get_tree</span>(forest, <span class="at">index =</span> <span class="dv">1</span>)</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(first_tree)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To predict in a new dataset requires a new X matrix,</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>to_predict <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">z =</span> F, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(<span class="fu">tibble</span>(<span class="at">z =</span> T, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)))</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>X_to_predict <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> to_predict)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>which can then be used to make predictions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>forest_predicted <span class="ot">&lt;-</span> to_predict <span class="sc">|&gt;</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat =</span> <span class="fu">predict</span>(forest, <span class="at">newdata =</span> X_to_predict) <span class="sc">|&gt;</span> </span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">pull</span>(predictions)</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When we visualize, we see that the forest from the package is also a good approximator of the conditional mean function. It is possible that the bias of this estimated forest arises from tuning parameters that did not grow sufficiently deep trees.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>p_no_points <span class="sc">+</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> forest_predicted,</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">y =</span> yhat)</span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Solid lines are grf::regression_forest() predictions.</span><span class="sc">\n</span><span class="st">Dashed lines are the true conditional mean."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-76-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Once you have learned a forest yourself, you might try a regression forest using the <a href="https://ilundberg.github.io/soc212b/data/baseball_population.csv"><code>baseball_population.csv</code></a> data or another dataset of your choosing.</p>
+</section>
+<section id="forests-as-adaptive-nearest-neighbors" class="level3">
+<h3 class="anchored" data-anchor-id="forests-as-adaptive-nearest-neighbors">Forests as adaptive nearest neighbors</h3>
+<p>A regression tree can be interpreted as an adaptive nearest-neighbor estimator: the prediction at predictor value <span class="math inline">\(\vec{x}\)</span> is the average outcome of all its neighbors, where neighbors are defined as all sampled data points that fall in the same leaf as <span class="math inline">\(\vec{x}\)</span>. The estimator is adaptive because the definition of the neighborhood around <span class="math inline">\(\vec{x}\)</span> was learned from the data.</p>
+<p>Random forests can likewise be interpreted as weighted adaptive nearest-neighbor estimators. For each unit <span class="math inline">\(i\)</span>, the predicted value is the average outcome of all other units where each unit <span class="math inline">\(j\)</span> is weighted by the frequency with which it falls in the same leaf as unit <span class="math inline">\(i\)</span>. Seeing forest-based predictions as a weighted average of other units’ outcomes is a powerful perspective that has led to new advances in forests for uses that go beyond standard regression <a href="https://projecteuclid.org/journals/annals-of-statistics/volume-47/issue-2/Generalized-random-forests/10.1214/18-AOS1709.full">(Athey, Tibshirani, &amp; Wager 2019)</a>.</p>
+</section>
+</section>
+<section id="gradient-boosted-trees" class="level2">
+<h2 class="anchored" data-anchor-id="gradient-boosted-trees">Gradient boosted trees</h2>
+<blockquote class="blockquote">
+<p>To read more on this topic, see Ch 17.2 of <a href="https://hastie.su.domains/CASI/">Efron &amp; Hastie (2016)</a></p>
+</blockquote>
+<p>Gradient boosted trees are similar to a random forest in that the result is an average of trees. A key difference is how the trees are produced. In a random forest, the trees are all independent prediction functions learned in parallel. In boosting, the trees are learned sequentially, with each tree correcting the errors of preceding trees. More precisely, the algorithm begins by predicting the sample mean for all observations and defining residuals as the difference between the true outcome <span class="math inline">\(Y\)</span> and the predicted value. Then the algorithm estimates a regression tree to model the residuals. It adds a regularized version of the predicted residuals to the predicted value, then calculates residuals and fits a new tree to predict the new residuals. Over a series of rounds, the predictions become sequentially closer to the truth, as visualized below.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xgboost)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>xgboost_illustration <span class="ot">&lt;-</span> <span class="fu">foreach</span>(<span class="at">round =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">.combine =</span> <span class="st">"rbind"</span>) <span class="sc">%do%</span> {</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  xgboost.out <span class="ot">&lt;-</span> <span class="fu">xgboost</span>(</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> simulated_data),</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> simulated_data <span class="sc">|&gt;</span> <span class="fu">pull</span>(y),</span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrounds =</span> round</span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>  to_predict <span class="sc">|&gt;</span></span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">yhat =</span> <span class="fu">predict</span>(xgboost.out, <span class="at">newdata =</span> X_to_predict),</span>
+<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">round =</span> <span class="fu">paste</span>(<span class="st">"After"</span>,round,<span class="fu">ifelse</span>(round <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"round"</span>, <span class="st">"rounds"</span>),<span class="st">"of boosting"</span>))</span>
+<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a>p_no_points <span class="sc">+</span></span>
+<span id="cb75-13"><a href="#cb75-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> xgboost_illustration,</span>
+<span id="cb75-14"><a href="#cb75-14" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">y =</span> yhat)) <span class="sc">+</span></span>
+<span id="cb75-15"><a href="#cb75-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>round) <span class="sc">+</span></span>
+<span id="cb75-16"><a href="#cb75-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Solid lines are xgboost::xgboost() predictions.</span><span class="sc">\n</span><span class="st">Dashed lines are the true conditional mean."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-77-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A difficulty in boosting is knowing when to stop: the predictions improve over time but ultimately will begin to overfit. While more trees is always better in a random forest, the same is not true of boosting.</p>
+<p>To learn more about boosting in math, we recommend Ch 17.2 of <a href="https://hastie.su.domains/CASI/">Efron &amp; Hastie (2016)</a>. To try boosting, you can install the <code>xgboost</code> package in R and follow the code below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xgboost)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To fit a boosting model, first define a predictor matrix and an outcome vector.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> simulated_data)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> simulated_data <span class="sc">|&gt;</span> <span class="fu">pull</span>(y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The code below uses these data to carry out 10 rounds of boosting (recall that the number of rounds is a key tuning parameter, and 10 is only chosen for convenience).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>xgboost.out <span class="ot">&lt;-</span> <span class="fu">xgboost</span>(</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> simulated_data),</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> simulated_data <span class="sc">|&gt;</span> <span class="fu">pull</span>(y),</span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrounds =</span> <span class="dv">10</span></span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we can define new data at which to predict</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>to_predict <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">z =</span> F, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(<span class="fu">tibble</span>(<span class="at">z =</span> T, <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">001</span>)))</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>X_to_predict <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> to_predict)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and then produce predicted values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>xgboost_predicted <span class="ot">&lt;-</span> to_predict <span class="sc">|&gt;</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yhat =</span> <span class="fu">predict</span>(xgboost.out, <span class="at">newdata =</span> X_to_predict))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Visualizing the result, we can see that boosting performed well in our simulated example.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>p_no_points <span class="sc">+</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> xgboost_predicted,</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">y =</span> yhat)</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Solid lines are xgboost::xgboost() predictions.</span><span class="sc">\n</span><span class="st">Dashed lines are the true conditional mean."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="algorithms_for_prediction_files/figure-html/unnamed-chunk-83-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="closing-thoughts" class="level2">
+<h2 class="anchored" data-anchor-id="closing-thoughts">Closing thoughts</h2>
+<p>Algorithms for prediction are often powerful tools from data science. Because they are <span class="math inline">\(\hat{Y}\)</span> tools, their application in social science requires us to ask questions involving <span class="math inline">\(\hat{Y}\)</span>. One such category of questions that have been the focus of this page are questions about conditional means. Questions about conditional means are <span class="math inline">\(\hat{Y}\)</span> questions because the conditional mean <span class="math inline">\(E(Y\mid\vec{X} = \vec{x})\)</span> would be the best possible prediction of <span class="math inline">\(Y\)</span> given <span class="math inline">\(\vec{X} = \vec{x}\)</span> when “best” is defined by squared error loss. We have therefore focused on algorithms for prediction that seek to minimize the sum of squared errors, since these algorithms may often be useful in social science as tools to estimate conditional means.</p>
+<!-- ```{r} -->
+<!-- #| code-fold: true -->
+<!-- cutoffs <- sort(unique(baseball_sample$team_past_record)) -->
+<!-- cutoff_results <- foreach(cutoff = cutoffs[-length(cutoffs)], .combine = "rbind") %do% { -->
+<!--   baseball_population |> -->
+<!--     mutate( -->
+<!--       split = case_when( -->
+<!--         team_past_record <= cutoff ~ "left", -->
+<!--         team_past_record > cutoff ~ "right" -->
+<!--       ) -->
+<!--     ) |> -->
+<!--     group_by(split) |> -->
+<!--     mutate(yhat = mean(salary)) |> -->
+<!--     ungroup() |> -->
+<!--     summarize(sum_squared_errors = sum((salary - yhat) ^ 2)) |> -->
+<!--     mutate(cutoff = cutoff) -->
+<!-- } -->
+<!-- cutoff_results |> -->
+<!--   ggplot(aes(x = cutoff, y = sum_squared_errors)) + -->
+<!--   geom_point() + -->
+<!--   geom_line() -->
+<!-- split_1 <- cutoff_results |> arrange(sum_squared_errors) |> slice_head(n = 1) |> pull(cutoff) -->
+<!-- ``` -->
+<!-- ### One regression tree -->
+<!-- ```{r} -->
+<!-- library(rpart) -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- fit <- rpart(salary ~ team_past_record, data = baseball_sample) -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- baseball_sample |> -->
+<!--   mutate(yhat = predict(fit)) |> -->
+<!--   ggplot(aes(x = team_past_record, y = yhat)) + -->
+<!--   geom_step() -->
+<!-- ``` -->
+<!-- What happened to produce that fit? -->
+<!-- ## Forests -->
+<!-- ```{r} -->
+<!-- library(grf) -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- forest <- regression_forest( -->
+<!--   X = model.matrix(~ team_past_record, data = baseball_sample), -->
+<!--   Y = baseball_sample$salary -->
+<!-- ) -->
+<!-- ``` -->
+<!-- Visualize one tree -->
+<!-- ```{r, eval = F} -->
+<!-- plot(get_tree(forest,1)) -->
+<!-- ``` -->
+<!-- Predict and visualize -->
+<!-- ```{r} -->
+<!-- newX <- model.matrix(~ team_past_record, data = baseball_population) -->
+<!-- baseball_population |> -->
+<!--   mutate(yhat = predict(forest, newdata = newX)$predictions) |> -->
+<!--   ggplot(aes(x = team_past_record, y = yhat)) + -->
+<!--   geom_point() -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- baseball_population |> -->
+<!--   filter(position == "RHP") |> -->
+<!--   group_by(team) |> -->
+<!--   mutate(salary = mean(salary)) |> -->
+<!--   distinct(salary, team_past_record) |> -->
+<!--   ggplot(aes(x = team_past_record, y = salary)) + -->
+<!--   geom_point() -->
+<!-- ``` -->
+<!-- ## Gradient boosting -->
 
 
 </section>
