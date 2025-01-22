@@ -66,6 +66,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -253,6 +282,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#problem-set-1" id="toc-problem-set-1" class="nav-link active" data-scroll-target="#problem-set-1">Problem Set 1</a></li>
   <li><a href="#problem-set-2" id="toc-problem-set-2" class="nav-link" data-scroll-target="#problem-set-2">Problem Set 2</a></li>
+  <li><a href="#problem-set-3" id="toc-problem-set-3" class="nav-link" data-scroll-target="#problem-set-3">Problem Set 3</a></li>
   </ul>
 </nav>
     </div>
@@ -312,6 +342,16 @@ ul.task-list li input[type="checkbox"] {
 <li><p>(15 points) Repeat the exercise above but with a sample of 20 units per group. Visualize the estimates. How do your results change?</p></li>
 </ol>
 <p>Note that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers.</p>
+</section>
+<section id="problem-set-3" class="level1">
+<h1>Problem Set 3</h1>
+<p>Using the simulation data from class or data from your own project:</p>
+<ol type="1">
+<li><p>(15 points) Estimate a regression tree and visualize it. If you are using R, there are packages to visualize the tree. If you are using Stata, there may be packages or you are welcome to use the summary text output.</p></li>
+<li><p>(10 points) Write 3-4 sentences for someone who has never heard of this method. Pick some predictor vector value and explain how the tree produces a prediction for that predictor vector.</p></li>
+<li><p>(15 points) Estimate a random forest. Visualize the predicted values as a function of the predictors. If your data have only two predictors, this could be as in class with one on the <span class="math inline">\(x\)</span>-axis and one for colors. If you have many predictors, you may need to find a creative way to visualize your predictions. You may choose to make predictions while holding one or more variables at a single value.</p></li>
+<li><p>(10 points) In a few sentences, give an example of a problem in your area of research (possibly your paper) where the functional form linking <span class="math inline">\(\vec{X}\)</span> to <span class="math inline">\(E(Y\mid\vec{X})\)</span> is unknown, such that a random forest might be a way to learn the functional form from the data.</p></li>
+</ol>
 
 
 </section>

@@ -41,3 +41,21 @@ The remainder of this problem set is based in the idea of multilevel models, tho
 3. (15 points) Repeat the exercise above but with a sample of 20 units per group. Visualize the estimates. How do your results change?
 
 Note that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers.
+
+# Problem Set 3
+
+Using the simulation data from class or data from your own project:
+
+1. (15 points) Estimate a regression tree and visualize it. If you are using R, there are packages to visualize the tree. If you are using Stata, there may be packages or you are welcome to use the summary text output.
+
+2. (10 points) Write 3-4 sentences for someone who has never heard of this method. Pick some predictor vector value and explain how the tree produces a prediction for that predictor vector.
+
+3. (15 points) Estimate a random forest. Visualize the predicted values as a function of the predictors. If your data have only two predictors, this could be as in class with one on the $x$-axis and one for colors. If you have many predictors, you may need to find a creative way to visualize your predictions. You may choose to make predictions while holding one or more variables at a single value.
+
+4. (10 points) In a few sentences, give an example of a problem in your area of research (possibly your paper) where the functional form linking $\vec{X}$ to $E(Y\mid\vec{X})$ is unknown, such that a random forest might be a way to learn the functional form from the data.
+
+
+
+
+
+

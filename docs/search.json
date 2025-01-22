@@ -4,7 +4,7 @@
     "href": "algorithms_for_prediction.html",
     "title": "Algorithms for prediction",
     "section": "",
-    "text": "For two sessions, we will cover a few algorithms for prediction. We aim to\nThis page contains embedded R code. If you are a Stata user, you can download do files that illustrate Ordinary Least Squares, multilevel models, ridge regression, and LASSO regression.\nA version of this page in slide format is available here:",
+    "text": "For two sessions, we will cover a few algorithms for prediction. We aim to\nThis page contains embedded R code. If you are a Stata user, you can download do files that illustrate Ordinary Least Squares, multilevel models, ridge regression, LASSO regression, and trees and forests.\nA version of this page in slide format is available here:\nHere is a PDF of this page for those taking notes by hand.",
     "crumbs": [
       "Problem Sets",
       "Descriptive Data Science with Probability Samples",

@@ -10,11 +10,13 @@ For two sessions, we will cover a few algorithms for prediction. We aim to
 * draw connections between algorithms often viewed as classical statistics (e.g., multilevel models) and those often viewed as machine learning (e.g., penalized regression)
 * by learning a few new methods, become comfortable with the skills to read about additional new methods on your own in the future
 
-This page contains embedded R code. If you are a Stata user, you can download do files that illustrate [Ordinary Least Squares](assets/stata_code/ols.do), [multilevel models](assets/stata_code/multilevel.do), [ridge regression](assets/stata_code/ridge.do), and [LASSO regression](assets/stata_code/lasso.do).
+This page contains embedded R code. If you are a Stata user, you can download do files that illustrate [Ordinary Least Squares](assets/stata_code/ols.do), [multilevel models](assets/stata_code/multilevel.do), [ridge regression](assets/stata_code/ridge.do), [LASSO regression](assets/stata_code/lasso.do), and [trees and forests](assets/stata_code/trees.do).
 
 A version of this page in slide format is available here:
 
 * [slides through LASSO regression](slides/lec2/penalized_regression_slides.qmd)
+
+Here is a [PDF of this page](assets/pdf_chapters/algorithms_for_prediction.pdf) for those taking notes by hand.
 
 ## Data: Baseball salaries {#sec-baseball}
 
