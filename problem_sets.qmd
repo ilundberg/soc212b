@@ -42,7 +42,7 @@ The remainder of this problem set is based in the idea of multilevel models, tho
 
 Note that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers.
 
-# Problem Set 3
+## Problem Set 3
 
 Using the simulation data from class or data from your own project:
 
