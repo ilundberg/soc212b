@@ -43,7 +43,14 @@ baseball_population <- read_csv("data/baseball.csv") |>
       distinct(),
     by = join_by(team)
   ) |>
-  select(player, salary, position, team, team_past_record) |>
+  left_join(
+    read_csv("data/baseball_3yrs.csv") |>
+      filter(year == 2022) |>
+      group_by(team) |>
+      summarize(team_past_salary = mean(salary)),
+    by = join_by(team)
+  ) |>
+  select(player, salary, position, team, team_past_record, team_past_salary) |>
   write_csv("data/baseball_population.csv")
 ```
 

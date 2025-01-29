@@ -405,12 +405,12 @@ window.Quarto = {
 <p>The first rows of the data are depicted below. Each row is a player. The <code>player</code> Madison Bumgarner had a <code>salary</code> of $21,882,892. His <code>position</code> was <code>LHP</code> for left-handed pitcher. His <code>team</code> was <code>Arizona</code>, and this team’s record in the previous season was 0.457, meaning that they won 45.7% of their games.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 944 × 5
-  player               salary position team    team_past_record
-  &lt;chr&gt;                 &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;              &lt;dbl&gt;
-1 Bumgarner, Madison 21882892 LHP      Arizona            0.457
-2 Marte, Ketel       11600000 2B       Arizona            0.457
-3 Ahmed, Nick        10375000 SS       Arizona            0.457
+<pre><code># A tibble: 944 × 6
+  player               salary position team    team_past_record team_past_salary
+  &lt;chr&gt;                 &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;              &lt;dbl&gt;            &lt;dbl&gt;
+1 Bumgarner, Madison 21882892 LHP      Arizona            0.457         2794887.
+2 Marte, Ketel       11600000 2B       Arizona            0.457         2794887.
+3 Ahmed, Nick        10375000 SS       Arizona            0.457         2794887.
 # ℹ 941 more rows</code></pre>
 </div>
 </div>
@@ -527,14 +527,14 @@ window.Quarto = {
 <p>In our sample, we observe the salaries of 5 players per team. Our 5 sampled Dodger players have an average salary of $7,936,238.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 5
-  player           salary position team         team_past_record
-  &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt;
-1 Phillips, Evan  1300000 RHP      L.A. Dodgers            0.685
-2 Miller, Shelby  1500000 RHP      L.A. Dodgers            0.685
-3 Taylor, Chris  15000000 OF       L.A. Dodgers            0.685
-4 Betts, Mookie  21158692 OF       L.A. Dodgers            0.685
-5 Outman, James    722500 OF       L.A. Dodgers            0.685</code></pre>
+<pre><code># A tibble: 5 × 6
+  player           salary position team        team_past_record team_past_salary
+  &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;                  &lt;dbl&gt;            &lt;dbl&gt;
+1 Phillips, Evan  1300000 RHP      L.A. Dodge…            0.685         8388736.
+2 Miller, Shelby  1500000 RHP      L.A. Dodge…            0.685         8388736.
+3 Taylor, Chris  15000000 OF       L.A. Dodge…            0.685         8388736.
+4 Betts, Mookie  21158692 OF       L.A. Dodge…            0.685         8388736.
+5 Outman, James    722500 OF       L.A. Dodge…            0.685         8388736.</code></pre>
 </div>
 </div>
 <p>Our task is to predict the salary for all 35 Dodger players and average those predictions to yield a predicted vaue of the Dodgers’ mean salary on opening day 2023. The data we will use to predict include all variables except the outcome for the Dodger players.</p>
@@ -617,12 +617,12 @@ window.Quarto = {
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">predicted_salary =</span> <span class="fu">predict</span>(ols, <span class="at">newdata =</span> dodgers_to_predict)) <span class="sc">|&gt;</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 35 × 5
-  player           position team         team_past_record predicted_salary
-  &lt;chr&gt;            &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt;            &lt;dbl&gt;
-1 Freeman, Freddie 1B       L.A. Dodgers            0.685         5552999.
-2 Heyward, Jason   OF       L.A. Dodgers            0.685         5552999.
-3 Betts, Mookie    OF       L.A. Dodgers            0.685         5552999.
+<pre><code># A tibble: 35 × 6
+  player       position team  team_past_record team_past_salary predicted_salary
+  &lt;chr&gt;        &lt;chr&gt;    &lt;chr&gt;            &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+1 Freeman, Fr… 1B       L.A.…            0.685         8388736.         5552999.
+2 Heyward, Ja… OF       L.A.…            0.685         8388736.         5552999.
+3 Betts, Mook… OF       L.A.…            0.685         8388736.         5552999.
 # ℹ 32 more rows</code></pre>
 </div>
 </div>
