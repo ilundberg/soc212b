@@ -5,7 +5,7 @@ format:
     fig-height: 3
 ---
 
-> If you are taking notes, here is a PDF of the [slides](slides/lec4/data_driven_selection_slides_handout.pdf) and a PDF of [this page](slides/lec4/data_driven_selection_chapter.pdf).
+> If you are taking notes, here is a PDF of the [slides](slides/lec4/data_driven_selection_slides_handout.pdf) and a PDF of [this page](assets/pdf_chapters/data_driven_selection.pdf). If you are a Stata user, most of this page is R code. The one most important exercise is sample splitting, for which you can use [sample_split.do](assets/stata_code/sample_split.do).
 
 Quantitative social scientists have long faced the question of how to choose a model. Even within the scope of linear regression, one might wonder whether a model that interacts two predictors is better than one that includes them only additively. As computational advances have yielded new algorithms for prediction, the number of choices has exploded. Many models are possible. How should we choose?
 
@@ -81,12 +81,15 @@ team_estimation <- baseball |>
   arrange(team_past_salary) |>
   mutate(highlighted = 1:n() %% 3)
 
+mean_salary_learning <- learning |> summarize(estimate = mean(salary)) |> pull(estimate)
+
 rsquared_individual <- individual_prediction |>
-  summarize(rsquared = 1 - var(salary - yhat) / var(salary)) |>
+  summarize(rsquared = 1 - mean((salary - yhat) ^ 2) / mean((salary - mean_salary_learning) ^ 2)) |>
   pull(rsquared)
 
 rsquared_team <- team_estimation |>
-  summarize(rsquared = 1 - var(salary - yhat) / var(salary)) |>
+  #left_join(team_subgroup_learning_mean, by = join_by(team)) |>
+  summarize(rsquared = 1 - mean((salary - yhat) ^ 2) / mean((salary - mean_salary_learning) ^ 2)) |>
   pull(rsquared)
 
 individual_prediction |>
@@ -125,12 +128,26 @@ individual_prediction |>
 ggsave("slides/lec4/figures/individual_prediction_errors.pdf", height = 3, width = 5)
 ```
 
-While one might have hoped to tell a story about high-quality prediction, the dominant story in the individual-level prediction plot is one of poor prediction: players' salaries vary widely around the estimated regression line. To put that fact to a number, one might consider $R^2_\text{Individual}$ which involves a ratio of the variance of prediction errors to the total variance of the outcome.
+While one might have hoped to tell a story about high-quality prediction, the dominant story in the individual-level prediction plot is one of poor prediction: players' salaries vary widely around the estimated regression line. To put that fact to a number, one might consider $R^2$ which involves a ratio of two expected squared prediction errors, one from the prediction function $\hat{f}$ and one from a comparison model that predicts the mean for all cases.^[When estimating $R^2$, we often use the training sample mean as an estimator of $\text{E}(Y)$ for the denominator, similar to how the training sample is used to learn $\hat{f}$.]
 
 $$
-R^2_\text{Individual} = 1 - \frac{\text{V}\left(Y - \hat{Y}\right)}{\text{V}(Y)} = `r format(round(rsquared_individual,3),nsmall=3)`
+R^2
+= 1 - \frac{
+	\overbrace{
+		\text{E}\left[
+			\left(
+				Y - \hat{f}(\vec{X})
+			\right)^2
+		\right]
+	}^{\substack{\text{Expected Squared}\\\text{Prediction Error}}}
+}
+{
+	\underbrace{
+		\text{E}\left[\left(Y - \text{E}(Y)\right)^2\right]
+	}_\text{Variance of $Y$}
+}
 $$
-In other words, subtracting the predicted values from the individual players' salaries only reduces the variance by `r label_percent(accuracy = .1)(rsquared_individual)`. If the goal is to predict for individuals, the model does not seem very good!
+In other words, subtracting the predicted values from the individual players' salaries only reduces the expected squared error by `r label_percent(accuracy = .1)(rsquared_individual)`. If the goal is to predict for individuals, the model does not seem very good!
 
 ## Estimating subgroup means
 
@@ -176,12 +193,26 @@ team_estimation |>
 ggsave("slides/lec4/figures/team_prediction_errors.pdf", height = 3, width = 5)
 ```
 
-The social scientist might argue that the model is quite good for team salaries. If we take the goal to be to estimate the team average salary, then we might create an analogous version of $R^2$ where the unit of analysis is a team.
+The social scientist might argue that the model is quite good for team salaries. If we take the goal to be to estimate the team average salary, then we might create an analogous version of $R^2$ focused on estimation of team-average salaries.^[When estimating $R^2_\text{Group}$, we often use the subgroup training sample mean as an estimator of $\text{E}(Y\mid\vec{X})$ for the denominator, similar to how the training sample is used to learn $\hat{f}$.]
 
 $$
-R^2_\text{Group} = 1 - \frac{\text{V}\left(\hat{Y}_\text{Team} - \bar{Y}_\text{Team}\right)}{\text{V}(\bar{Y}_\text{Team})} = `r format(round(rsquared_team,3),nsmall=3)`
+R^2_\text{Group}
+= 1 - \frac{
+	\overbrace{
+		\text{E}\left[
+			\left(
+				\text{E}(Y\mid\vec{X}) - \hat{f}(\vec{X})
+			\right)^2
+		\right]
+	}^{\substack{\text{Expected Squared}\\\text{Estimation Error}}}
+}
+{
+	\underbrace{
+		\text{E}\left[\left(\text{E}(Y\mid\vec{X}) - \text{E}(Y)\right)^2\right]
+	}_\text{If Predicted $\text{E}(Y)$ for Everyone}
+}
 $$
-By that metric, the model seems quite good, predicting away `r label_percent(accuracy = .1)(rsquared_team)` of the team-level variance in salary. Surprisingly, a model that was not very good at predicting for individuals might be quite good at predicting the team-average outcomes!
+By that metric, the model seems quite good, predicting away `r label_percent(accuracy = .1)(rsquared_team)` of the expected squared error at the team level. Surprisingly, a model that was not very good at predicting for individuals might be quite good at predicting the team-average outcomes!
 
 One might respond that prediction and estimation are simply different goals, with little to do with one another. But in fact the two are mathematically linked. Given two models to choose from, the one that predicts better (in squared error loss) will also be a better estimator of the subgroup means.
 
@@ -272,7 +303,7 @@ How many neighbors should we include? We first consider evaluating by **in-sampl
 
 The blue line in the figure below shows results. In-sample mean squared prediction error is lowest when we pool over 0 neighbors. With in-sample evaluation, the predictions become gradually worse (higher mean squared error) as we pool information over more teams. If our goal were in-sample prediction, we should choose an estimator that does not pool information at all: the Dodgers' population mean salary would be estimated by the mean among the sampled Dodgers only.
 
-```{r, echo = F}
+```{r, echo = F, warning = F, comment = F, message = F}
 knn_estimator <- function(n_neighbors) {
   learning <- baseball |>
     group_by(team) |>
@@ -569,17 +600,16 @@ A downside of 50-50 sample splitting is that the train set is only half as large
 
 One solution to this problem is **cross-validation**, which proceeds in a series of steps:
 
-1) Partition the data into $k$ folds
-2) Start a loop at $i$ = 1
-3) Use fold $i$ as the test set and the other $k-1$ folds as the train set
-4) Increment $i$ and repeat step 3 until all folds have been used as the test set in turn
-5) Average the performance metric over the $k$ iterations
-6) Optionally, repeat steps 1--5 many times for various random partitions of the data and average to reduce stochastic error
+1) Randomize the sampled cases into a set of folds (e.g., 5 folds).
+2) Take fold 1 as the test set and estimate predictive performance.
+3) Take fold 2 as the test set and estimate predictive performance.
+4) Iterate until all folds have served as the test set
+5) Average predictive performance over the folds
 
-```{r, echo = F, output = F}
+```{r, echo = F}
 forplot <- tibble(y = 1:5, labels = c("Train","Train","Train","Train","Train")) |>
   mutate(fold = paste("Fold",6-y))
-forplot |>
+p0 <- forplot |>
   ggplot() +
   geom_rect(
     aes(ymin = y, ymax = y + 1, xmin = 0, xmax = 1),
@@ -591,11 +621,11 @@ forplot |>
     color = "white"
   ) +
   theme_void()
-ggsave("slides/lec4/figures/five_folds.pdf", height = 3, width = .8)
+ggsave("slides/lec4/figures/five_folds.pdf", plot = p0, height = 3, width = .8)
 for (i in 1:5) {
   forplot_case <- forplot
   forplot_case$labels[i] <- "Test"
-  forplot_case |>
+  p <- forplot_case |>
     ggplot() +
     geom_rect(
       aes(ymin = y, ymax = y + 1, xmin = 0, xmax = 1, fill = labels),
@@ -611,10 +641,16 @@ for (i in 1:5) {
     ) +
     theme_void() +
     theme(legend.position = "none")
-  ggsave(paste0("slides/lec4/figures/five_folds_",i,".pdf"), height = 3, width = .8)
+  assign(paste0("p",i),p)
+  ggsave(paste0("slides/lec4/figures/five_folds_",i,".pdf"), plot = p, height = 3, width = .8)
 }
-
+blank_space <- ggplot() + theme_void()
+gridExtra::grid.arrange(
+  p0,blank_space,blank_space,p1,p2,p3,p4,p5, nrow = 1
+)
 ```
+
+Optionally, repeat for many repetitions of randomly assigning cases to folds to reduce stochastic error.
 
 Cross-validation is so common that it is already packaged into some of the learning algorithms we have considered in class. For example, the code below carries out cross-validation to automatically select the penalty parameter for ridge regression.
 

@@ -353,7 +353,7 @@ window.Quarto = {
 
 
 <blockquote class="blockquote">
-<p>If you are taking notes, here is a PDF of the <a href="slides/lec4/data_driven_selection_slides_handout.pdf">slides</a> and a PDF of <a href="slides/lec4/data_driven_selection_chapter.pdf">this page</a>.</p>
+<p>If you are taking notes, here is a PDF of the <a href="slides/lec4/data_driven_selection_slides_handout.pdf">slides</a> and a PDF of <a href="assets/pdf_chapters/data_driven_selection.pdf">this page</a>. If you are a Stata user, most of this page is R code. The one most important exercise is sample splitting, for which you can use <a href="assets/stata_code/sample_split.do">sample_split.do</a>.</p>
 </blockquote>
 <p>Quantitative social scientists have long faced the question of how to choose a model. Even within the scope of linear regression, one might wonder whether a model that interacts two predictors is better than one that includes them only additively. As computational advances have yielded new algorithms for prediction, the number of choices has exploded. Many models are possible. How should we choose?</p>
 <p>An algorithm for prediction takes as its input a feature vector <span class="math inline">\(\vec{x}\)</span> and returns as its output a predicted value, <span class="math inline">\(\hat{y}\)</span>. One way to choose among several algorithms is to find the one that produces predictions <span class="math inline">\(\hat{y}\)</span> that are as close as possible to the true outcomes <span class="math inline">\(y\)</span>. While this predictive metric might seem grounded in data science, this page will show how metrics of predictive performance can also help with a classical social science task: estimating subgroup means. By the end of the page, we will have motivated why one should care about metrics of predictive performance and learned tools to estimate predictive performance by sample splitting.</p>
@@ -391,10 +391,24 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>While one might have hoped to tell a story about high-quality prediction, the dominant story in the individual-level prediction plot is one of poor prediction: players’ salaries vary widely around the estimated regression line. To put that fact to a number, one might consider <span class="math inline">\(R^2_\text{Individual}\)</span> which involves a ratio of the variance of prediction errors to the total variance of the outcome.</p>
+<p>While one might have hoped to tell a story about high-quality prediction, the dominant story in the individual-level prediction plot is one of poor prediction: players’ salaries vary widely around the estimated regression line. To put that fact to a number, one might consider <span class="math inline">\(R^2\)</span> which involves a ratio of two expected squared prediction errors, one from the prediction function <span class="math inline">\(\hat{f}\)</span> and one from a comparison model that predicts the mean for all cases.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <p><span class="math display">\[
-R^2_\text{Individual} = 1 - \frac{\text{V}\left(Y - \hat{Y}\right)}{\text{V}(Y)} = 0.058
-\]</span> In other words, subtracting the predicted values from the individual players’ salaries only reduces the variance by 5.8%. If the goal is to predict for individuals, the model does not seem very good!</p>
+R^2
+= 1 - \frac{
+    \overbrace{
+        \text{E}\left[
+            \left(
+                Y - \hat{f}(\vec{X})
+            \right)^2
+        \right]
+    }^{\substack{\text{Expected Squared}\\\text{Prediction Error}}}
+}
+{
+    \underbrace{
+        \text{E}\left[\left(Y - \text{E}(Y)\right)^2\right]
+    }_\text{Variance of $Y$}
+}
+\]</span> In other words, subtracting the predicted values from the individual players’ salaries only reduces the expected squared error by 5.8%. If the goal is to predict for individuals, the model does not seem very good!</p>
 </section>
 <section id="estimating-subgroup-means" class="level2">
 <h2 class="anchored" data-anchor-id="estimating-subgroup-means">Estimating subgroup means</h2>
@@ -408,10 +422,24 @@ R^2_\text{Individual} = 1 - \frac{\text{V}\left(Y - \hat{Y}\right)}{\text{V}(Y)}
 </div>
 </div>
 </div>
-<p>The social scientist might argue that the model is quite good for team salaries. If we take the goal to be to estimate the team average salary, then we might create an analogous version of <span class="math inline">\(R^2\)</span> where the unit of analysis is a team.</p>
+<p>The social scientist might argue that the model is quite good for team salaries. If we take the goal to be to estimate the team average salary, then we might create an analogous version of <span class="math inline">\(R^2\)</span> focused on estimation of team-average salaries.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <p><span class="math display">\[
-R^2_\text{Group} = 1 - \frac{\text{V}\left(\hat{Y}_\text{Team} - \bar{Y}_\text{Team}\right)}{\text{V}(\bar{Y}_\text{Team})} = 0.672
-\]</span> By that metric, the model seems quite good, predicting away 67.2% of the team-level variance in salary. Surprisingly, a model that was not very good at predicting for individuals might be quite good at predicting the team-average outcomes!</p>
+R^2_\text{Group}
+= 1 - \frac{
+    \overbrace{
+        \text{E}\left[
+            \left(
+                \text{E}(Y\mid\vec{X}) - \hat{f}(\vec{X})
+            \right)^2
+        \right]
+    }^{\substack{\text{Expected Squared}\\\text{Estimation Error}}}
+}
+{
+    \underbrace{
+        \text{E}\left[\left(\text{E}(Y\mid\vec{X}) - \text{E}(Y)\right)^2\right]
+    }_\text{If Predicted $\text{E}(Y)$ for Everyone}
+}
+\]</span> By that metric, the model seems quite good, predicting away 57.1% of the expected squared error at the team level. Surprisingly, a model that was not very good at predicting for individuals might be quite good at predicting the team-average outcomes!</p>
 <p>One might respond that prediction and estimation are simply different goals, with little to do with one another. But in fact the two are mathematically linked. Given two models to choose from, the one that predicts better (in squared error loss) will also be a better estimator of the subgroup means.</p>
 </section>
 <section id="prediction-and-estimation-are-connected" class="level2">
@@ -479,10 +507,6 @@ R^2_\text{Group} = 1 - \frac{\text{V}\left(\hat{Y}_\text{Team} - \bar{Y}_\text{T
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`geom_line()`: Each group consists of only one observation.
-ℹ Do you need to adjust the group aesthetic?</code></pre>
-</div>
 </div>
 </section>
 <section id="out-of-sample-performance" class="level3">
@@ -531,80 +555,80 @@ R^2_\text{Group} = 1 - \frac{\text{V}\left(\hat{Y}_\text{Team} - \bar{Y}_\text{T
 </div>
 <p>In code, we can carry out a train-test split by first loading the baseball population,</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>baseball_population <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://ilundberg.github.io/soc212b/data/baseball_population.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>baseball_population <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://ilundberg.github.io/soc212b/data/baseball_population.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>and drawing a sample of 10 players per team.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>baseball_sample <span class="ot">&lt;-</span> baseball_population <span class="sc">|&gt;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(team) <span class="sc">|&gt;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>baseball_sample <span class="ot">&lt;-</span> baseball_population <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(team) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then create the split. The code below first stratifies by team and then randomly samples 50% of cases to be used for the <code>train</code> set.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> baseball_sample <span class="sc">|&gt;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(team) <span class="sc">|&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">prop =</span> .<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> baseball_sample <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(team) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">prop =</span> .<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The code below takes all remaining cases not used for training to be used as the <code>test</code> set.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> baseball_sample <span class="sc">|&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(train, <span class="at">by =</span> <span class="fu">join_by</span>(player))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> baseball_sample <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(train, <span class="at">by =</span> <span class="fu">join_by</span>(player))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then learn a prediction function in the train set and evaluate performance in the test set. For example, the code below uses OLS.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(salary <span class="sc">~</span> team, <span class="at">data =</span> train)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>test_mse <span class="ot">&lt;-</span> test <span class="sc">|&gt;</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make predictions</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yhat =</span> <span class="fu">predict</span>(ols, <span class="at">newdata =</span> test)) <span class="sc">|&gt;</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate squared errors</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">squared_error =</span> (salary <span class="sc">-</span> yhat) <span class="sc">^</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Summarize</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mse =</span> <span class="fu">mean</span>(squared_error))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(salary <span class="sc">~</span> team, <span class="at">data =</span> train)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>test_mse <span class="ot">&lt;-</span> test <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make predictions</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yhat =</span> <span class="fu">predict</span>(ols, <span class="at">newdata =</span> test)) <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate squared errors</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">squared_error =</span> (salary <span class="sc">-</span> yhat) <span class="sc">^</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Summarize</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mse =</span> <span class="fu">mean</span>(squared_error))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="tuning-parameters-by-sample-splitting" class="level2">
 <h2 class="anchored" data-anchor-id="tuning-parameters-by-sample-splitting">Tuning parameters by sample splitting</h2>
 <p>One way we might use sample splitting is for parameter tuning: to choose the value of some unknown tuning parameter such as the penalty <span class="math inline">\(\lambda\)</span> in ridge regression.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Loaded glmnet 4.1-8</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ridge_regression <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team, <span class="at">data =</span> train),</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> train <span class="sc">|&gt;</span> <span class="fu">pull</span>(salary),</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ridge_regression <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team, <span class="at">data =</span> train),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> train <span class="sc">|&gt;</span> <span class="fu">pull</span>(salary),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The <code>glmnet</code> package makes estimates at many values of the penalty parameter <span class="math inline">\(\lambda\)</span>. We can make predictions in the test set from models using these various values of <span class="math inline">\(\lambda\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>predicted <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  ridge_regression,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">newx =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team, <span class="at">data =</span> test)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>predicted <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  ridge_regression,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">newx =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team, <span class="at">data =</span> test)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can extract the penalty parameter values with <code>ridge_regression$lambda</code>, organizing them in a <code>tibble</code> for ease of access.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lambda_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda =</span> ridge_regression<span class="sc">$</span>lambda,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda_index =</span> <span class="fu">colnames</span>(predicted)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lambda_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda =</span> ridge_regression<span class="sc">$</span>lambda,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda_index =</span> <span class="fu">colnames</span>(predicted)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For each <span class="math inline">\(\lambda\)</span> value, the predictions are a column of <code>predicted</code>. The code below wrangles these predictions into a tidy format.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>predicted_tibble <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(predicted) <span class="sc">|&gt;</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Append the actual value of the test outcome</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">y =</span> test <span class="sc">|&gt;</span> <span class="fu">pull</span>(salary)) <span class="sc">|&gt;</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>y, <span class="at">names_to =</span> <span class="st">"lambda_index"</span>, <span class="at">values_to =</span> <span class="st">"yhat"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(lambda_tibble, <span class="at">by =</span> <span class="fu">join_by</span>(lambda_index)) <span class="sc">|&gt;</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">squared_error =</span> (y <span class="sc">-</span> yhat) <span class="sc">^</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>predicted_tibble <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(predicted) <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Append the actual value of the test outcome</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">y =</span> test <span class="sc">|&gt;</span> <span class="fu">pull</span>(salary)) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>y, <span class="at">names_to =</span> <span class="st">"lambda_index"</span>, <span class="at">values_to =</span> <span class="st">"yhat"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(lambda_tibble, <span class="at">by =</span> <span class="fu">join_by</span>(lambda_index)) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">squared_error =</span> (y <span class="sc">-</span> yhat) <span class="sc">^</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>At each <span class="math inline">\(\lambda\)</span> value, we can calculate mean squared error in the test set.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> predicted_tibble <span class="sc">|&gt;</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(lambda) <span class="sc">|&gt;</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mse =</span> <span class="fu">mean</span>(squared_error))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> predicted_tibble <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(lambda) <span class="sc">|&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mse =</span> <span class="fu">mean</span>(squared_error))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The figure below visualizes these estimates. As the penalty parameter grows larger, predictive performance improves (lower error) to a point and then begins to get worse. The selected best value of the tuning parameter <span class="math inline">\(\lambda\)</span> is highlighted in blue.</p>
 <div class="cell">
@@ -622,24 +646,33 @@ R^2_\text{Group} = 1 - \frac{\text{V}\left(\hat{Y}_\text{Team} - \bar{Y}_\text{T
 <p>A downside of 50-50 sample splitting is that the train set is only half as large as the full available sample. We might prefer if it were larger, for instance 80% of the data used for training and only 20% used for testing. But then our estimates of performance in the test set might be noisy.</p>
 <p>One solution to this problem is <strong>cross-validation</strong>, which proceeds in a series of steps:</p>
 <ol type="1">
-<li>Partition the data into <span class="math inline">\(k\)</span> folds</li>
-<li>Start a loop at <span class="math inline">\(i\)</span> = 1</li>
-<li>Use fold <span class="math inline">\(i\)</span> as the test set and the other <span class="math inline">\(k-1\)</span> folds as the train set</li>
-<li>Increment <span class="math inline">\(i\)</span> and repeat step 3 until all folds have been used as the test set in turn</li>
-<li>Average the performance metric over the <span class="math inline">\(k\)</span> iterations</li>
-<li>Optionally, repeat steps 1–5 many times for various random partitions of the data and average to reduce stochastic error</li>
+<li>Randomize the sampled cases into a set of folds (e.g., 5 folds).</li>
+<li>Take fold 1 as the test set and estimate predictive performance.</li>
+<li>Take fold 2 as the test set and estimate predictive performance.</li>
+<li>Iterate until all folds have served as the test set</li>
+<li>Average predictive performance over the folds</li>
 </ol>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_driven_selection_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Optionally, repeat for many repetitions of randomly assigning cases to folds to reduce stochastic error.</p>
 <p>Cross-validation is so common that it is already packaged into some of the learning algorithms we have considered in class. For example, the code below carries out cross-validation to automatically select the penalty parameter for ridge regression.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ridge_regression_cv <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team, <span class="at">data =</span> train),</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> train <span class="sc">|&gt;</span> <span class="fu">pull</span>(salary),</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ridge_regression_cv <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team, <span class="at">data =</span> train),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> train <span class="sc">|&gt;</span> <span class="fu">pull</span>(salary),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can use <code>ridge_regression_cv$lambda.min</code> to extract the chosen value of <span class="math inline">\(\lambda\)</span> that minimizes cross-validated mean squared error (2.7074931^{7}). We can also visualize the performance with a <code>plot()</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ridge_regression_cv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ridge_regression_cv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -650,42 +683,42 @@ R^2_\text{Group} = 1 - \frac{\text{V}\left(\hat{Y}_\text{Team} - \bar{Y}_\text{T
 </div>
 <p>We can make predictions at the chosen value of <span class="math inline">\(\lambda\)</span> by specifying the <code>s</code> argument in the <code>predict()</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>predicted <span class="ot">&lt;-</span> test <span class="sc">|&gt;</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat =</span> <span class="fu">predict</span>(</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>      ridge_regression_cv,</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">s =</span> <span class="st">"lambda.min"</span>,</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">newx =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team, <span class="at">data =</span> test)</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    )[,<span class="dv">1</span>]</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>predicted <span class="ot">&lt;-</span> test <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat =</span> <span class="fu">predict</span>(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>      ridge_regression_cv,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">s =</span> <span class="st">"lambda.min"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">newx =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team, <span class="at">data =</span> test)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    )[,<span class="dv">1</span>]</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="choosing-an-algorithm-by-sample-splitting" class="level2">
 <h2 class="anchored" data-anchor-id="choosing-an-algorithm-by-sample-splitting">Choosing an algorithm by sample splitting</h2>
 <p>In the example above, we used sample splitting to choose the optimal value of a penalty parameter (<span class="math inline">\(\lambda\)</span>) within a particular algorithm for prediction (ridge regression). One can also use a train-test split to choose among many very different estimators. For example, we might estimate OLS, a tree, and a forest.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(grf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(grf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(salary <span class="sc">~</span> team_past_salary, <span class="at">data =</span> train)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">rpart</span>(salary <span class="sc">~</span> team_past_salary, <span class="at">data =</span> train)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>forest <span class="ot">&lt;-</span> <span class="fu">regression_forest</span>(</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team_past_salary, <span class="at">data =</span> train),</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> train <span class="sc">|&gt;</span> <span class="fu">pull</span>(salary)</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(salary <span class="sc">~</span> team_past_salary, <span class="at">data =</span> train)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">rpart</span>(salary <span class="sc">~</span> team_past_salary, <span class="at">data =</span> train)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>forest <span class="ot">&lt;-</span> <span class="fu">regression_forest</span>(</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team_past_salary, <span class="at">data =</span> train),</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> train <span class="sc">|&gt;</span> <span class="fu">pull</span>(salary)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can make predictions for all of these estimators in the test set.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>predicted <span class="ot">&lt;-</span> test <span class="sc">|&gt;</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat_ols =</span> <span class="fu">predict</span>(ols, <span class="at">newdata =</span> test),</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat_tree =</span> <span class="fu">predict</span>(tree, <span class="at">newdata =</span> test),</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat_forest =</span> <span class="fu">predict</span>(forest, <span class="at">newdata =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team_past_salary, <span class="at">data =</span> test))<span class="sc">$</span>predictions</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"yhat"</span>), <span class="at">names_to =</span> <span class="st">"estimator"</span>, <span class="at">values_to =</span> <span class="st">"yhat"</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>predicted <span class="ot">&lt;-</span> test <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat_ols =</span> <span class="fu">predict</span>(ols, <span class="at">newdata =</span> test),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat_tree =</span> <span class="fu">predict</span>(tree, <span class="at">newdata =</span> test),</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat_forest =</span> <span class="fu">predict</span>(forest, <span class="at">newdata =</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>team_past_salary, <span class="at">data =</span> test))<span class="sc">$</span>predictions</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"yhat"</span>), <span class="at">names_to =</span> <span class="st">"estimator"</span>, <span class="at">values_to =</span> <span class="st">"yhat"</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The figure below visualizes the predicted values.</p>
 <div class="cell">
@@ -699,10 +732,10 @@ R^2_\text{Group} = 1 - \frac{\text{V}\left(\hat{Y}_\text{Team} - \bar{Y}_\text{T
 </div>
 <p>We can calculate mean squared error in the test set for each algorithm to determine which one is producing the best predictions.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> predicted <span class="sc">|&gt;</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(estimator) <span class="sc">|&gt;</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">squared_error =</span> (salary <span class="sc">-</span> yhat) <span class="sc">^</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mse =</span> <span class="fu">mean</span>(squared_error))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> predicted <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(estimator) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">squared_error =</span> (salary <span class="sc">-</span> yhat) <span class="sc">^</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mse =</span> <span class="fu">mean</span>(squared_error))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -719,7 +752,14 @@ R^2_\text{Group} = 1 - \frac{\text{V}\left(\hat{Y}_\text{Team} - \bar{Y}_\text{T
 
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>When estimating <span class="math inline">\(R^2\)</span>, we often use the training sample mean as an estimator of <span class="math inline">\(\text{E}(Y)\)</span> for the denominator, similar to how the training sample is used to learn <span class="math inline">\(\hat{f}\)</span>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>When estimating <span class="math inline">\(R^2_\text{Group}\)</span>, we often use the subgroup training sample mean as an estimator of <span class="math inline">\(\text{E}(Y\mid\vec{X})\)</span> for the denominator, similar to how the training sample is used to learn <span class="math inline">\(\hat{f}\)</span>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

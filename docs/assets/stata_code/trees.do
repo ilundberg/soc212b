@@ -14,6 +14,10 @@ crtrees y x z, rforests generate(yhat_forest) bootstraps(50)
 * Visualize predictions
 scatter yhat_forest x, colorvar(z)
 
+rforest y x z, type(regression)
+predict yhat_rforest
+scatter yhat_rforest x, colorvar(z)
+
 * Forest notes:
 * 1) Each run of code creates a file matatree in your working directory.
 *    You must delete this file to run again.

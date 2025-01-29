@@ -92,9 +92,15 @@ By the end of class, you will be able to
 
 \goalsframe
 
+\begin{frame}{Today's focus}
+We want to estimate $\E(Y\mid\vec{X})$. We have many algorithms: \vskip .1in
+\includegraphics[width = .8\textwidth]{figures/many_algorithm_predictions} \vskip .1in
+How do we choose?
+\end{frame}
+
 \section{Prediction and Estimation}
 
-\begin{frame}
+\begin{frame}{Concrete example: Evaluate model performance}
 Model player salaries this year as a linear function\\of team average salaries last year \vskip .2in
 $$
 \E(\text{Salary}\mid\text{Team}) = \alpha + \beta(\text{Team Average Salary Last Season})
@@ -105,14 +111,28 @@ $$
 \includegraphics[width = \textwidth]{figures/individual_prediction_errors}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{A score for individual-level predictive performance}
 $$
-R^2 = 1 - \frac{\overbrace{\V\left(Y - \hat{Y}\right)}^\text{Variance of Errors}}{\underbrace{\V(Y)}_\text{Variance of Y}}
+R^2
+= 1 - \frac{
+	\overbrace{
+		\E\left[
+			\left(
+				Y - \hat{f}(\vec{X})
+			\right)^2
+		\right]
+	}^{\substack{\text{Expected Squared}\\\text{Prediction Error}}}
+}
+{
+	\underbrace{
+		\E\left[\left(Y - \E(Y)\right)^2\right]
+	}_\text{Variance of $Y$}
+}
 $$
 Limiting cases:
 \begin{itemize}
 \item 1 = perfect prediction
-\item 0 = predicted same value for all cases
+\item 0 = predicted the overall mean for all cases
 \end{itemize}
 This example: $R^2 = 0.058$
 \end{frame}
@@ -125,9 +145,23 @@ What if the goal is to estimate for subgroups\\instead of to predict for individ
 \includegraphics[width = \textwidth]{figures/team_prediction_errors}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{A score for group-level estimation performance}
 $$
-R^2_\text{Group} = 1 - \frac{\text{V}\left(\hat{Y}_\text{Team} - \bar{Y}_\text{Team}\right)}{\text{V}(\bar{Y}_\text{Team})}
+R^2_\text{Group}
+= 1 - \frac{
+	\overbrace{
+		\E\left[
+			\left(
+				\E(Y\mid\vec{X}) - \hat{f}(\vec{X})
+			\right)^2
+		\right]
+	}^{\substack{\text{Expected Squared}\\\text{Estimation Error}}}
+}
+{
+	\underbrace{
+		\E\left[\left(\E(Y\mid\vec{X}) - \E(Y)\right)^2\right]
+	}_\text{If Predicted $\E(Y)$ for Everyone}
+}
 $$
 Variance of team-level prediction errors\\over variance of team-level means\footnote{$R^2_\text{Group}$ is not widely used, but I think it is useful here.\\{}} \vskip .2in
 In this example: $R^2_\text{Group} = 0.672$
