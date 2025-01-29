@@ -1,15 +1,17 @@
 ---
-title: "Data-driven selection of a prediction function"
+title: "Data-driven selection of an estimator"
 format: 
   html:
     fig-height: 3
 ---
 
+> If you are taking notes, here is a PDF of the [slides](slides/lec4/data_driven_selection_slides_handout.pdf) and a PDF of [this page](slides/lec4/data_driven_selection_chapter.pdf).
+
 Quantitative social scientists have long faced the question of how to choose a model. Even within the scope of linear regression, one might wonder whether a model that interacts two predictors is better than one that includes them only additively. As computational advances have yielded new algorithms for prediction, the number of choices has exploded. Many models are possible. How should we choose?
 
 An algorithm for prediction takes as its input a feature vector $\vec{x}$ and returns as its output a predicted value, $\hat{y}$. One way to choose among several algorithms is to find the one that produces predictions $\hat{y}$ that are as close as possible to the true outcomes $y$. While this predictive metric might seem grounded in data science, this page will show how metrics of predictive performance can also help with a classical social science task: estimating subgroup means. By the end of the page, we will have motivated why one should care about metrics of predictive performance and learned tools to estimate predictive performance by sample splitting.
 
-### When the goal of the model is to predict for individuals
+## Predicting for individuals
 
 Continuing with the example of baseball player salaries, we consider a model to predict salary this year as a linear function of team average salary from last year. We first prepare the environment and load data.
 
@@ -120,6 +122,7 @@ individual_prediction |>
     "Individual Prediction Errors",
     subtitle = "Randomly selected players highlighted for illustration"
   )
+ggsave("slides/lec4/figures/individual_prediction_errors.pdf", height = 3, width = 5)
 ```
 
 While one might have hoped to tell a story about high-quality prediction, the dominant story in the individual-level prediction plot is one of poor prediction: players' salaries vary widely around the estimated regression line. To put that fact to a number, one might consider $R^2_\text{Individual}$ which involves a ratio of the variance of prediction errors to the total variance of the outcome.
@@ -129,7 +132,7 @@ R^2_\text{Individual} = 1 - \frac{\text{V}\left(Y - \hat{Y}\right)}{\text{V}(Y)}
 $$
 In other words, subtracting the predicted values from the individual players' salaries only reduces the variance by `r label_percent(accuracy = .1)(rsquared_individual)`. If the goal is to predict for individuals, the model does not seem very good!
 
-### When the goal of the model is to estimate for subgroups
+## Estimating subgroup means
 
 A social scientist might respond that the goal was never to accurately predict the salary of any individual baseball player. Rather, the data on individual players was in service of a more aggregate goal: estimating the mean salary on each team. Noting that the prediction is the same for every player on a team, the social scientist might propose the graph below, in which the unit of analysis is a team instead of a player.
 
@@ -170,6 +173,7 @@ team_estimation |>
     "Group-Level Estimation Errors",
     subtitle = "Dots are true team mean salaries, excluding players\nfrom the learning sample in which the line was estimated"
   )
+ggsave("slides/lec4/figures/team_prediction_errors.pdf", height = 3, width = 5)
 ```
 
 The social scientist might argue that the model is quite good for team salaries. If we take the goal to be to estimate the team average salary, then we might create an analogous version of $R^2$ where the unit of analysis is a team.
@@ -181,7 +185,7 @@ By that metric, the model seems quite good, predicting away `r label_percent(acc
 
 One might respond that prediction and estimation are simply different goals, with little to do with one another. But in fact the two are mathematically linked. Given two models to choose from, the one that predicts better (in squared error loss) will also be a better estimator of the subgroup means.
 
-## How predictive performance metrics can choose the best estimator
+## Prediction and estimation are connected
 
 To formalize the problem of choosing an estimator, suppose we have two prediction functions $\hat{f}_1$ and $\hat{f}_2$. Each function takes in a vector of features $\vec{x}$ and returns a predicted value, $\hat{f}_1(\vec{x})$ or $\hat{f}_2(\vec{x})$. We will assume for simplicity that each function has already been learned on a simple random sample from our population, and that the remaining units available to us are those that were not used in the learning process.
 
@@ -190,7 +194,8 @@ Suppose we draw a random unit with features $\vec{X}$ and outcome $Y$. For this 
 $$
 \underbrace{\text{ESPE}(\hat{f})}_{\substack{\text{Expected Squared}\\\text{Prediction Error}}} = \text{E}\left[\left(Y - \hat{f}(\vec{X})\right)^2\right]
 $$
-In our baseball example, the algorithm $\hat{f}_1$ makes an error when Mookie Betts has a salary of $Y_\text{MookieBetts} = $`r `baseball |> filter(player == "Betts, Mookie") |> pull(salary) |> label_currency(scale = 1e-6, suffix = "m", accuracy = .1)()` but the algorithm only predicts $\hat{f}_1(\vec{X}_\text{MookieBetts}) = $`r baseball |> mutate(yhat = predict(linear_regression, newdata = baseball)) |> filter(player == "Betts, Mookie") |> pull(yhat) |> label_currency(scale = 1e-6, suffix = "m", accuracy = .1)()`. The expected squared prediction error is the squared difference between these two values, taken on average over all players.
+In our baseball example, the algorithm $\hat{f}_1$ makes an error when Mookie Betts has a salary of 
+`r baseball |> filter(player == "Betts, Mookie") |> pull(salary) |> label_currency(prefix = "", scale = 1e-6, suffix = "m", accuracy = .1)()` but the algorithm only predicts `r baseball |> mutate(yhat = predict(linear_regression, newdata = baseball)) |> filter(player == "Betts, Mookie") |> pull(yhat) |> unname() |> label_currency(prefix = "", scale = 1e-6, suffix = "m", accuracy = .1)()`. The expected squared prediction error is the squared difference between these two values, taken on average over all players.
 
 Our social scientist has already replied that we rarely care about predicting the salary of an individual player. Instead, our questions are really about estimating subgroup means, such as the mean pay on each team. The social scientist might instead want to know about estimation error,
 $$
@@ -237,7 +242,7 @@ $$
 \end{aligned}
 $$
 
-## Out-of-sample error: Illustration with k-nearest neighbors
+## Why out-of-sample prediction matters
 
 The connection between prediction and estimation opens a powerful bridge: we can find good estimators by exploring which algorithms predict well. But it is important to remember that this bridge exists only for **out-of-sample prediction error**: error when predictions are made on a new sample that did not include the initial predictions.
 
@@ -318,7 +323,7 @@ estimates <- foreach(i = 0:29, .combine = "rbind") %do% {
   }
 }
 
-estimates |>
+unsmoothed <- estimates |>
   select(n_neighbors, test_mse, train_mse) |>
   group_by(n_neighbors) |>
   summarize_all(mean) |>
@@ -326,9 +331,22 @@ estimates |>
   mutate(name = case_when(
     name == "test_mse" ~ "Out of sample cases",
     name == "train_mse" ~ "Same cases used for learning"
-  )) |>
-  ggplot(aes(x = n_neighbors, y = value, color = name)) +
-  geom_smooth(se = F) +
+  ))
+
+smoothed <- unsmoothed |>
+  group_by(name) |>
+  nest() |>
+  mutate(data = map(data, \(x) {
+    fit <- loess(value ~ n_neighbors, data = x)
+    x |>
+      mutate(smoothed = predict(fit))
+  })) |>
+  unnest(data)
+
+smoothed |>
+  ggplot(aes(x = n_neighbors, y = smoothed, color = name)) +
+  geom_point() +
+  geom_line() +
   theme_minimal() +
   scale_x_continuous(name = "Neighboring Teams Included in Mean\n<- more flexible model           more pooled model ->") +
   scale_y_continuous(breaks = NULL, name = "Mean Squared Prediction Error") +
@@ -337,6 +355,23 @@ estimates |>
     "In-sample and out-of-sample measures of predictive performance",
     subtitle = "Nearest neighbor estimator applied to repeated samples of 10 players per team.\nCurves are smoothed estimates over simulation results."
   )
+
+for (i in c(0:5,10,15,20,25,29)) {
+  smoothed |>
+    ggplot(aes(x = n_neighbors, y = smoothed, color = name)) +
+    geom_point(alpha = 0) +
+    geom_point(data = smoothed |> filter(n_neighbors <= i)) +
+    geom_line(data = smoothed |> filter(n_neighbors <= i)) +
+    theme_minimal() +
+    scale_x_continuous(name = "Neighboring Teams Included in Mean\n<- more flexible model           more pooled model ->") +
+    scale_y_continuous(breaks = NULL, name = "Mean Squared Prediction Error") +
+    scale_color_discrete(name = "Evaluation set") +
+    ggtitle(
+      "In-sample and out-of-sample measures of predictive performance",
+      subtitle = "Nearest neighbor estimator applied to repeated samples of 10 players per team.\nCurves are smoothed estimates over simulation results."
+    )
+  ggsave(paste0("slides/lec4/figures/knn_",i,".pdf"), height = 4, width = 6)
+}
 ```
 
 ### Out-of-sample performance
@@ -387,6 +422,7 @@ tibble(index = 1:16) |>
   annotate(geom = "text", x = 2.75, y = 18, label = "Outcome", fontface = "bold") +
   xlim(c(-.5,3)) +
   theme_void()
+ggsave("slides/lec4/figures/randomize_split.pdf", height = 3, width = 6)
 ```
 
 Then we separate these into two datasets. We use the train set to learn the model and the test set to evaluate the performance of the learned model.
@@ -414,6 +450,7 @@ ggplot() +
   annotate(geom = "segment", color = "gray", x = 2.5, xend = 3, y = seq(.5,3.5,.5)) +
   xlim(c(-1,3)) +
   theme_void()
+ggsave("slides/lec4/figures/train_test.pdf", height = 3, width = 6)
 ```
 
 In code, we can carry out a train-test split by first loading the baseball population,
@@ -460,7 +497,7 @@ test_mse <- test |>
   summarize(mse = mean(squared_error))
 ```
 
-### Sample splitting for parameter tuning
+## Tuning parameters by sample splitting
 
 One way we might use sample splitting is for parameter tuning: to choose the value of some unknown tuning parameter such as the penalty $\lambda$ in ridge regression.
 
@@ -487,7 +524,7 @@ lambda_tibble <- tibble(
   lambda_index = colnames(predicted)
 )
 ```
-For each $\lamdba$ value, the predictions are a column of `predicted`. The code below wrangles these predictions into a tidy format.
+For each $\lambda$ value, the predictions are a column of `predicted`. The code below wrangles these predictions into a tidy format.
 ```{r}
 predicted_tibble <- as_tibble(predicted) |>
   # Append the actual value of the test outcome
@@ -522,9 +559,11 @@ mse |>
     x = "Penalty Parameter Lambda\n(Log Scale)",
     y = "Test Mean Squared Error\n(Log Scale)"
   )
+ggsave("slides/lec4/figures/choosing_lambda.pdf", height = 3, width = 5)
+
 ```
 
-### Cross-validation
+## Cross-validation
 
 A downside of 50-50 sample splitting is that the train set is only half as large as the full available sample. We might prefer if it were larger, for instance 80\% of the data used for training and only 20\% used for testing. But then our estimates of performance in the test set might be noisy.
 
@@ -536,6 +575,46 @@ One solution to this problem is **cross-validation**, which proceeds in a series
 4) Increment $i$ and repeat step 3 until all folds have been used as the test set in turn
 5) Average the performance metric over the $k$ iterations
 6) Optionally, repeat steps 1--5 many times for various random partitions of the data and average to reduce stochastic error
+
+```{r, echo = F, output = F}
+forplot <- tibble(y = 1:5, labels = c("Train","Train","Train","Train","Train")) |>
+  mutate(fold = paste("Fold",6-y))
+forplot |>
+  ggplot() +
+  geom_rect(
+    aes(ymin = y, ymax = y + 1, xmin = 0, xmax = 1),
+    fill = ucla, color = "gray"
+  ) +
+  geom_text(
+    aes(label = fold, y = y + .5),
+    x = .5, fontface = "bold",
+    color = "white"
+  ) +
+  theme_void()
+ggsave("slides/lec4/figures/five_folds.pdf", height = 3, width = .8)
+for (i in 1:5) {
+  forplot_case <- forplot
+  forplot_case$labels[i] <- "Test"
+  forplot_case |>
+    ggplot() +
+    geom_rect(
+      aes(ymin = y, ymax = y + 1, xmin = 0, xmax = 1, fill = labels),
+      color = "gray"
+    ) +
+    scale_fill_manual(
+      values = c("black",ucla)
+    ) +
+    geom_text(
+      aes(label = labels, y = y + .5),
+      x = .5, fontface = "bold",
+      color = "white"
+    ) +
+    theme_void() +
+    theme(legend.position = "none")
+  ggsave(paste0("slides/lec4/figures/five_folds_",i,".pdf"), height = 3, width = .8)
+}
+
+```
 
 Cross-validation is so common that it is already packaged into some of the learning algorithms we have considered in class. For example, the code below carries out cross-validation to automatically select the penalty parameter for ridge regression.
 
@@ -566,7 +645,7 @@ predicted <- test |>
   )
 ```
 
-## Choosing among many algorithms
+## Choosing an algorithm by sample splitting
 
 In the example above, we used sample splitting to choose the optimal value of a penalty parameter ($\lambda$) within a particular algorithm for prediction (ridge regression). One can also use a train-test split to choose among many very different estimators. For example, we might estimate OLS, a tree, and a forest.
 
@@ -616,6 +695,7 @@ predicted |>
   scale_y_continuous(name = "Team Average Salary This Season",
                      labels = label_currency(scale = 1e-6, suffix = "m")) +
   theme_minimal()
+ggsave("slides/lec4/figures/many_algorithm_predictions.pdf", height = 3, width = 5)
 ```
 
 We can calculate mean squared error in the test set for each algorithm to determine which one is producing the best predictions.
@@ -648,6 +728,7 @@ mse |>
     labels = c("Not Best Algorithm","Best Algorithm")
   ) +
   theme_minimal()
+ggsave("slides/lec4/figures/many_algorithm_MSE.pdf", height = 3, width = 5)
 ```
 
 <!-- ## SuperLearner -->
