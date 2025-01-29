@@ -54,8 +54,19 @@ Using the simulation data from class or data from your own project:
 
 4. (10 points) In a few sentences, give an example of a problem in your area of research (possibly your paper) where the functional form linking $\vec{X}$ to $E(Y\mid\vec{X})$ is unknown, such that a random forest might be a way to learn the functional form from the data.
 
+## Problem Set 4
 
+Write the abstract of your research paper. If you do not have results yet, pretend that your results are really amazing! You can make up any estimates that you want. As an added challenge, try writing the abstract twice with two sets of possible results. It would be ideal if all possible results are interesting.
 
+As you write, minimize jargon so that you are writing for a New York Times reader. Emphasize big claims and don't bury them in statistical terminology. The goal of this exercise is to help us ask and frame a high-impact question that will speak to a broad audience. Possibly, the exercise will lead you to change your question.
+
+Your peer reviewer should comment on things that may include:
+
+* what about this abstract is especially compelling?
+* what parts (if any) about this abstract are directed to a small subset of academia and perhaps should be broadened? This may be parts with jargon.
+* what claims could be emphasized more?
+
+The hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions.
 
 
 

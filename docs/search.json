@@ -479,6 +479,13 @@
     "text": "Problem Set 3\nUsing the simulation data from class or data from your own project:\n\n(15 points) Estimate a regression tree and visualize it. If you are using R, there are packages to visualize the tree. If you are using Stata, there may be packages or you are welcome to use the summary text output.\n(10 points) Write 3-4 sentences for someone who has never heard of this method. Pick some predictor vector value and explain how the tree produces a prediction for that predictor vector.\n(15 points) Estimate a random forest. Visualize the predicted values as a function of the predictors. If your data have only two predictors, this could be as in class with one on the \\(x\\)-axis and one for colors. If you have many predictors, you may need to find a creative way to visualize your predictions. You may choose to make predictions while holding one or more variables at a single value.\n(10 points) In a few sentences, give an example of a problem in your area of research (possibly your paper) where the functional form linking \\(\\vec{X}\\) to \\(E(Y\\mid\\vec{X})\\) is unknown, such that a random forest might be a way to learn the functional form from the data."
   },
   {
+    "objectID": "problem_sets.html#problem-set-4",
+    "href": "problem_sets.html#problem-set-4",
+    "title": "Problem Sets",
+    "section": "Problem Set 4",
+    "text": "Problem Set 4\nWrite the abstract of your research paper. If you do not have results yet, pretend that your results are really amazing! You can make up any estimates that you want. As an added challenge, try writing the abstract twice with two sets of possible results.\nAs you write, minimize jargon so that you are writing for a New York Times reader. Emphasize big claims and don’t bury them in statistical terminology. The goal of this exercise is to help us ask and frame a high-impact question that will speak to a broad audience. Possibly, the exercise will lead you to change your question.\nYour peer reviewer should comment on things that may include:\n\nwhat about this abstract is especially compelling?\nwhat parts (if any) about this abstract are directed to a small subset of academia and perhaps should be broadened? This may be parts with jargon.\nwhat claims could be emphasized more?\n\nThe hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions."
+  },
+  {
     "objectID": "scales.html",
     "href": "scales.html",
     "title": "Scale construction",
