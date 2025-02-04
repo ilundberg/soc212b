@@ -68,5 +68,84 @@ Your peer reviewer should comment on things that may include:
 
 The hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions.
 
+## Problem Set 5
 
+This problem set is unlike the preceding ones in two ways. It is entirely conceptual, with no data analysis, and it is entirely about hypothetical examples rather than your paper. It is a chance to reinforce a few basic ideas from our class on panel data. Questions 1--5 are on difference in difference. Questions 6--7 are on regression discontinuity.
 
+In the figures below, the treated group becomes treated between time 1 and time 2. The control group never becomes treated. Figures are hypothetical scenarios that depict true potential outcomes even if those outcomes would not be observed in an actual study.
+
+```{r, echo = F, message = F, warning = F, fig.height = 3}
+library(tidyverse)
+make_plot <- function(
+    yT = c(4,3,3),
+    yC = 2:0,
+    counterfactual = 2,
+    show_counterfactual = T
+) {
+  p <- data.frame(t = rep(0:2,2),
+                  a = rep(c(F,T), each = 3),
+                  y = c(yC,yT)) %>%
+    ggplot(aes(x = t, y = y, group = a)) +
+    annotate(geom = "rect", xmin = 1.5, xmax = Inf, ymin = -Inf, ymax = Inf,
+             fill = "gray", alpha = .3) +
+    annotate(geom = "text", x = .5, y = 5.5, label = "Pre-Treatment\nPeriods") +
+    annotate(geom = "text", x = 2.5, y = 5.5, label = "Treatment\nPeriod") +
+    geom_point() +
+    geom_line() +
+    annotate(geom = "text", x = -.2, y = c(yT[1],yC[1]),
+             label = c("Treated\nGroup", "Control\nGroup"),
+             hjust = 1) +
+    annotate(geom = "text", x = 2.2, y = c(yT[3],yC[3]), 
+             label = c("{Y^1}['Treated,2']","{Y^0}['Control,2']"),
+             hjust = 0, parse = T) +
+    theme_classic() +
+    scale_y_continuous(limits = c(-1,6), breaks = NULL, name = "Outcome") +
+    scale_x_continuous(limits = c(-1.2,3.5), breaks = 0:2,labels = function(x) paste("t =",x), name = "Time") +
+    theme(panel.grid = element_blank())
+  if (show_counterfactual) {
+    p <- p +
+    annotate(geom = "segment", linetype = "dashed",
+             x = 1, xend = 2, y = yT[2], yend = counterfactual) +
+    annotate(geom = "point",
+             x = 2, y = counterfactual) +
+    annotate(geom = "text", x = 2.2, y = counterfactual, 
+             label = "{Y^0}['Treated,2']",
+             hjust = 0, parse = T)
+  }
+  return(p)
+}
+
+gridExtra::grid.arrange(
+  make_plot(yT = c(4,3,3),
+            yC = 2:0,
+            counterfactual = 2) +
+    ggtitle("Setting A"),
+  make_plot(yT = c(4,3,3),
+            yC = 2:0,
+            counterfactual = 1) +
+    ggtitle("Setting B"),
+  nrow = 1
+)
+```
+
+**1 (7 points).** In which setting does the parallel trends assumption hold: A, B, neither, or both?
+
+**2 (7 points).** In actual data analysis, can we ever know for certain whether we are in Setting A or Setting B? If the answer is no, then tell us which outcome cannot be observed.
+
+**3 (7 points)** A researcher comes to you with the data below, which depict only observed outcomes. That researcher wants to run a difference in difference analysis. Here, we have not depicted the counterfactual outcome because the researcher would not know it. Why is the parallel trends assumption doubtful in this setting?
+
+```{r, echo = F, fig.width = 3.2, fig.height = 3}
+make_plot(yT = c(4,3,3),
+          yC = c(0,.25,1),
+          counterfactual = NA,
+          show_counterfactual = F) +
+  ggtitle("Setting C")
+```
+
+**4 (7 points)**. A researcher is interested in the causal effect of a minimum wage increase on employment. They plan to analyze data on the U.S. only, and they are interested in a time when the minimum wage rose simultaneously at every place in the U.S. Why won't a difference in difference design work for the researcher's question?
+
+**5 (7 points).** Propose another design that the researcher could use to answer the question in (1.4), which may involve data outside the U.S. or may involve a different analysis of data within the U.S. Answer this question in no more than 3 sentences. Many answers are possible.
+
+**6 (8 points).** A colleague tells you they've read that regression discontinuity designs have proven that winning one election (greater than 50\% of the vote) causes a political party to have better chances in the next election. In your district, the winner won with 70\% of the vote. Why isn't the regression discontinuity evidence very informative for districts like yours?
+
+**7 (7 points).** Describe an example you have encountered where a regression discontinuity analysis might be used to estimate a causal effect.

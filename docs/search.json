@@ -276,39 +276,64 @@
     ]
   },
   {
-    "objectID": "yhat_regression.html",
-    "href": "yhat_regression.html",
-    "title": "Regression for Y-hat",
+    "objectID": "problem_sets.html",
+    "href": "problem_sets.html",
+    "title": "Problem Sets",
     "section": "",
-    "text": "slides\nThis class is about regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.\nSome of this class relies on an ongoing project on description: ilundberg.github.io/description",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Regression for Y-hat"
-    ]
+    "text": "This page will contain a problem set corresponding to each class meeting. The problem sets are very open-ended and are designed to connect the material from class to your ongoing project.\nFor every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.\nWe chose together the following weekly pattern for problem sets:\nWe will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another’s projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer’s work as well as offering suggestions for improvement or future directions."
   },
   {
-    "objectID": "weighting_for_inference.html",
-    "href": "weighting_for_inference.html",
-    "title": "Weighting for causal and population inference",
-    "section": "",
-    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators.",
-    "crumbs": [
-      "Problem Sets",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Estimation by weighting"
-    ]
+    "objectID": "problem_sets.html#problem-set-1",
+    "href": "problem_sets.html#problem-set-1",
+    "title": "Problem Sets",
+    "section": "Problem Set 1",
+    "text": "Problem Set 1\n\n1. Your ongoing paper.\n1.1. (15 points) Write an abstract of your research paper.\n1.2. (5 points) What is one unit-specific quantity in your paper?\n1.3. (5 points) What is one target population in your paper?\n\n\n2. Regression for a conditional mean\n(25 points)\nIn class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing."
   },
   {
-    "objectID": "resampling.html",
-    "href": "resampling.html",
-    "title": "Statistical Uncertainty: Bootstrap and Beyond",
+    "objectID": "problem_sets.html#problem-set-2",
+    "href": "problem_sets.html#problem-set-2",
+    "title": "Problem Sets",
+    "section": "Problem Set 2",
+    "text": "Problem Set 2\n\n(20 points) In your project, do you have something analogous to many groups with a few observations per group? This could more generally be any case where the number of parameters to be estimated is somewhat large for the sample size available. If not in your project, think of an example in your general research area. Write a few sentences about why one might want penalized regression in that setting.\n\nThe remainder of this problem set is based in the idea of multilevel models, though you can alternatively estimate by LASSO or ridge regression if you prefer. You can complete parts (2) and (3) in your own dataset if you can define at least 10 groups with at least 20 units per group. Wherever we say “team”, substitute whatever group is in your dataset. You may also use the baseball_population.csv data, in which the group variable is team.\n\n(15 points) Draw a sample of 5 units per group. Estimate an unpenalized OLS regression and a penalized regression (multilevel, ridge, or LASSO). Produce a graph that compares the predicted values.\n(15 points) Repeat the exercise above but with a sample of 20 units per group. Visualize the estimates. How do your results change?\n\nNote that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-3",
+    "href": "problem_sets.html#problem-set-3",
+    "title": "Problem Sets",
+    "section": "Problem Set 3",
+    "text": "Problem Set 3\nUsing the simulation data from class or data from your own project:\n\n(15 points) Estimate a regression tree and visualize it. If you are using R, there are packages to visualize the tree. If you are using Stata, there may be packages or you are welcome to use the summary text output.\n(10 points) Write 3-4 sentences for someone who has never heard of this method. Pick some predictor vector value and explain how the tree produces a prediction for that predictor vector.\n(15 points) Estimate a random forest. Visualize the predicted values as a function of the predictors. If your data have only two predictors, this could be as in class with one on the \\(x\\)-axis and one for colors. If you have many predictors, you may need to find a creative way to visualize your predictions. You may choose to make predictions while holding one or more variables at a single value.\n(10 points) In a few sentences, give an example of a problem in your area of research (possibly your paper) where the functional form linking \\(\\vec{X}\\) to \\(E(Y\\mid\\vec{X})\\) is unknown, such that a random forest might be a way to learn the functional form from the data."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-4",
+    "href": "problem_sets.html#problem-set-4",
+    "title": "Problem Sets",
+    "section": "Problem Set 4",
+    "text": "Problem Set 4\nWrite the abstract of your research paper. If you do not have results yet, pretend that your results are really amazing! You can make up any estimates that you want. As an added challenge, try writing the abstract twice with two sets of possible results. It would be ideal if all possible results are interesting.\nAs you write, minimize jargon so that you are writing for a New York Times reader. Emphasize big claims and don’t bury them in statistical terminology. The goal of this exercise is to help us ask and frame a high-impact question that will speak to a broad audience. Possibly, the exercise will lead you to change your question.\nYour peer reviewer should comment on things that may include:\n\nwhat about this abstract is especially compelling?\nwhat parts (if any) about this abstract are directed to a small subset of academia and perhaps should be broadened? This may be parts with jargon.\nwhat claims could be emphasized more?\n\nThe hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-5",
+    "href": "problem_sets.html#problem-set-5",
+    "title": "Problem Sets",
+    "section": "Problem Set 5",
+    "text": "Problem Set 5\nThis problem set is unlike the preceding ones in two ways. It is entirely conceptual, with no data analysis, and it is entirely about hypothetical examples rather than your paper. It is a chance to reinforce a few basic ideas from our class on panel data. Questions 1–5 are on difference in difference. Questions 6–7 are on regression discontinuity.\nIn the figures below, the treated group becomes treated between time 1 and time 2. The control group never becomes treated. Figures are hypothetical scenarios that depict true potential outcomes even if those outcomes would not be observed in an actual study.\n\n\n\n\n\n\n\n\n\n1 (7 points). In which setting does the parallel trends assumption hold: A, B, neither, or both?\n2 (7 points). In actual data analysis, can we ever know for certain whether we are in Setting A or Setting B? If the answer is no, then tell us which outcome cannot be observed.\n3 (7 points) A researcher comes to you with the data below, which depict only observed outcomes. That researcher wants to run a difference in difference analysis. Here, we have not depicted the counterfactual outcome because the researcher would not know it. Why is the parallel trends assumption doubtful in this setting?\n\n\n\n\n\n\n\n\n\n4 (7 points). A researcher is interested in the causal effect of a minimum wage increase on employment. They plan to analyze data on the U.S. only, and they are interested in a time when the minimum wage rose simultaneously at every place in the U.S. Why won’t a difference in difference design work for the researcher’s question?\n5 (7 points). Propose another design that the researcher could use to answer the question in (1.4), which may involve data outside the U.S. or may involve a different analysis of data within the U.S. Answer this question in no more than 3 sentences. Many answers are possible.\n6 (8 points). A colleague tells you they’ve read that regression discontinuity designs have proven that winning one election (greater than 50% of the vote) causes a political party to have better chances in the next election. In your district, the winner won with 70% of the vote. Why isn’t the regression discontinuity evidence very informative for districts like yours?\n7 (7 points). Describe an example you have encountered where a regression discontinuity analysis might be used to estimate a causal effect."
+  },
+  {
+    "objectID": "who_we_are.html",
+    "href": "who_we_are.html",
+    "title": "Who We Are",
     "section": "",
-    "text": "As researchers adopt algorithmic estimation methods for which analytical standard errors do not exist, methods to produce standard errors by resampling become all the more important. We will discuss the bootstrap for simple random samples and extensions to allow resampling-based standard error estimates in complex survey samples.",
+    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
+  },
+  {
+    "objectID": "scales.html",
+    "href": "scales.html",
+    "title": "Scale construction",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
     "crumbs": [
       "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Statistical uncertainty by resampling"
+      "Additional topics",
+      "Scale construction"
     ]
   },
   {
@@ -451,58 +476,40 @@
     ]
   },
   {
-    "objectID": "problem_sets.html",
-    "href": "problem_sets.html",
-    "title": "Problem Sets",
+    "objectID": "resampling.html",
+    "href": "resampling.html",
+    "title": "Statistical Uncertainty: Bootstrap and Beyond",
     "section": "",
-    "text": "This page will contain a problem set corresponding to each class meeting. The problem sets are very open-ended and are designed to connect the material from class to your ongoing project.\nFor every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.\nWe chose together the following weekly pattern for problem sets:\nWe will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another’s projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer’s work as well as offering suggestions for improvement or future directions."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-1",
-    "href": "problem_sets.html#problem-set-1",
-    "title": "Problem Sets",
-    "section": "Problem Set 1",
-    "text": "Problem Set 1\n\n1. Your ongoing paper.\n1.1. (15 points) Write an abstract of your research paper.\n1.2. (5 points) What is one unit-specific quantity in your paper?\n1.3. (5 points) What is one target population in your paper?\n\n\n2. Regression for a conditional mean\n(25 points)\nIn class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-2",
-    "href": "problem_sets.html#problem-set-2",
-    "title": "Problem Sets",
-    "section": "Problem Set 2",
-    "text": "Problem Set 2\n\n(20 points) In your project, do you have something analogous to many groups with a few observations per group? This could more generally be any case where the number of parameters to be estimated is somewhat large for the sample size available. If not in your project, think of an example in your general research area. Write a few sentences about why one might want penalized regression in that setting.\n\nThe remainder of this problem set is based in the idea of multilevel models, though you can alternatively estimate by LASSO or ridge regression if you prefer. You can complete parts (2) and (3) in your own dataset if you can define at least 10 groups with at least 20 units per group. Wherever we say “team”, substitute whatever group is in your dataset. You may also use the baseball_population.csv data, in which the group variable is team.\n\n(15 points) Draw a sample of 5 units per group. Estimate an unpenalized OLS regression and a penalized regression (multilevel, ridge, or LASSO). Produce a graph that compares the predicted values.\n(15 points) Repeat the exercise above but with a sample of 20 units per group. Visualize the estimates. How do your results change?\n\nNote that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-3",
-    "href": "problem_sets.html#problem-set-3",
-    "title": "Problem Sets",
-    "section": "Problem Set 3",
-    "text": "Problem Set 3\nUsing the simulation data from class or data from your own project:\n\n(15 points) Estimate a regression tree and visualize it. If you are using R, there are packages to visualize the tree. If you are using Stata, there may be packages or you are welcome to use the summary text output.\n(10 points) Write 3-4 sentences for someone who has never heard of this method. Pick some predictor vector value and explain how the tree produces a prediction for that predictor vector.\n(15 points) Estimate a random forest. Visualize the predicted values as a function of the predictors. If your data have only two predictors, this could be as in class with one on the \\(x\\)-axis and one for colors. If you have many predictors, you may need to find a creative way to visualize your predictions. You may choose to make predictions while holding one or more variables at a single value.\n(10 points) In a few sentences, give an example of a problem in your area of research (possibly your paper) where the functional form linking \\(\\vec{X}\\) to \\(E(Y\\mid\\vec{X})\\) is unknown, such that a random forest might be a way to learn the functional form from the data."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-4",
-    "href": "problem_sets.html#problem-set-4",
-    "title": "Problem Sets",
-    "section": "Problem Set 4",
-    "text": "Problem Set 4\nWrite the abstract of your research paper. If you do not have results yet, pretend that your results are really amazing! You can make up any estimates that you want. As an added challenge, try writing the abstract twice with two sets of possible results. It would be ideal if all possible results are interesting.\nAs you write, minimize jargon so that you are writing for a New York Times reader. Emphasize big claims and don’t bury them in statistical terminology. The goal of this exercise is to help us ask and frame a high-impact question that will speak to a broad audience. Possibly, the exercise will lead you to change your question.\nYour peer reviewer should comment on things that may include:\n\nwhat about this abstract is especially compelling?\nwhat parts (if any) about this abstract are directed to a small subset of academia and perhaps should be broadened? This may be parts with jargon.\nwhat claims could be emphasized more?\n\nThe hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions."
-  },
-  {
-    "objectID": "scales.html",
-    "href": "scales.html",
-    "title": "Scale construction",
-    "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "text": "As researchers adopt algorithmic estimation methods for which analytical standard errors do not exist, methods to produce standard errors by resampling become all the more important. We will discuss the bootstrap for simple random samples and extensions to allow resampling-based standard error estimates in complex survey samples.",
     "crumbs": [
       "Problem Sets",
-      "Additional topics",
-      "Scale construction"
+      "Descriptive Data Science with Probability Samples",
+      "Statistical uncertainty by resampling"
     ]
   },
   {
-    "objectID": "who_we_are.html",
-    "href": "who_we_are.html",
-    "title": "Who We Are",
+    "objectID": "weighting_for_inference.html",
+    "href": "weighting_for_inference.html",
+    "title": "Weighting for causal and population inference",
     "section": "",
-    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
+    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Estimation by weighting"
+    ]
+  },
+  {
+    "objectID": "yhat_regression.html",
+    "href": "yhat_regression.html",
+    "title": "Regression for Y-hat",
+    "section": "",
+    "text": "slides\nThis class is about regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.\nSome of this class relies on an ongoing project on description: ilundberg.github.io/description",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Regression for Y-hat"
+    ]
   },
   {
     "objectID": "slides/lec2/penalized_regression_slides.html#problem-set-1-discussion",
