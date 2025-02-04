@@ -1,0 +1,4 @@
+\beamer@sectionintoc {1}{Difference in Difference}{3}{0}{1}
+\beamer@sectionintoc {2}{Interrupted Time Series}{73}{0}{2}
+\beamer@sectionintoc {3}{Regression Discontinuity}{93}{0}{3}
+\beamer@sectionintoc {4}{Synthetic Control}{111}{0}{4}

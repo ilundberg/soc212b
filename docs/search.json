@@ -443,7 +443,7 @@
     "href": "panel_data.html",
     "title": "Panel data",
     "section": "",
-    "text": "This page will cover forecasting, interrupted time series, difference in difference, and fixed effects.",
+    "text": "Here are slides for today.\n\nThis session will cover a series of estimators that apply when\n\nmany units are observed over many time periods each\none or more units become treated at some point in the observation window\n\nThese estimators include difference in difference, interrupted time series, regression discontinuity, and synthetic control. In order to cover many estimators, today’s class will focus more on conceptual ideas than on coding. Thus, material is currently available in slide form rather than in written note form.",
     "crumbs": [
       "Problem Sets",
       "Non-Probability Samples and Observational Causal Inference",
@@ -483,7 +483,7 @@
     "href": "problem_sets.html#problem-set-4",
     "title": "Problem Sets",
     "section": "Problem Set 4",
-    "text": "Problem Set 4\nWrite the abstract of your research paper. If you do not have results yet, pretend that your results are really amazing! You can make up any estimates that you want. As an added challenge, try writing the abstract twice with two sets of possible results.\nAs you write, minimize jargon so that you are writing for a New York Times reader. Emphasize big claims and don’t bury them in statistical terminology. The goal of this exercise is to help us ask and frame a high-impact question that will speak to a broad audience. Possibly, the exercise will lead you to change your question.\nYour peer reviewer should comment on things that may include:\n\nwhat about this abstract is especially compelling?\nwhat parts (if any) about this abstract are directed to a small subset of academia and perhaps should be broadened? This may be parts with jargon.\nwhat claims could be emphasized more?\n\nThe hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions."
+    "text": "Problem Set 4\nWrite the abstract of your research paper. If you do not have results yet, pretend that your results are really amazing! You can make up any estimates that you want. As an added challenge, try writing the abstract twice with two sets of possible results. It would be ideal if all possible results are interesting.\nAs you write, minimize jargon so that you are writing for a New York Times reader. Emphasize big claims and don’t bury them in statistical terminology. The goal of this exercise is to help us ask and frame a high-impact question that will speak to a broad audience. Possibly, the exercise will lead you to change your question.\nYour peer reviewer should comment on things that may include:\n\nwhat about this abstract is especially compelling?\nwhat parts (if any) about this abstract are directed to a small subset of academia and perhaps should be broadened? This may be parts with jargon.\nwhat claims could be emphasized more?\n\nThe hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions."
   },
   {
     "objectID": "scales.html",
