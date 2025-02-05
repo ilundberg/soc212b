@@ -78,7 +78,7 @@ At the end of class, you will be able to:
 
 \title{Panel Data\\\vskip .1in\begin{small}Difference in difference\\Interrupted time series\\Regression discontinuity\\Synthetic control\\{}\end{small}}
 \author{Ian Lundberg\\Soc 212B\\Winter 2025}
-\date{8 Nov 2022}
+\date{5 Feb 2025}
 
 \begin{document}
 
@@ -273,6 +273,79 @@ Egami, N., \& Yamauchi, S. (2023).\\\bref{https://doi.org/10.1017/pan.2022.8}{Us
 \end{frame}
 
 \begin{frame}
+
+Malesky, E. J., Nguyen, C. V., \& Tran, A. (2014).\\
+\bref{https://doi.org/10.1017/S0003055413000580}{The impact of recentralization on public services:\\A difference-in-differences analysis of the abolition of elected councils in Vietnam.}\\
+American Political Science Review, 108(1), 144-168.
+
+\end{frame}
+
+\begin{frame}
+
+Does government work better when it is centralized or decentralized?
+
+\end{frame}
+
+\begin{frame}{Vietnam setting: A study of recentralization}
+
+\begin{tikzpicture}[x = \textwidth, y = .8\textheight]
+\node at (0,0) {};
+\node at (1,1) {};
+\node[draw, rounded corners] (national) at (.45,.8) {National Assembly};
+\node[draw, rounded corners] (provincial) at (.45,.6) {Provincial People's Committee};
+\node[draw, rounded corners] (district) at (.45,.4) {District People's Committee};
+\node[draw, rounded corners] (commune) at (.45,.2) {Commune People's Committee};
+\draw[->, thick] (national) -- (provincial);
+\draw[->, thick] (provincial) -- (district);
+\draw[->, thick] (district) -- (commune);
+\node[font = \footnotesize, anchor = east] at (1,.8) {most centralized};
+\node[font = \footnotesize, anchor = east] at (1,.4) {district $\approx$ 120k people};
+\node[font = \footnotesize, anchor = east] at (1,.2) {most decentralized};
+\draw[line width = 2pt, red] (district.west) -- (district.east);
+\node[font = \footnotesize, anchor = west, red, align = left] at (0,.4) {National Assembly\\2008 Resolution\\to Study\\Removal of DPCs};
+\end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}{Vietnam setting: A study of recentralization}
+
+Input from social scientists \pause
+\begin{enumerate}
+\item Enough treated units to study \pause
+\item Sampling stratified by region \pause
+\item Sampling stratified by
+\begin{itemize}
+\item city versus rural
+\item lowland versus highland
+\item midland versus inter-nationally bordered land
+\end{itemize} \pause
+\item Sampling stratified by socioeconomic and public administration performance
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\centering
+\includegraphics[height = .9\textheight]{figures/malesky_map}
+\end{frame}
+
+\begin{frame}
+
+Vietnam Household Living Standards Survey\\
+Reports by each local commune by commune leaders
+\begin{itemize}
+\item 2006 and 2008: Before DPC abolition
+\item 2010: After DPC abolition
+\end{itemize}
+One outcome we will examine:\\
+Is there the following project in the commune?
+\begin{itemize}
+\item Investment on culture and education
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
 \begin{tikzpicture}[x = \textwidth, y = .9\textheight]
 \node at (0,0) {};
 \node at (1,1) {};
@@ -393,7 +466,7 @@ Pre-treatment periods make it possible to\\
 \section{Interrupted Time Series}
 
 \begin{frame}[t]{Interrupted time series\footnote{Bernal, J. L., Cummins, S., \& Gasparrini, A. (2017). \bref{https://doi.org/10.1093/ije/dyw098}{Interrupted time series regression for the evaluation of public health interventions: A tutorial.} International Journal of Epidemiology, 46(1), 348-355.\\{}}} \pause \vskip .2in
-You study one unit. It is untreated. Then it is treated. \vskip .2in
+You study one unit. It is untreated. Then it is treated. \vskip .2in \pause
 \begin{center}
 \includegraphics[width = .4\textwidth]{figures/parallel_trends_doubtful_4.pdf} \vskip .1in
 \end{center}
@@ -579,6 +652,16 @@ Identifying Assumption: & $\underbrace{Y^0_{\text{CA},t}}_\text{Counterfactual} 
 \item You want to extrapolate far from the cutoff \hfill 1988$\rightarrow$2000
 \end{itemize}
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Discussion}
+
+\begin{itemize}
+\item What data do you need to use the method?
+\item What are the most likely limitations?
+\item How would you generalize your method to settings where many units become treated, potentially at different time points (staggered adoption)?
+\end{itemize}
+
 \end{frame}
 
 \goalsframe

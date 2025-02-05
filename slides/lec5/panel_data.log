@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.20)  4 FEB 2025 10:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.20)  5 FEB 2025 08:42
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1790,625 +1790,535 @@ Package pdftex.def Info: figures/ey_ept.png  used on input line 273.
 (pdftex.def)             Requested size: 307.28987pt x 128.46806pt.
  [50
 
- <./figures/ey_ept.png>]
-<figures/malesky_map.png, id=592, 476.78125pt x 763.85374pt>
-File: figures/malesky_map.png Graphic file (type png)
-<use figures/malesky_map.png>
-Package pdftex.def Info: figures/malesky_map.png  used on input line 308.
-(pdftex.def)             Requested size: 133.89796pt x 214.51813pt.
+ <./figures/ey_ept.png>] [51
 
-Overfull \hbox (11.1488pt too wide) in paragraph at lines 308--308
-[][]  
- []
-
-[51
-
- <./figures/malesky_map.png>]
-File: figures/malesky_map.png Graphic file (type png)
-<use figures/malesky_map.png>
-Package pdftex.def Info: figures/malesky_map.png  used on input line 308.
-(pdftex.def)             Requested size: 133.89796pt x 214.51813pt.
-
-Overfull \hbox (11.1488pt too wide) in paragraph at lines 308--308
-[][]  
- []
-
-[52
+] [52
 
 ]
-File: figures/malesky_map.png Graphic file (type png)
-<use figures/malesky_map.png>
-Package pdftex.def Info: figures/malesky_map.png  used on input line 308.
-(pdftex.def)             Requested size: 133.89796pt x 214.51813pt.
-
-Overfull \hbox (11.1488pt too wide) in paragraph at lines 308--308
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 308--308
 [][]  
  []
 
 [53
 
-]
-File: figures/malesky_map.png Graphic file (type png)
-<use figures/malesky_map.png>
-Package pdftex.def Info: figures/malesky_map.png  used on input line 308.
-(pdftex.def)             Requested size: 133.89796pt x 214.51813pt.
+] [54
 
-Overfull \hbox (11.1488pt too wide) in paragraph at lines 308--308
-[][]  
- []
+] [55
 
-[54
+] [56
 
-]
-<figures/ey_fig3.png, id=630, 966.61125pt x 336.25626pt>
-File: figures/ey_fig3.png Graphic file (type png)
-<use figures/ey_fig3.png>
-Package pdftex.def Info: figures/ey_fig3.png  used on input line 314.
-(pdftex.def)             Requested size: 307.28987pt x 106.89613pt.
-<figures/ey_table2.png, id=631, 1349.04pt x 272.01625pt>
-File: figures/ey_table2.png Graphic file (type png)
-<use figures/ey_table2.png>
-Package pdftex.def Info: figures/ey_table2.png  used on input line 314.
-(pdftex.def)             Requested size: 307.28987pt x 61.96057pt.
- [55
-
- <./figures/ey_fig3.png> <./figures/ey_table2.png>]
-File: figures/ey_fig3.png Graphic file (type png)
-<use figures/ey_fig3.png>
-Package pdftex.def Info: figures/ey_fig3.png  used on input line 314.
-(pdftex.def)             Requested size: 307.28987pt x 106.89613pt.
-File: figures/ey_table2.png Graphic file (type png)
-<use figures/ey_table2.png>
-Package pdftex.def Info: figures/ey_table2.png  used on input line 314.
-(pdftex.def)             Requested size: 307.28987pt x 61.96057pt.
- [56
-
-]
-File: figures/ey_fig3.png Graphic file (type png)
-<use figures/ey_fig3.png>
-Package pdftex.def Info: figures/ey_fig3.png  used on input line 314.
-(pdftex.def)             Requested size: 307.28987pt x 106.89613pt.
-File: figures/ey_table2.png Graphic file (type png)
-<use figures/ey_table2.png>
-Package pdftex.def Info: figures/ey_table2.png  used on input line 314.
-(pdftex.def)             Requested size: 307.28987pt x 61.96057pt.
- [57
+] [57
 
 ] [58
 
 ]
-[59
+<figures/malesky_map.png, id=670, 476.78125pt x 763.85374pt>
+File: figures/malesky_map.png Graphic file (type png)
+<use figures/malesky_map.png>
+Package pdftex.def Info: figures/malesky_map.png  used on input line 330.
+(pdftex.def)             Requested size: 150.63066pt x 241.33032pt.
+ [59
+
+ <./figures/malesky_map.png>] [60
 
 ]
-File: figures/egami_yamauchi_fig2a.png Graphic file (type png)
-<use figures/egami_yamauchi_fig2a.png>
-Package pdftex.def Info: figures/egami_yamauchi_fig2a.png  used on input line 3
-48.
-(pdftex.def)             Requested size: 122.91406pt x 110.59164pt.
+File: figures/malesky_map.png Graphic file (type png)
+<use figures/malesky_map.png>
+Package pdftex.def Info: figures/malesky_map.png  used on input line 381.
+(pdftex.def)             Requested size: 133.89796pt x 214.51813pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 348--348
+Overfull \hbox (11.1488pt too wide) in paragraph at lines 381--381
 [][]  
- []
-
-
-Overfull \vbox (4.35641pt too high) detected at line 348
- []
-
-[60
-
-]
-File: figures/egami_yamauchi_fig2a.png Graphic file (type png)
-<use figures/egami_yamauchi_fig2a.png>
-Package pdftex.def Info: figures/egami_yamauchi_fig2a.png  used on input line 3
-48.
-(pdftex.def)             Requested size: 122.91406pt x 110.59164pt.
-
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 348--348
-[][]  
- []
-
-
-Overfull \vbox (4.35641pt too high) detected at line 348
  []
 
 [61
 
 ]
-File: figures/egami_yamauchi_fig2a.png Graphic file (type png)
-<use figures/egami_yamauchi_fig2a.png>
-Package pdftex.def Info: figures/egami_yamauchi_fig2a.png  used on input line 3
-48.
-(pdftex.def)             Requested size: 122.91406pt x 110.59164pt.
+File: figures/malesky_map.png Graphic file (type png)
+<use figures/malesky_map.png>
+Package pdftex.def Info: figures/malesky_map.png  used on input line 381.
+(pdftex.def)             Requested size: 133.89796pt x 214.51813pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 348--348
+Overfull \hbox (11.1488pt too wide) in paragraph at lines 381--381
 [][]  
- []
-
-
-Overfull \vbox (4.35641pt too high) detected at line 348
  []
 
 [62
 
 ]
-File: figures/egami_yamauchi_fig2a.png Graphic file (type png)
-<use figures/egami_yamauchi_fig2a.png>
-Package pdftex.def Info: figures/egami_yamauchi_fig2a.png  used on input line 3
-48.
-(pdftex.def)             Requested size: 122.91406pt x 110.59164pt.
+File: figures/malesky_map.png Graphic file (type png)
+<use figures/malesky_map.png>
+Package pdftex.def Info: figures/malesky_map.png  used on input line 381.
+(pdftex.def)             Requested size: 133.89796pt x 214.51813pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 348--348
+Overfull \hbox (11.1488pt too wide) in paragraph at lines 381--381
 [][]  
- []
-
-
-Overfull \vbox (4.35641pt too high) detected at line 348
  []
 
 [63
 
 ]
-<figures/ey_fig4a.png, id=718, 550.055pt x 412.54124pt>
-File: figures/ey_fig4a.png Graphic file (type png)
-<use figures/ey_fig4a.png>
-Package pdftex.def Info: figures/ey_fig4a.png  used on input line 353.
-(pdftex.def)             Requested size: 153.64493pt x 115.23378pt.
- [64
+File: figures/malesky_map.png Graphic file (type png)
+<use figures/malesky_map.png>
+Package pdftex.def Info: figures/malesky_map.png  used on input line 381.
+(pdftex.def)             Requested size: 133.89796pt x 214.51813pt.
 
- <./figures/ey_fig4a.png>] [65
+Overfull \hbox (11.1488pt too wide) in paragraph at lines 381--381
+[][]  
+ []
+
+[64
 
 ]
-<figures/ey_fig2b.png, id=738, 524.96124pt x 736.7525pt>
-File: figures/ey_fig2b.png Graphic file (type png)
-<use figures/ey_fig2b.png>
-Package pdftex.def Info: figures/ey_fig2b.png  used on input line 371.
-(pdftex.def)             Requested size: 95.53027pt x 134.07332pt.
-<figures/ey_assumption3.png, id=739, 1504.62125pt x 478.78876pt>
-File: figures/ey_assumption3.png Graphic file (type png)
-<use figures/ey_assumption3.png>
-Package pdftex.def Info: figures/ey_assumption3.png  used on input line 371.
-(pdftex.def)             Requested size: 199.73653pt x 63.55244pt.
-<figures/ey_sdid.png, id=740, 1226.5825pt x 295.1025pt>
-File: figures/ey_sdid.png Graphic file (type png)
-<use figures/ey_sdid.png>
-Package pdftex.def Info: figures/ey_sdid.png  used on input line 371.
-(pdftex.def)             Requested size: 199.73653pt x 48.05038pt.
+<figures/ey_fig3.png, id=727, 966.61125pt x 336.25626pt>
+File: figures/ey_fig3.png Graphic file (type png)
+<use figures/ey_fig3.png>
+Package pdftex.def Info: figures/ey_fig3.png  used on input line 387.
+(pdftex.def)             Requested size: 307.28987pt x 106.89613pt.
+<figures/ey_table2.png, id=728, 1349.04pt x 272.01625pt>
+File: figures/ey_table2.png Graphic file (type png)
+<use figures/ey_table2.png>
+Package pdftex.def Info: figures/ey_table2.png  used on input line 387.
+(pdftex.def)             Requested size: 307.28987pt x 61.96057pt.
+ [65
 
-Overfull \hbox (11.1488pt too wide) in paragraph at lines 371--371
+ <./figures/ey_fig3.png> <./figures/ey_table2.png>]
+File: figures/ey_fig3.png Graphic file (type png)
+<use figures/ey_fig3.png>
+Package pdftex.def Info: figures/ey_fig3.png  used on input line 387.
+(pdftex.def)             Requested size: 307.28987pt x 106.89613pt.
+File: figures/ey_table2.png Graphic file (type png)
+<use figures/ey_table2.png>
+Package pdftex.def Info: figures/ey_table2.png  used on input line 387.
+(pdftex.def)             Requested size: 307.28987pt x 61.96057pt.
+ [66
+
+]
+File: figures/ey_fig3.png Graphic file (type png)
+<use figures/ey_fig3.png>
+Package pdftex.def Info: figures/ey_fig3.png  used on input line 387.
+(pdftex.def)             Requested size: 307.28987pt x 106.89613pt.
+File: figures/ey_table2.png Graphic file (type png)
+<use figures/ey_table2.png>
+Package pdftex.def Info: figures/ey_table2.png  used on input line 387.
+(pdftex.def)             Requested size: 307.28987pt x 61.96057pt.
+ [67
+
+] [68
+
+]
+[69
+
+]
+File: figures/egami_yamauchi_fig2a.png Graphic file (type png)
+<use figures/egami_yamauchi_fig2a.png>
+Package pdftex.def Info: figures/egami_yamauchi_fig2a.png  used on input line 4
+21.
+(pdftex.def)             Requested size: 122.91406pt x 110.59164pt.
+
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 421--421
 [][]  
  []
 
 
-Overfull \vbox (4.35641pt too high) detected at line 371
- []
-
-[66
-
- <./figures/ey_fig2b.png> <./figures/ey_assumption3.png> <./figures/ey_sdid.png
->]
-File: figures/ey_fig2b.png Graphic file (type png)
-<use figures/ey_fig2b.png>
-Package pdftex.def Info: figures/ey_fig2b.png  used on input line 371.
-(pdftex.def)             Requested size: 95.53027pt x 134.07332pt.
-File: figures/ey_assumption3.png Graphic file (type png)
-<use figures/ey_assumption3.png>
-Package pdftex.def Info: figures/ey_assumption3.png  used on input line 371.
-(pdftex.def)             Requested size: 199.73653pt x 63.55244pt.
-File: figures/ey_sdid.png Graphic file (type png)
-<use figures/ey_sdid.png>
-Package pdftex.def Info: figures/ey_sdid.png  used on input line 371.
-(pdftex.def)             Requested size: 199.73653pt x 48.05038pt.
-
-Overfull \hbox (11.1488pt too wide) in paragraph at lines 371--371
-[][]  
- []
-
-
-Overfull \vbox (4.35641pt too high) detected at line 371
- []
-
-[67
-
-]
-File: figures/ey_fig2b.png Graphic file (type png)
-<use figures/ey_fig2b.png>
-Package pdftex.def Info: figures/ey_fig2b.png  used on input line 371.
-(pdftex.def)             Requested size: 95.53027pt x 134.07332pt.
-File: figures/ey_assumption3.png Graphic file (type png)
-<use figures/ey_assumption3.png>
-Package pdftex.def Info: figures/ey_assumption3.png  used on input line 371.
-(pdftex.def)             Requested size: 199.73653pt x 63.55244pt.
-File: figures/ey_sdid.png Graphic file (type png)
-<use figures/ey_sdid.png>
-Package pdftex.def Info: figures/ey_sdid.png  used on input line 371.
-(pdftex.def)             Requested size: 199.73653pt x 48.05038pt.
-
-Overfull \hbox (11.1488pt too wide) in paragraph at lines 371--371
-[][]  
- []
-
-
-Overfull \vbox (4.35641pt too high) detected at line 371
- []
-
-[68
-
-]
-<figures/ey_fig3b.png, id=772, 320.19624pt x 337.26pt>
-File: figures/ey_fig3b.png Graphic file (type png)
-<use figures/ey_fig3b.png>
-Package pdftex.def Info: figures/ey_fig3b.png  used on input line 376.
-(pdftex.def)             Requested size: 122.91406pt x 129.4621pt.
-<figures/ey_fig4b.png, id=773, 468.75125pt x 410.53375pt>
-File: figures/ey_fig4b.png Graphic file (type png)
-<use figures/ey_fig4b.png>
-Package pdftex.def Info: figures/ey_fig4b.png  used on input line 376.
-(pdftex.def)             Requested size: 122.91406pt x 107.64456pt.
- [69
-
- <./figures/ey_fig3b.png> <./figures/ey_fig4b.png>]
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 391--391
-[]  
+Overfull \vbox (4.35641pt too high) detected at line 421
  []
 
 [70
 
 ]
-<figures/ey_fig2.png, id=795, 960.58875pt x 447.6725pt>
-File: figures/ey_fig2.png Graphic file (type png)
-<use figures/ey_fig2.png>
-Package pdftex.def Info: figures/ey_fig2.png  used on input line 391.
-(pdftex.def)             Requested size: 307.28987pt x 143.2103pt.
+File: figures/egami_yamauchi_fig2a.png Graphic file (type png)
+<use figures/egami_yamauchi_fig2a.png>
+Package pdftex.def Info: figures/egami_yamauchi_fig2a.png  used on input line 4
+21.
+(pdftex.def)             Requested size: 122.91406pt x 110.59164pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 391--391
-[]  
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 421--421
+[][]  
+ []
+
+
+Overfull \vbox (4.35641pt too high) detected at line 421
  []
 
 [71
 
- <./figures/ey_fig2.png>]
-File: figures/ey_fig3.png Graphic file (type png)
-<use figures/ey_fig3.png>
-Package pdftex.def Info: figures/ey_fig3.png  used on input line 391.
-(pdftex.def)             Requested size: 307.28987pt x 106.89613pt.
+]
+File: figures/egami_yamauchi_fig2a.png Graphic file (type png)
+<use figures/egami_yamauchi_fig2a.png>
+Package pdftex.def Info: figures/egami_yamauchi_fig2a.png  used on input line 4
+21.
+(pdftex.def)             Requested size: 122.91406pt x 110.59164pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 391--391
-[]  
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 421--421
+[][]  
+ []
+
+
+Overfull \vbox (4.35641pt too high) detected at line 421
  []
 
 [72
 
 ]
-<figures/parallel_trends_doubtful_4.pdf, id=815, 361.35pt x 216.81pt>
-File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
-<use figures/parallel_trends_doubtful_4.pdf>
-Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
-(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
- [73
+File: figures/egami_yamauchi_fig2a.png Graphic file (type png)
+<use figures/egami_yamauchi_fig2a.png>
+Package pdftex.def Info: figures/egami_yamauchi_fig2a.png  used on input line 4
+21.
+(pdftex.def)             Requested size: 122.91406pt x 110.59164pt.
 
- <./figures/parallel_trends_doubtful_4.pdf>]
-File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
-<use figures/parallel_trends_doubtful_4.pdf>
-Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
-(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
- [74
-
-]
-File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
-<use figures/parallel_trends_doubtful_4.pdf>
-Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
-(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
-
-Overfull \vbox (7.0915pt too high) detected at line 419
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 421--421
+[][]  
  []
 
-[75
+
+Overfull \vbox (4.35641pt too high) detected at line 421
+ []
+
+[73
 
 ]
-File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
-<use figures/parallel_trends_doubtful_4.pdf>
-Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
-(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
+<figures/ey_fig4a.png, id=815, 550.055pt x 412.54124pt>
+File: figures/ey_fig4a.png Graphic file (type png)
+<use figures/ey_fig4a.png>
+Package pdftex.def Info: figures/ey_fig4a.png  used on input line 426.
+(pdftex.def)             Requested size: 153.64493pt x 115.23378pt.
+ [74
 
-Overfull \vbox (7.0915pt too high) detected at line 419
+ <./figures/ey_fig4a.png>] [75
+
+]
+<figures/ey_fig2b.png, id=835, 524.96124pt x 736.7525pt>
+File: figures/ey_fig2b.png Graphic file (type png)
+<use figures/ey_fig2b.png>
+Package pdftex.def Info: figures/ey_fig2b.png  used on input line 444.
+(pdftex.def)             Requested size: 95.53027pt x 134.07332pt.
+<figures/ey_assumption3.png, id=836, 1504.62125pt x 478.78876pt>
+File: figures/ey_assumption3.png Graphic file (type png)
+<use figures/ey_assumption3.png>
+Package pdftex.def Info: figures/ey_assumption3.png  used on input line 444.
+(pdftex.def)             Requested size: 199.73653pt x 63.55244pt.
+<figures/ey_sdid.png, id=837, 1226.5825pt x 295.1025pt>
+File: figures/ey_sdid.png Graphic file (type png)
+<use figures/ey_sdid.png>
+Package pdftex.def Info: figures/ey_sdid.png  used on input line 444.
+(pdftex.def)             Requested size: 199.73653pt x 48.05038pt.
+
+Overfull \hbox (11.1488pt too wide) in paragraph at lines 444--444
+[][]  
+ []
+
+
+Overfull \vbox (4.35641pt too high) detected at line 444
  []
 
 [76
 
-]
-File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
-<use figures/parallel_trends_doubtful_4.pdf>
-Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
-(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
+ <./figures/ey_fig2b.png> <./figures/ey_assumption3.png> <./figures/ey_sdid.png
+>]
+File: figures/ey_fig2b.png Graphic file (type png)
+<use figures/ey_fig2b.png>
+Package pdftex.def Info: figures/ey_fig2b.png  used on input line 444.
+(pdftex.def)             Requested size: 95.53027pt x 134.07332pt.
+File: figures/ey_assumption3.png Graphic file (type png)
+<use figures/ey_assumption3.png>
+Package pdftex.def Info: figures/ey_assumption3.png  used on input line 444.
+(pdftex.def)             Requested size: 199.73653pt x 63.55244pt.
+File: figures/ey_sdid.png Graphic file (type png)
+<use figures/ey_sdid.png>
+Package pdftex.def Info: figures/ey_sdid.png  used on input line 444.
+(pdftex.def)             Requested size: 199.73653pt x 48.05038pt.
 
-Overfull \vbox (7.0915pt too high) detected at line 419
+Overfull \hbox (11.1488pt too wide) in paragraph at lines 444--444
+[][]  
+ []
+
+
+Overfull \vbox (4.35641pt too high) detected at line 444
  []
 
 [77
 
 ]
-File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
-<use figures/parallel_trends_doubtful_4.pdf>
-Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
-(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
+File: figures/ey_fig2b.png Graphic file (type png)
+<use figures/ey_fig2b.png>
+Package pdftex.def Info: figures/ey_fig2b.png  used on input line 444.
+(pdftex.def)             Requested size: 95.53027pt x 134.07332pt.
+File: figures/ey_assumption3.png Graphic file (type png)
+<use figures/ey_assumption3.png>
+Package pdftex.def Info: figures/ey_assumption3.png  used on input line 444.
+(pdftex.def)             Requested size: 199.73653pt x 63.55244pt.
+File: figures/ey_sdid.png Graphic file (type png)
+<use figures/ey_sdid.png>
+Package pdftex.def Info: figures/ey_sdid.png  used on input line 444.
+(pdftex.def)             Requested size: 199.73653pt x 48.05038pt.
 
-Overfull \vbox (23.19151pt too high) detected at line 419
+Overfull \hbox (11.1488pt too wide) in paragraph at lines 444--444
+[][]  
+ []
+
+
+Overfull \vbox (4.35641pt too high) detected at line 444
  []
 
 [78
 
 ]
-File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
-<use figures/parallel_trends_doubtful_4.pdf>
-Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
-(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
+<figures/ey_fig3b.png, id=868, 320.19624pt x 337.26pt>
+File: figures/ey_fig3b.png Graphic file (type png)
+<use figures/ey_fig3b.png>
+Package pdftex.def Info: figures/ey_fig3b.png  used on input line 449.
+(pdftex.def)             Requested size: 122.91406pt x 129.4621pt.
+<figures/ey_fig4b.png, id=869, 468.75125pt x 410.53375pt>
+File: figures/ey_fig4b.png Graphic file (type png)
+<use figures/ey_fig4b.png>
+Package pdftex.def Info: figures/ey_fig4b.png  used on input line 449.
+(pdftex.def)             Requested size: 122.91406pt x 107.64456pt.
+ [79
 
-Overfull \vbox (7.0915pt too high) detected at line 419
- []
-
-[79
-
-]
-File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
-<use figures/parallel_trends_doubtful_4.pdf>
-Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
-(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
-
-Overfull \vbox (7.0915pt too high) detected at line 419
+ <./figures/ey_fig3b.png> <./figures/ey_fig4b.png>]
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 464--464
+[]  
  []
 
 [80
 
 ]
-File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
-<use figures/parallel_trends_doubtful_4.pdf>
-Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
-(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
- [81
+<figures/ey_fig2.png, id=891, 960.58875pt x 447.6725pt>
+File: figures/ey_fig2.png Graphic file (type png)
+<use figures/ey_fig2.png>
+Package pdftex.def Info: figures/ey_fig2.png  used on input line 464.
+(pdftex.def)             Requested size: 307.28987pt x 143.2103pt.
+
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 464--464
+[]  
+ []
+
+[81
+
+ <./figures/ey_fig2.png>]
+File: figures/ey_fig3.png Graphic file (type png)
+<use figures/ey_fig3.png>
+Package pdftex.def Info: figures/ey_fig3.png  used on input line 464.
+(pdftex.def)             Requested size: 307.28987pt x 106.89613pt.
+
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 464--464
+[]  
+ []
+
+[82
 
 ]
+<figures/parallel_trends_doubtful_4.pdf, id=912, 361.35pt x 216.81pt>
 File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
 <use figures/parallel_trends_doubtful_4.pdf>
 Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
-(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
- [82
-
-]
-File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
-<use figures/parallel_trends_doubtful_4.pdf>
-Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
+line 492.
 (pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
  [83
 
+ <./figures/parallel_trends_doubtful_4.pdf>]
+File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
+<use figures/parallel_trends_doubtful_4.pdf>
+Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
+line 492.
+(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
+ [84
+
 ]
 File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
 <use figures/parallel_trends_doubtful_4.pdf>
 Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
-line 419.
+line 492.
 (pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
- [84
 
-] [85
+Overfull \vbox (7.0915pt too high) detected at line 492
+ []
+
+[85
 
 ]
-<figures/its_problem_1.pdf, id=966, 361.35pt x 266.9975pt>
-File: figures/its_problem_1.pdf Graphic file (type pdf)
-<use figures/its_problem_1.pdf>
-Package pdftex.def Info: figures/its_problem_1.pdf  used on input line 427.
-(pdftex.def)             Requested size: 307.28987pt x 227.05486pt.
+File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
+<use figures/parallel_trends_doubtful_4.pdf>
+Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
+line 492.
+(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
 
-Overfull \vbox (2.07219pt too high) detected at line 427
+Overfull \vbox (7.0915pt too high) detected at line 492
  []
 
 [86
 
- <./figures/its_problem_1.pdf>]
-<figures/its_problem_2.pdf, id=981, 361.35pt x 266.9975pt>
-File: figures/its_problem_2.pdf Graphic file (type pdf)
-<use figures/its_problem_2.pdf>
-Package pdftex.def Info: figures/its_problem_2.pdf  used on input line 427.
-(pdftex.def)             Requested size: 307.28987pt x 227.05486pt.
+]
+File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
+<use figures/parallel_trends_doubtful_4.pdf>
+Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
+line 492.
+(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
 
-Overfull \vbox (2.07219pt too high) detected at line 427
+Overfull \vbox (7.0915pt too high) detected at line 492
  []
 
 [87
 
- <./figures/its_problem_2.pdf>]
-<figures/its_problem_3.pdf, id=996, 361.35pt x 266.9975pt>
-File: figures/its_problem_3.pdf Graphic file (type pdf)
-<use figures/its_problem_3.pdf>
-Package pdftex.def Info: figures/its_problem_3.pdf  used on input line 427.
-(pdftex.def)             Requested size: 307.28987pt x 227.05486pt.
+]
+File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
+<use figures/parallel_trends_doubtful_4.pdf>
+Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
+line 492.
+(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
 
-Overfull \vbox (2.07219pt too high) detected at line 427
+Overfull \vbox (23.19151pt too high) detected at line 492
  []
 
 [88
 
- <./figures/its_problem_3.pdf>]
-<figures/its_problem_4.pdf, id=1011, 361.35pt x 266.9975pt>
-File: figures/its_problem_4.pdf Graphic file (type pdf)
-<use figures/its_problem_4.pdf>
-Package pdftex.def Info: figures/its_problem_4.pdf  used on input line 427.
-(pdftex.def)             Requested size: 307.28987pt x 227.05486pt.
+]
+File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
+<use figures/parallel_trends_doubtful_4.pdf>
+Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
+line 492.
+(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
 
-Overfull \vbox (2.07219pt too high) detected at line 427
+Overfull \vbox (7.0915pt too high) detected at line 492
  []
 
 [89
 
- <./figures/its_problem_4.pdf>]
-<figures/its_problem_5.pdf, id=1028, 361.35pt x 266.9975pt>
-File: figures/its_problem_5.pdf Graphic file (type pdf)
-<use figures/its_problem_5.pdf>
-Package pdftex.def Info: figures/its_problem_5.pdf  used on input line 427.
+]
+File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
+<use figures/parallel_trends_doubtful_4.pdf>
+Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
+line 492.
+(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
+
+Overfull \vbox (7.0915pt too high) detected at line 492
+ []
+
+[90
+
+]
+File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
+<use figures/parallel_trends_doubtful_4.pdf>
+Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
+line 492.
+(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
+ [91
+
+]
+File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
+<use figures/parallel_trends_doubtful_4.pdf>
+Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
+line 492.
+(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
+ [92
+
+]
+File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
+<use figures/parallel_trends_doubtful_4.pdf>
+Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
+line 492.
+(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
+ [93
+
+]
+File: figures/parallel_trends_doubtful_4.pdf Graphic file (type pdf)
+<use figures/parallel_trends_doubtful_4.pdf>
+Package pdftex.def Info: figures/parallel_trends_doubtful_4.pdf  used on input 
+line 492.
+(pdftex.def)             Requested size: 122.91406pt x 73.7475pt.
+ [94
+
+] [95
+
+]
+<figures/its_problem_1.pdf, id=1062, 361.35pt x 266.9975pt>
+File: figures/its_problem_1.pdf Graphic file (type pdf)
+<use figures/its_problem_1.pdf>
+Package pdftex.def Info: figures/its_problem_1.pdf  used on input line 500.
 (pdftex.def)             Requested size: 307.28987pt x 227.05486pt.
- [90
 
- <./figures/its_problem_5.pdf>] [91
-
-]
-[92
-
-]
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
-[][]  
- []
-
-[93
-
-]
-<figures/ct_fig1a.png, id=1074, 912.40875pt x 690.58pt>
-File: figures/ct_fig1a.png Graphic file (type png)
-<use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
-(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
-
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
-[][]  
- []
-
-[94
-
- <./figures/ct_fig1a.png>]
-File: figures/ct_fig1a.png Graphic file (type png)
-<use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
-(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
-
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
-[][]  
- []
-
-[95
-
-]
-File: figures/ct_fig1a.png Graphic file (type png)
-<use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
-(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
-
-Overfull \hbox (19.37386pt too wide) in paragraph at lines 476--476
-[][]  
+Overfull \vbox (2.07219pt too high) detected at line 500
  []
 
 [96
 
-]
-File: figures/ct_fig1a.png Graphic file (type png)
-<use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
-(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+ <./figures/its_problem_1.pdf>]
+<figures/its_problem_2.pdf, id=1077, 361.35pt x 266.9975pt>
+File: figures/its_problem_2.pdf Graphic file (type pdf)
+<use figures/its_problem_2.pdf>
+Package pdftex.def Info: figures/its_problem_2.pdf  used on input line 500.
+(pdftex.def)             Requested size: 307.28987pt x 227.05486pt.
 
-Overfull \hbox (19.37386pt too wide) in paragraph at lines 476--476
-[][]  
+Overfull \vbox (2.07219pt too high) detected at line 500
  []
 
 [97
 
-]
-File: figures/ct_fig1a.png Graphic file (type png)
-<use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
-(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+ <./figures/its_problem_2.pdf>]
+<figures/its_problem_3.pdf, id=1093, 361.35pt x 266.9975pt>
+File: figures/its_problem_3.pdf Graphic file (type pdf)
+<use figures/its_problem_3.pdf>
+Package pdftex.def Info: figures/its_problem_3.pdf  used on input line 500.
+(pdftex.def)             Requested size: 307.28987pt x 227.05486pt.
 
-Overfull \hbox (19.37386pt too wide) in paragraph at lines 476--476
-[][]  
+Overfull \vbox (2.07219pt too high) detected at line 500
  []
 
 [98
 
-]
-File: figures/ct_fig1a.png Graphic file (type png)
-<use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
-(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+ <./figures/its_problem_3.pdf>]
+<figures/its_problem_4.pdf, id=1108, 361.35pt x 266.9975pt>
+File: figures/its_problem_4.pdf Graphic file (type pdf)
+<use figures/its_problem_4.pdf>
+Package pdftex.def Info: figures/its_problem_4.pdf  used on input line 500.
+(pdftex.def)             Requested size: 307.28987pt x 227.05486pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
-[][]  
+Overfull \vbox (2.07219pt too high) detected at line 500
  []
 
 [99
 
-]
-File: figures/ct_fig1a.png Graphic file (type png)
-<use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
-(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+ <./figures/its_problem_4.pdf>]
+<figures/its_problem_5.pdf, id=1124, 361.35pt x 266.9975pt>
+File: figures/its_problem_5.pdf Graphic file (type pdf)
+<use figures/its_problem_5.pdf>
+Package pdftex.def Info: figures/its_problem_5.pdf  used on input line 500.
+(pdftex.def)             Requested size: 307.28987pt x 227.05486pt.
+ [100
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
-[][]  
- []
-
-[100
+ <./figures/its_problem_5.pdf>] [101
 
 ]
-File: figures/ct_fig1a.png Graphic file (type png)
-<use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
-(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
-
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
-[][]  
- []
-
-[101
-
-]
-File: figures/ct_fig1a.png Graphic file (type png)
-<use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
-(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
-
-Overfull \hbox (11.59593pt too wide) in paragraph at lines 476--476
-[][]  
- []
-
 [102
 
 ]
-File: figures/ct_fig1a.png Graphic file (type png)
-<use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
-(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
-
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
 [][]  
  []
 
 [103
 
 ]
+<figures/ct_fig1a.png, id=1171, 912.40875pt x 690.58pt>
 File: figures/ct_fig1a.png Graphic file (type png)
 <use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
 (pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
 [][]  
  []
 
 [104
 
-]
+ <./figures/ct_fig1a.png>]
 File: figures/ct_fig1a.png Graphic file (type png)
 <use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
 (pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
 [][]  
  []
 
@@ -2417,10 +2327,10 @@ Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
 ]
 File: figures/ct_fig1a.png Graphic file (type png)
 <use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
 (pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
+Overfull \hbox (19.37386pt too wide) in paragraph at lines 549--549
 [][]  
  []
 
@@ -2429,10 +2339,10 @@ Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
 ]
 File: figures/ct_fig1a.png Graphic file (type png)
 <use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
 (pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
+Overfull \hbox (19.37386pt too wide) in paragraph at lines 549--549
 [][]  
  []
 
@@ -2441,10 +2351,10 @@ Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
 ]
 File: figures/ct_fig1a.png Graphic file (type png)
 <use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
 (pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
+Overfull \hbox (19.37386pt too wide) in paragraph at lines 549--549
 [][]  
  []
 
@@ -2453,80 +2363,202 @@ Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
 ]
 File: figures/ct_fig1a.png Graphic file (type png)
 <use figures/ct_fig1a.png>
-Package pdftex.def Info: figures/ct_fig1a.png  used on input line 476.
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
 (pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
 
-Overfull \hbox (7.29922pt too wide) in paragraph at lines 476--476
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
 [][]  
  []
 
 [109
 
-] [110
+]
+File: figures/ct_fig1a.png Graphic file (type png)
+<use figures/ct_fig1a.png>
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
+(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
 
-] [111
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
+[][]  
+ []
 
-] [112
-
-] [113
-
-] [114
-
-] [115
+[110
 
 ]
-<figures/synth_fig1.png, id=1317, 880.28876pt x 848.16875pt>
-File: figures/synth_fig1.png Graphic file (type png)
-<use figures/synth_fig1.png>
-Package pdftex.def Info: figures/synth_fig1.png  used on input line 527.
-(pdftex.def)             Requested size: 166.97452pt x 160.88962pt.
+File: figures/ct_fig1a.png Graphic file (type png)
+<use figures/ct_fig1a.png>
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
+(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
 
-Overfull \hbox (9.3422pt too wide) in paragraph at lines 527--527
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
+[][]  
+ []
+
+[111
+
+]
+File: figures/ct_fig1a.png Graphic file (type png)
+<use figures/ct_fig1a.png>
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
+(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+
+Overfull \hbox (11.59593pt too wide) in paragraph at lines 549--549
+[][]  
+ []
+
+[112
+
+]
+File: figures/ct_fig1a.png Graphic file (type png)
+<use figures/ct_fig1a.png>
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
+(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
+[][]  
+ []
+
+[113
+
+]
+File: figures/ct_fig1a.png Graphic file (type png)
+<use figures/ct_fig1a.png>
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
+(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
+[][]  
+ []
+
+[114
+
+]
+File: figures/ct_fig1a.png Graphic file (type png)
+<use figures/ct_fig1a.png>
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
+(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
+[][]  
+ []
+
+[115
+
+]
+File: figures/ct_fig1a.png Graphic file (type png)
+<use figures/ct_fig1a.png>
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
+(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
 [][]  
  []
 
 [116
 
- <./figures/synth_fig1.png>]
-<figures/synth_tab1.png, id=1331, 878.28125pt x 584.1825pt>
-File: figures/synth_tab1.png Graphic file (type png)
-<use figures/synth_tab1.png>
-Package pdftex.def Info: figures/synth_tab1.png  used on input line 535.
-(pdftex.def)             Requested size: 201.5716pt x 134.07332pt.
- [117
+]
+File: figures/ct_fig1a.png Graphic file (type png)
+<use figures/ct_fig1a.png>
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
+(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
 
- <./figures/synth_tab1.png>]
-Overfull \hbox (13.81656pt too wide) in paragraph at lines 547--547
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
+[][]  
+ []
+
+[117
+
+]
+File: figures/ct_fig1a.png Graphic file (type png)
+<use figures/ct_fig1a.png>
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
+(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
 [][]  
  []
 
 [118
 
 ]
-Overfull \hbox (13.81656pt too wide) in paragraph at lines 547--547
+File: figures/ct_fig1a.png Graphic file (type png)
+<use figures/ct_fig1a.png>
+Package pdftex.def Info: figures/ct_fig1a.png  used on input line 549.
+(pdftex.def)             Requested size: 153.64493pt x 116.28008pt.
+
+Overfull \hbox (7.29922pt too wide) in paragraph at lines 549--549
 [][]  
  []
 
 [119
 
+] [120
+
+] [121
+
+] [122
+
+] [123
+
+] [124
+
+] [125
+
 ]
-Overfull \hbox (13.81656pt too wide) in paragraph at lines 547--547
+<figures/synth_fig1.png, id=1412, 880.28876pt x 848.16875pt>
+File: figures/synth_fig1.png Graphic file (type png)
+<use figures/synth_fig1.png>
+Package pdftex.def Info: figures/synth_fig1.png  used on input line 600.
+(pdftex.def)             Requested size: 166.97452pt x 160.88962pt.
+
+Overfull \hbox (9.3422pt too wide) in paragraph at lines 600--600
 [][]  
  []
 
-[120
+[126
+
+ <./figures/synth_fig1.png>]
+<figures/synth_tab1.png, id=1426, 878.28125pt x 584.1825pt>
+File: figures/synth_tab1.png Graphic file (type png)
+<use figures/synth_tab1.png>
+Package pdftex.def Info: figures/synth_tab1.png  used on input line 608.
+(pdftex.def)             Requested size: 201.5716pt x 134.07332pt.
+ [127
+
+ <./figures/synth_tab1.png>]
+Overfull \hbox (13.81656pt too wide) in paragraph at lines 620--620
+[][]  
+ []
+
+[128
 
 ]
-<figures/synth_fig2.png, id=1383, 867.24pt x 835.12pt>
+Overfull \hbox (13.81656pt too wide) in paragraph at lines 620--620
+[][]  
+ []
+
+[129
+
+]
+Overfull \hbox (13.81656pt too wide) in paragraph at lines 620--620
+[][]  
+ []
+
+[130
+
+]
+<figures/synth_fig2.png, id=1479, 867.24pt x 835.12pt>
 File: figures/synth_fig2.png Graphic file (type png)
 <use figures/synth_fig2.png>
-Package pdftex.def Info: figures/synth_fig2.png  used on input line 554.
+Package pdftex.def Info: figures/synth_fig2.png  used on input line 627.
 (pdftex.def)             Requested size: 167.06662pt x 160.88962pt.
- [121
+ [131
 
- <./figures/synth_fig2.png>] [122
+ <./figures/synth_fig2.png>] [132
 
-] [123
+] [133
+
+] [134
 
 ]
 \tf@nav=\write6
@@ -2543,10 +2575,10 @@ Package rerunfilecheck Info: File `panel_data.out' has not changed.
 (rerunfilecheck)             Checksum: 5F3956274402657EE6E71D6E71FA8869;630.
  ) 
 Here is how much of TeX's memory you used:
- 30839 strings out of 476025
- 634015 string characters out of 5790016
+ 30918 strings out of 476025
+ 635196 string characters out of 5790016
  1866388 words of memory out of 5000000
- 50348 multiletter control sequences out of 15000+600000
+ 50405 multiletter control sequences out of 15000+600000
  545115 words of font info for 133 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,20n,122p,432b,753s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -2569,10 +2601,10 @@ exlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/tex
 live/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texli
 ve/2023/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/t
 exlive/2023/texmf-dist/fonts/type1/public/cm-super/sfss1000.pfb>
-Output written on panel_data.pdf (123 pages, 5229659 bytes).
+Output written on panel_data.pdf (134 pages, 5241093 bytes).
 PDF statistics:
- 1555 PDF objects out of 1728 (max. 8388607)
- 1291 compressed objects within 13 object streams
- 251 named destinations out of 1000 (max. 500000)
+ 1665 PDF objects out of 1728 (max. 8388607)
+ 1389 compressed objects within 14 object streams
+ 273 named destinations out of 1000 (max. 500000)
  275 words of extra memory for PDF output out of 10000 (max. 10000000)
 
