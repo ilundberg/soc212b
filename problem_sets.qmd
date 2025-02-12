@@ -149,3 +149,16 @@ make_plot(yT = c(4,3,3),
 <!-- **6 (8 points).** A colleague tells you they've read that regression discontinuity designs have proven that winning one election (greater than 50\% of the vote) causes a political party to have better chances in the next election. In your district, the winner won with 70\% of the vote. Why isn't the regression discontinuity evidence very informative for districts like yours? -->
 
 <!-- **7 (7 points).** Describe an example you have encountered where a regression discontinuity analysis might be used to estimate a causal effect. -->
+
+## Problem Set 6
+
+Construct a bootstrap confidence interval using data from your project. Some things to tell us in writing include:
+
+* what is your population parameter?
+* what is your estimator?
+* how many bootstrap samples did you draw?
+* did you use the Normal approximation or the percentile method?
+
+If your data are not suitable for a bootstrap confidence interval for some reason (e.g., you have the entire population so that confidence intervals don't make sense), go ahead and carry out the steps for practice and then tell us why the bootstrap might not be appropriate in your setting.
+
+
