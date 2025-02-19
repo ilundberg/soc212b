@@ -1,0 +1,11 @@
+\beamer@sectionintoc {1}{Define Causal Effects}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{Practicing notation}{39}{0}{1}
+\beamer@sectionintoc {2}{Exchangeability}{68}{0}{2}
+\beamer@sectionintoc {3}{Conditional Exchangeability}{103}{0}{3}
+\beamer@sectionintoc {4}{DAGs}{117}{0}{4}
+\beamer@subsectionintoc {4}{1}{Nodes and Edges}{117}{0}{4}
+\beamer@subsectionintoc {4}{2}{Causal Paths}{121}{0}{4}
+\beamer@subsectionintoc {4}{3}{Forks}{133}{0}{4}
+\beamer@subsectionintoc {4}{4}{Colliders}{141}{0}{4}
+\beamer@subsectionintoc {4}{5}{Blocked Paths}{150}{0}{4}
+\beamer@subsectionintoc {4}{6}{Statistical Dependence}{164}{0}{4}

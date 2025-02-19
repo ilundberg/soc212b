@@ -2,7 +2,14 @@
 title: "Nonparametric Identification"
 ---
 
-<!-- [slides](../slides/lec07_define_causal/lec07.pdf) -->
+<!-- for PDF, use this: -->
+<!-- format: pdf -->
+<!-- header-includes: -->
+<!--   - \usepackage{cancel} -->
+<!--   - \def\unicode{x2AEB}endenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}} -->
+<!--   - \newcommand\unicode{x2AEB}{\protect\mathpalette{\protect\unicode{x2AEB}endenT}{\perp}} -->
+
+> Here are [slides](slides/lec7/nonparametric_identification_slides.pdf) and a [PDF of this page](assets/pdf_chapters/nonparametric_identification.pdf).
 
 The course so far has focused on descriptive claims. For example, we have estimated the average value of an outcome in the population, or among population subgroups. This lecture pivots to causal claims: what would happen if a population were exposed to a hypothetical intervention.
 
@@ -165,7 +172,7 @@ In a conditionally randomized experiment, exchangeability is not likely to hold.
 
 Even though exchangeability does not hold marginally (across everyone), in a conditionally randomized experiment exchangeability does hold within subgroups. If we focus on those in the top 25\% of the class, the 90\% who are assigned to finish college are a simple random sample of the entire higher-performing subgroup. If we focus on those in the bottom 75\% of the class, the 10\% who are assigned to finish college are a simple random sample of the entire lower-performing subgroup.
 
-Formally, conditional exchangeability takes the exchangeability assumption ($\{Y^0,Y^1\}\unicode{x2AEB}A$) and adds a conditioning bar $\mid\vec{X}$, meaning that this assumption holds within subgroups defined by one or more pre-treatment variables $\vec{X}$.
+Formally, conditional exchangeability takes the exchangeability assumption ($\{Y^0,Y^1\}\unicode{x2AEB} A$) and adds a conditioning bar $\mid\vec{X}$, meaning that this assumption holds within subgroups defined by one or more pre-treatment variables $\vec{X}$.
 
 > **Conditional exchangeability.** The assumption that potential outcomes $\{Y^0,Y^1\}$ are independent of treatment $A$ among subpopulations that are identical along a set of pre-treatment covariates $\vec{X}$. Formally, $\{Y^0,Y^1\} \unicode{x2AEB} A \mid \vec{X}$.
 

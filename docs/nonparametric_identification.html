@@ -324,7 +324,15 @@ window.Quarto = {
 </header>
 
 
-<!-- [slides](../slides/lec07_define_causal/lec07.pdf) -->
+<!-- for PDF, use this: -->
+<!-- format: pdf -->
+<!-- header-includes: -->
+<!--   - \usepackage{cancel} -->
+<!--   - \def\unicode{x2AEB}endenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}} -->
+<!--   - \newcommand\unicode{x2AEB}{\protect\mathpalette{\protect\unicode{x2AEB}endenT}{\perp}} -->
+<blockquote class="blockquote">
+<p>Here are <a href="slides/lec7/nonparametric_identification_slides.pdf">slides</a> and a <a href="assets/pdf_chapters/nonparametric_identification.pdf">PDF of this page</a>.</p>
+</blockquote>
 <p>The course so far has focused on descriptive claims. For example, we have estimated the average value of an outcome in the population, or among population subgroups. This lecture pivots to causal claims: what would happen if a population were exposed to a hypothetical intervention.</p>
 <section id="fundamental-problem-of-causal-inference" class="level2">
 <h2 class="anchored" data-anchor-id="fundamental-problem-of-causal-inference">Fundamental problem of causal inference</h2>
@@ -418,7 +426,7 @@ E\left(\text{Earning}^{\text{CollegeDegree} = \texttt{TRUE}}\right) &gt; E\left(
 </blockquote>
 <p>In a conditionally randomized experiment, exchangeability is not likely to hold. People who are treated (assigned to a four-year degree) are more likely to have come from the top 25% of their high school class. They might be especially hard-working people. The treated and untreated might have had different employment at age 40 even if none of them had been treated.</p>
 <p>Even though exchangeability does not hold marginally (across everyone), in a conditionally randomized experiment exchangeability does hold within subgroups. If we focus on those in the top 25% of the class, the 90% who are assigned to finish college are a simple random sample of the entire higher-performing subgroup. If we focus on those in the bottom 75% of the class, the 10% who are assigned to finish college are a simple random sample of the entire lower-performing subgroup.</p>
-<p>Formally, conditional exchangeability takes the exchangeability assumption (<span class="math inline">\(\{Y^0,Y^1\}\unicode{x2AEB}A\)</span>) and adds a conditioning bar <span class="math inline">\(\mid\vec{X}\)</span>, meaning that this assumption holds within subgroups defined by one or more pre-treatment variables <span class="math inline">\(\vec{X}\)</span>.</p>
+<p>Formally, conditional exchangeability takes the exchangeability assumption (<span class="math inline">\(\{Y^0,Y^1\}\unicode{x2AEB} A\)</span>) and adds a conditioning bar <span class="math inline">\(\mid\vec{X}\)</span>, meaning that this assumption holds within subgroups defined by one or more pre-treatment variables <span class="math inline">\(\vec{X}\)</span>.</p>
 <blockquote class="blockquote">
 <p><strong>Conditional exchangeability.</strong> The assumption that potential outcomes <span class="math inline">\(\{Y^0,Y^1\}\)</span> are independent of treatment <span class="math inline">\(A\)</span> among subpopulations that are identical along a set of pre-treatment covariates <span class="math inline">\(\vec{X}\)</span>. Formally, <span class="math inline">\(\{Y^0,Y^1\} \unicode{x2AEB} A \mid \vec{X}\)</span>.</p>
 </blockquote>
