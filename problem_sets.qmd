@@ -165,7 +165,7 @@ If your data are not suitable for a bootstrap confidence interval for some reaso
 
 For (1) to (5),
 
-* List all paths connecting $A$ and $Y$
+* List all paths connecting $A$ and $Y$. Remember that a path can be written in one line as a sequence of nodes connected by edges.
 * For each path, answer
      * is this path open before we condition on anything?
      * is this path open conditional on $X$?

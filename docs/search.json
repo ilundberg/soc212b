@@ -605,7 +605,7 @@
     "href": "problem_sets.html#problem-set-7",
     "title": "Problem Sets",
     "section": "Problem Set 7",
-    "text": "Problem Set 7\nFor (1) to (5),\n\nList all paths connecting \\(A\\) and \\(Y\\)\nFor each path, answer\n\nis this path open before we condition on anything?\nis this path open conditional on \\(X\\)?\n\nAre any non-causal paths between \\(A\\) and \\(Y\\) open once we condition on \\(X\\)? In other words, other than causal paths from \\(A\\) to \\(Y\\) is there any other reason \\(A\\) and \\(Y\\) would be associated conditional on \\(X\\)?"
+    "text": "Problem Set 7\nFor (1) to (5),\n\nList all paths connecting \\(A\\) and \\(Y\\). Remember that a path can be written in one line as a sequence of nodes connected by edges.\nFor each path, answer\n\nis this path open before we condition on anything?\nis this path open conditional on \\(X\\)?\n\nAre any non-causal paths between \\(A\\) and \\(Y\\) open once we condition on \\(X\\)? In other words, other than causal paths from \\(A\\) to \\(Y\\) is there any other reason \\(A\\) and \\(Y\\) would be associated conditional on \\(X\\)?"
   },
   {
     "objectID": "who_we_are.html",
