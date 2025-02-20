@@ -552,6 +552,62 @@
     ]
   },
   {
+    "objectID": "problem_sets.html",
+    "href": "problem_sets.html",
+    "title": "Problem Sets",
+    "section": "",
+    "text": "This page will contain a problem set corresponding to each class meeting. The problem sets are very open-ended and are designed to connect the material from class to your ongoing project.\nFor every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.\nWe chose together the following weekly pattern for problem sets:\nWe will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another’s projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer’s work as well as offering suggestions for improvement or future directions."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-1",
+    "href": "problem_sets.html#problem-set-1",
+    "title": "Problem Sets",
+    "section": "Problem Set 1",
+    "text": "Problem Set 1\n\n1. Your ongoing paper.\n1.1. (15 points) Write an abstract of your research paper.\n1.2. (5 points) What is one unit-specific quantity in your paper?\n1.3. (5 points) What is one target population in your paper?\n\n\n2. Regression for a conditional mean\n(25 points)\nIn class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-2",
+    "href": "problem_sets.html#problem-set-2",
+    "title": "Problem Sets",
+    "section": "Problem Set 2",
+    "text": "Problem Set 2\n\n(20 points) In your project, do you have something analogous to many groups with a few observations per group? This could more generally be any case where the number of parameters to be estimated is somewhat large for the sample size available. If not in your project, think of an example in your general research area. Write a few sentences about why one might want penalized regression in that setting.\n\nThe remainder of this problem set is based in the idea of multilevel models, though you can alternatively estimate by LASSO or ridge regression if you prefer. You can complete parts (2) and (3) in your own dataset if you can define at least 10 groups with at least 20 units per group. Wherever we say “team”, substitute whatever group is in your dataset. You may also use the baseball_population.csv data, in which the group variable is team.\n\n(15 points) Draw a sample of 5 units per group. Estimate an unpenalized OLS regression and a penalized regression (multilevel, ridge, or LASSO). Produce a graph that compares the predicted values.\n(15 points) Repeat the exercise above but with a sample of 20 units per group. Visualize the estimates. How do your results change?\n\nNote that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-3",
+    "href": "problem_sets.html#problem-set-3",
+    "title": "Problem Sets",
+    "section": "Problem Set 3",
+    "text": "Problem Set 3\nUsing the simulation data from class or data from your own project:\n\n(15 points) Estimate a regression tree and visualize it. If you are using R, there are packages to visualize the tree. If you are using Stata, there may be packages or you are welcome to use the summary text output.\n(10 points) Write 3-4 sentences for someone who has never heard of this method. Pick some predictor vector value and explain how the tree produces a prediction for that predictor vector.\n(15 points) Estimate a random forest. Visualize the predicted values as a function of the predictors. If your data have only two predictors, this could be as in class with one on the \\(x\\)-axis and one for colors. If you have many predictors, you may need to find a creative way to visualize your predictions. You may choose to make predictions while holding one or more variables at a single value.\n(10 points) In a few sentences, give an example of a problem in your area of research (possibly your paper) where the functional form linking \\(\\vec{X}\\) to \\(E(Y\\mid\\vec{X})\\) is unknown, such that a random forest might be a way to learn the functional form from the data."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-4",
+    "href": "problem_sets.html#problem-set-4",
+    "title": "Problem Sets",
+    "section": "Problem Set 4",
+    "text": "Problem Set 4\nWrite the abstract of your research paper. If you do not have results yet, pretend that your results are really amazing! You can make up any estimates that you want. As an added challenge, try writing the abstract twice with two sets of possible results. It would be ideal if all possible results are interesting.\nAs you write, minimize jargon so that you are writing for a New York Times reader. Emphasize big claims and don’t bury them in statistical terminology. The goal of this exercise is to help us ask and frame a high-impact question that will speak to a broad audience. Possibly, the exercise will lead you to change your question.\nYour peer reviewer should comment on things that may include:\n\nwhat about this abstract is especially compelling?\nwhat parts (if any) about this abstract are directed to a small subset of academia and perhaps should be broadened? This may be parts with jargon.\nwhat claims could be emphasized more?\n\nThe hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-5",
+    "href": "problem_sets.html#problem-set-5",
+    "title": "Problem Sets",
+    "section": "Problem Set 5",
+    "text": "Problem Set 5\nThis problem set is unlike the preceding ones in two ways. It is entirely conceptual, with no data analysis, and it is entirely about hypothetical examples rather than your paper. It is a chance to reinforce a few basic ideas from our class on panel data. Questions 1–5 are on difference in difference. Questions 6–7 are on regression discontinuity.\nIn the figures below, the treated group becomes treated between time 1 and time 2. The control group never becomes treated. Figures are hypothetical scenarios that depict true potential outcomes even if those outcomes would not be observed in an actual study.\n\n\n\n\n\n\n\n\n\n1 (10 points). In which setting does the parallel trends assumption hold: A, B, neither, or both?\n2 (10 points). In actual data analysis, can we ever know for certain whether we are in Setting A or Setting B? If the answer is no, then tell us which outcome cannot be observed.\n3 (10 points) A researcher comes to you with the data below, which depict only observed outcomes. That researcher wants to run a difference in difference analysis. Here, we have not depicted the counterfactual outcome because the researcher would not know it. Why is the parallel trends assumption doubtful in this setting?\n\n\n\n\n\n\n\n\n\n4 (10 points). A researcher is interested in the causal effect of a minimum wage increase on employment. They plan to analyze data on the U.S. only, and they are interested in a time when the minimum wage rose simultaneously at every place in the U.S. Why won’t a difference in difference design work for the researcher’s question?\n5 (10 points). Propose another design that the researcher could use to answer the question in (1.4), which may involve data outside the U.S. or may involve a different analysis of data within the U.S. Answer this question in no more than 3 sentences. Many answers are possible."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-6",
+    "href": "problem_sets.html#problem-set-6",
+    "title": "Problem Sets",
+    "section": "Problem Set 6",
+    "text": "Problem Set 6\nConstruct a bootstrap confidence interval using data from your project. Some things to tell us in writing include:\n\nwhat is your population parameter?\nwhat is your estimator?\nhow many bootstrap samples did you draw?\ndid you use the Normal approximation or the percentile method?\n\nIf your data are not suitable for a bootstrap confidence interval for some reason (e.g., you have the entire population so that confidence intervals don’t make sense), go ahead and carry out the steps for practice and then tell us why the bootstrap might not be appropriate in your setting."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-7",
+    "href": "problem_sets.html#problem-set-7",
+    "title": "Problem Sets",
+    "section": "Problem Set 7",
+    "text": "Problem Set 7\nFor (1) to (5),\n\nList all paths connecting \\(A\\) and \\(Y\\)\nFor each path, answer\n\nis this path open before we condition on anything?\nis this path open conditional on \\(X\\)?\n\nAre any non-causal paths between \\(A\\) and \\(Y\\) open once we condition on \\(X\\)? In other words, other than causal paths from \\(A\\) to \\(Y\\) is there any other reason \\(A\\) and \\(Y\\) would be associated conditional on \\(X\\)?"
+  },
+  {
     "objectID": "who_we_are.html",
     "href": "who_we_are.html",
     "title": "Who We Are",
@@ -720,62 +776,6 @@
       "Descriptive Data Science with Probability Samples",
       "Regression for Y-hat"
     ]
-  },
-  {
-    "objectID": "problem_sets.html",
-    "href": "problem_sets.html",
-    "title": "Problem Sets",
-    "section": "",
-    "text": "This page will contain a problem set corresponding to each class meeting. The problem sets are very open-ended and are designed to connect the material from class to your ongoing project.\nFor every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.\nWe chose together the following weekly pattern for problem sets:\nWe will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another’s projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer’s work as well as offering suggestions for improvement or future directions."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-1",
-    "href": "problem_sets.html#problem-set-1",
-    "title": "Problem Sets",
-    "section": "Problem Set 1",
-    "text": "Problem Set 1\n\n1. Your ongoing paper.\n1.1. (15 points) Write an abstract of your research paper.\n1.2. (5 points) What is one unit-specific quantity in your paper?\n1.3. (5 points) What is one target population in your paper?\n\n\n2. Regression for a conditional mean\n(25 points)\nIn class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-2",
-    "href": "problem_sets.html#problem-set-2",
-    "title": "Problem Sets",
-    "section": "Problem Set 2",
-    "text": "Problem Set 2\n\n(20 points) In your project, do you have something analogous to many groups with a few observations per group? This could more generally be any case where the number of parameters to be estimated is somewhat large for the sample size available. If not in your project, think of an example in your general research area. Write a few sentences about why one might want penalized regression in that setting.\n\nThe remainder of this problem set is based in the idea of multilevel models, though you can alternatively estimate by LASSO or ridge regression if you prefer. You can complete parts (2) and (3) in your own dataset if you can define at least 10 groups with at least 20 units per group. Wherever we say “team”, substitute whatever group is in your dataset. You may also use the baseball_population.csv data, in which the group variable is team.\n\n(15 points) Draw a sample of 5 units per group. Estimate an unpenalized OLS regression and a penalized regression (multilevel, ridge, or LASSO). Produce a graph that compares the predicted values.\n(15 points) Repeat the exercise above but with a sample of 20 units per group. Visualize the estimates. How do your results change?\n\nNote that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-3",
-    "href": "problem_sets.html#problem-set-3",
-    "title": "Problem Sets",
-    "section": "Problem Set 3",
-    "text": "Problem Set 3\nUsing the simulation data from class or data from your own project:\n\n(15 points) Estimate a regression tree and visualize it. If you are using R, there are packages to visualize the tree. If you are using Stata, there may be packages or you are welcome to use the summary text output.\n(10 points) Write 3-4 sentences for someone who has never heard of this method. Pick some predictor vector value and explain how the tree produces a prediction for that predictor vector.\n(15 points) Estimate a random forest. Visualize the predicted values as a function of the predictors. If your data have only two predictors, this could be as in class with one on the \\(x\\)-axis and one for colors. If you have many predictors, you may need to find a creative way to visualize your predictions. You may choose to make predictions while holding one or more variables at a single value.\n(10 points) In a few sentences, give an example of a problem in your area of research (possibly your paper) where the functional form linking \\(\\vec{X}\\) to \\(E(Y\\mid\\vec{X})\\) is unknown, such that a random forest might be a way to learn the functional form from the data."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-4",
-    "href": "problem_sets.html#problem-set-4",
-    "title": "Problem Sets",
-    "section": "Problem Set 4",
-    "text": "Problem Set 4\nWrite the abstract of your research paper. If you do not have results yet, pretend that your results are really amazing! You can make up any estimates that you want. As an added challenge, try writing the abstract twice with two sets of possible results. It would be ideal if all possible results are interesting.\nAs you write, minimize jargon so that you are writing for a New York Times reader. Emphasize big claims and don’t bury them in statistical terminology. The goal of this exercise is to help us ask and frame a high-impact question that will speak to a broad audience. Possibly, the exercise will lead you to change your question.\nYour peer reviewer should comment on things that may include:\n\nwhat about this abstract is especially compelling?\nwhat parts (if any) about this abstract are directed to a small subset of academia and perhaps should be broadened? This may be parts with jargon.\nwhat claims could be emphasized more?\n\nThe hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-5",
-    "href": "problem_sets.html#problem-set-5",
-    "title": "Problem Sets",
-    "section": "Problem Set 5",
-    "text": "Problem Set 5\nThis problem set is unlike the preceding ones in two ways. It is entirely conceptual, with no data analysis, and it is entirely about hypothetical examples rather than your paper. It is a chance to reinforce a few basic ideas from our class on panel data. Questions 1–5 are on difference in difference. Questions 6–7 are on regression discontinuity.\nIn the figures below, the treated group becomes treated between time 1 and time 2. The control group never becomes treated. Figures are hypothetical scenarios that depict true potential outcomes even if those outcomes would not be observed in an actual study.\n\n\n\n\n\n\n\n\n\n1 (10 points). In which setting does the parallel trends assumption hold: A, B, neither, or both?\n2 (10 points). In actual data analysis, can we ever know for certain whether we are in Setting A or Setting B? If the answer is no, then tell us which outcome cannot be observed.\n3 (10 points) A researcher comes to you with the data below, which depict only observed outcomes. That researcher wants to run a difference in difference analysis. Here, we have not depicted the counterfactual outcome because the researcher would not know it. Why is the parallel trends assumption doubtful in this setting?\n\n\n\n\n\n\n\n\n\n4 (10 points). A researcher is interested in the causal effect of a minimum wage increase on employment. They plan to analyze data on the U.S. only, and they are interested in a time when the minimum wage rose simultaneously at every place in the U.S. Why won’t a difference in difference design work for the researcher’s question?\n5 (10 points). Propose another design that the researcher could use to answer the question in (1.4), which may involve data outside the U.S. or may involve a different analysis of data within the U.S. Answer this question in no more than 3 sentences. Many answers are possible."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-6",
-    "href": "problem_sets.html#problem-set-6",
-    "title": "Problem Sets",
-    "section": "Problem Set 6",
-    "text": "Problem Set 6\nConstruct a bootstrap confidence interval using data from your project. Some things to tell us in writing include:\n\nwhat is your population parameter?\nwhat is your estimator?\nhow many bootstrap samples did you draw?\ndid you use the Normal approximation or the percentile method?\n\nIf your data are not suitable for a bootstrap confidence interval for some reason (e.g., you have the entire population so that confidence intervals don’t make sense), go ahead and carry out the steps for practice and then tell us why the bootstrap might not be appropriate in your setting."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-7",
-    "href": "problem_sets.html#problem-set-7",
-    "title": "Problem Sets",
-    "section": "Problem Set 7",
-    "text": "Problem Set 7\n1 (20 points). True or False.\nFor 1.1–1.5, answer True or False: \\(X\\) is a sufficient adjustment set to identify the causal effect of \\(A\\) on \\(Y\\). Recall that as you work on these problems, a good strategy is to first list all non-causal paths between \\(A\\) and \\(Y\\) and then cross out any that are blocked when conditioning on \\(X\\).\n\n2 (30 points). A DAG in your research area.\nIn your research project or field of research, define a causal question. Define the treatment variable and potential outcomes. Draw a DAG and identify a sufficient adjustment set given your DAG.\nCoding help: How to draw a DAG.\nFor this class, you can draw your DAG by hand and take a picture of it, and include the picture in your writeup. Alternatively, you can learn to type a DAG as a tikzpicture in LaTeX, as I do. Both are equally good!\nTo produce a DAG with code, I include the following in my LaTeX document header:\n\n\\usepackage{tikz}\n\\usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}\n\nThen I use code like the below to draw a DAG.\n\n\\begin{tikzpicture}[x = .3in, y = .3in]\n    \\node (x) at (0,-1) {$X$};\n    \\node (a) at (0,0) {$A$};\n    \\node (y) at (1,0) {$Y$};\n    \\draw[-&gt;, thick] (x) -- (a);\n    \\draw[-&gt;, thick] (a) -- (y);\n    \\draw[-&gt;, thick] (x) -- (y);\n\\end{tikzpicture}"
   },
   {
     "objectID": "data_driven_selection.html",

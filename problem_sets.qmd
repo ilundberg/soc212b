@@ -163,38 +163,42 @@ If your data are not suitable for a bootstrap confidence interval for some reaso
 
 ## Problem Set 7
 
-**1 (20 points). True or False.**
+For (1) to (5),
 
-For 1.1–1.5, answer True or False: $X$ is a sufficient adjustment set to identify the causal effect of $A$ on $Y$. Recall that as you work on these problems, a good strategy is to first list all non-causal paths between $A$ and $Y$ and then cross out any that are blocked when conditioning on $X$.
+* List all paths connecting $A$ and $Y$
+* For each path, answer
+     * is this path open before we condition on anything?
+     * is this path open conditional on $X$?
+* Are any non-causal paths between $A$ and $Y$ open once we condition on $X$? In other words, other than causal paths from $A$ to $Y$ is there any other reason $A$ and $Y$ would be associated conditional on $X$?
 
-![](assets/figures/dags_true_false.png)
+![](assets/figures/dags_pset.png)
 
-**2 (30 points). A DAG in your research area.**
+<!-- **2 (30 points). A DAG in your research area.** -->
 
-In your research project or field of research, define a causal question. Define the treatment variable and potential outcomes. Draw a DAG and identify a sufficient adjustment set given your DAG.
+<!-- In your research project or field of research, define a causal question. Define the treatment variable and potential outcomes. Draw a DAG and identify a sufficient adjustment set given your DAG. -->
 
-**Coding help: How to draw a DAG.**
+<!-- **Coding help: How to draw a DAG.** -->
 
-For this class, you can draw your DAG by hand and take a picture of it, and include the picture in your writeup. Alternatively, you can learn to type a DAG as a tikzpicture in LaTeX, as I do. Both are equally good!
+<!-- For this class, you can draw your DAG by hand and take a picture of it, and include the picture in your writeup. Alternatively, you can learn to type a DAG as a tikzpicture in LaTeX, as I do. Both are equally good! -->
 
-To produce a DAG with code, I include the following in my LaTeX document header:
+<!-- To produce a DAG with code, I include the following in my LaTeX document header: -->
 
-```{latex, eval = F}
-\usepackage{tikz}
-\usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}
-```
+<!-- ```{latex, eval = F} -->
+<!-- \usepackage{tikz} -->
+<!-- \usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc} -->
+<!-- ``` -->
 
-Then I use code like the below to draw a DAG.
+<!-- Then I use code like the below to draw a DAG. -->
 
-```{tikz, eval = F}
-\begin{tikzpicture}[x = .3in, y = .3in]
-    \node (x) at (0,-1) {$X$};
-    \node (a) at (0,0) {$A$};
-    \node (y) at (1,0) {$Y$};
-    \draw[->, thick] (x) -- (a);
-    \draw[->, thick] (a) -- (y);
-    \draw[->, thick] (x) -- (y);
-\end{tikzpicture}
-```
+<!-- ```{tikz, eval = F} -->
+<!-- \begin{tikzpicture}[x = .3in, y = .3in] -->
+<!--     \node (x) at (0,-1) {$X$}; -->
+<!--     \node (a) at (0,0) {$A$}; -->
+<!--     \node (y) at (1,0) {$Y$}; -->
+<!--     \draw[->, thick] (x) -- (a); -->
+<!--     \draw[->, thick] (a) -- (y); -->
+<!--     \draw[->, thick] (x) -- (y); -->
+<!-- \end{tikzpicture} -->
+<!-- ``` -->
 
 
