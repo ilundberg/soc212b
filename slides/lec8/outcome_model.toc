@@ -1,0 +1,6 @@
+\beamer@sectionintoc {1}{Prediction For Population Inference}{3}{0}{1}
+\beamer@sectionintoc {2}{For Causal Inference: By Hand}{17}{0}{2}
+\beamer@sectionintoc {3}{Visual Example}{19}{0}{3}
+\beamer@sectionintoc {4}{Coding Example}{45}{0}{4}
+\beamer@sectionintoc {5}{With ML}{46}{0}{5}
+\beamer@sectionintoc {6}{Warnings}{60}{0}{6}

@@ -173,32 +173,39 @@ For (1) to (5),
 
 ![](assets/figures/dags_pset.png)
 
-<!-- **2 (30 points). A DAG in your research area.** -->
+## Problem Set 8
 
-<!-- In your research project or field of research, define a causal question. Define the treatment variable and potential outcomes. Draw a DAG and identify a sufficient adjustment set given your DAG. -->
+**1 (25 points). A DAG in your research area.**
 
-<!-- **Coding help: How to draw a DAG.** -->
+In your research project or field of research, define a causal question. Define the treatment variable and potential outcomes. Draw a DAG and identify a sufficient adjustment set given your DAG.
 
-<!-- For this class, you can draw your DAG by hand and take a picture of it, and include the picture in your writeup. Alternatively, you can learn to type a DAG as a tikzpicture in LaTeX, as I do. Both are equally good! -->
+**Coding help: How to draw a DAG.**
 
-<!-- To produce a DAG with code, I include the following in my LaTeX document header: -->
+For this class, you can draw your DAG by hand and take a picture of it, and include the picture in your writeup. Alternatively, you can learn to type a DAG as a tikzpicture in LaTeX, as I do. Both are equally good!
 
-<!-- ```{latex, eval = F} -->
-<!-- \usepackage{tikz} -->
-<!-- \usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc} -->
-<!-- ``` -->
+To produce a DAG with code, I include the following in my LaTeX document header:
 
-<!-- Then I use code like the below to draw a DAG. -->
+```{latex, eval = F}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}
+```
 
-<!-- ```{tikz, eval = F} -->
-<!-- \begin{tikzpicture}[x = .3in, y = .3in] -->
-<!--     \node (x) at (0,-1) {$X$}; -->
-<!--     \node (a) at (0,0) {$A$}; -->
-<!--     \node (y) at (1,0) {$Y$}; -->
-<!--     \draw[->, thick] (x) -- (a); -->
-<!--     \draw[->, thick] (a) -- (y); -->
-<!--     \draw[->, thick] (x) -- (y); -->
-<!-- \end{tikzpicture} -->
-<!-- ``` -->
+Then I use code like the below to draw a DAG.
 
+```{tikz, eval = F}
+\begin{tikzpicture}[x = .3in, y = .3in]
+    \node (x) at (0,-1) {$X$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at (1,0) {$Y$};
+    \draw[->, thick] (x) -- (a);
+    \draw[->, thick] (a) -- (y);
+    \draw[->, thick] (x) -- (y);
+\end{tikzpicture}
+```
+
+**2 (25 points).** Outcome model for causal inference.
+
+Define a causal estimand and estimate it using an outcome model. You are welcome to use any causal estimand you are interested in, in any dataset you like (potentially from your project). The outcome model can be statistical (e.g., OLS) or a more data-science model (e.g., random forest).
+
+If you'd rather use data we provide, feel free to use the data from my analogous [undergrad problem set](https://soc114.github.io/assignments/pset4.html#causal-inference-with-statistical-modeling). This is a simulated version of data from an ongoing project with Soonhong.
 

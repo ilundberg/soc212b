@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -275,8 +309,37 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#prediction-to-describe-with-non-probability-samples" id="toc-prediction-to-describe-with-non-probability-samples" class="nav-link active" data-scroll-target="#prediction-to-describe-with-non-probability-samples">Prediction to describe with non-probability samples</a>
+  <ul class="collapse">
+  <li><a href="#real-example-xbox-survey" id="toc-real-example-xbox-survey" class="nav-link" data-scroll-target="#real-example-xbox-survey">Real example: Xbox survey</a></li>
+  <li><a href="#takeaways-prediction-to-describe" id="toc-takeaways-prediction-to-describe" class="nav-link" data-scroll-target="#takeaways-prediction-to-describe">Takeaways: Prediction to describe</a></li>
+  </ul></li>
+  <li><a href="#causal-inference-example-on-paper" id="toc-causal-inference-example-on-paper" class="nav-link" data-scroll-target="#causal-inference-example-on-paper">Causal inference: Example on paper</a></li>
+  <li><a href="#causal-inference-with-ols-simulated-example-in-code" id="toc-causal-inference-with-ols-simulated-example-in-code" class="nav-link" data-scroll-target="#causal-inference-with-ols-simulated-example-in-code">Causal inference with OLS: Simulated example in code</a>
+  <ul class="collapse">
+  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">1) Model</a></li>
+  <li><a href="#predict" id="toc-predict" class="nav-link" data-scroll-target="#predict">2) Predict</a></li>
+  <li><a href="#aggregate" id="toc-aggregate" class="nav-link" data-scroll-target="#aggregate">3) Aggregate</a></li>
+  </ul></li>
+  <li><a href="#logistic-regression-a-realistic-simulated-example" id="toc-logistic-regression-a-realistic-simulated-example" class="nav-link" data-scroll-target="#logistic-regression-a-realistic-simulated-example">Logistic regression: A realistic simulated example</a>
+  <ul class="collapse">
+  <li><a href="#data-based-simulation" id="toc-data-based-simulation" class="nav-link" data-scroll-target="#data-based-simulation">Data-based simulation</a></li>
+  <li><a href="#model-1" id="toc-model-1" class="nav-link" data-scroll-target="#model-1">1) Model</a></li>
+  <li><a href="#predict-1" id="toc-predict-1" class="nav-link" data-scroll-target="#predict-1">2) Predict</a></li>
+  <li><a href="#aggregate-1" id="toc-aggregate-1" class="nav-link" data-scroll-target="#aggregate-1">3) Aggregate</a></li>
+  </ul></li>
+  <li><a href="#machine-learning-outcome-models-for-causal-inference" id="toc-machine-learning-outcome-models-for-causal-inference" class="nav-link" data-scroll-target="#machine-learning-outcome-models-for-causal-inference">Machine learning outcome models for causal inference</a>
+  <ul class="collapse">
+  <li><a href="#a-promising-story" id="toc-a-promising-story" class="nav-link" data-scroll-target="#a-promising-story">A promising story</a></li>
+  <li><a href="#a-warning-example" id="toc-a-warning-example" class="nav-link" data-scroll-target="#a-warning-example">A warning example</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -300,11 +363,546 @@ window.Quarto = {
 </header>
 
 
+<blockquote class="blockquote">
+<p>Here are <a href="slides/lec8/outcome_model.pdf">slides</a> and a <a href="assets/pdf_chapters/prediction_for_inference.pdf">pdf of this page</a>.</p>
+</blockquote>
 <p>This session will be about prediction to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. If you have a Census with features <span class="math inline">\(\vec{X}\)</span>, ignorable sampling conditional on <span class="math inline">\(\vec{X}\)</span>, and a good sample estimator of <span class="math inline">\(E(Y\mid\vec{X})\)</span> then you can predict <span class="math inline">\(E(Y\mid\vec{X})\)</span> and aggregate over the Census-known population distribution of <span class="math inline">\(\vec{X}\)</span>. For causal inference, being assigned to treatment is analogous to being sampled to observe the potential outcome under treatment.</p>
+<section id="prediction-to-describe-with-non-probability-samples" class="level2">
+<h2 class="anchored" data-anchor-id="prediction-to-describe-with-non-probability-samples">Prediction to describe with non-probability samples</h2>
+<p>Suppose you collect a non-probability sample, such as people willing who respond on a survey on Amazon Mechanical Turk. Each person answers three questions:</p>
+<ol type="1">
+<li>What is your sex?</li>
+<li>What is your age?</li>
+<li>Have you ever had a TikTok account?</li>
+</ol>
+<p>You want to estimate the rate of using TikTok in the full U.S. population. But you worry about your sample: perhaps the age distribution of your sample is younger than the U.S. population, and younger people are more likely to have a TikTok account. Formally, whether a unit is sampled <span class="math inline">\(S\)</span> is not independent of that unit’s outcome <span class="math inline">\(Y\)</span>.</p>
+<p><span class="math display">\[
+S \not\unicode{x2AEB} Y
+\]</span></p>
+<p>You hope that it might help that your survey also measured sex and age. One thing you might do is to use logistic regression to estimate an outcome model to predict the probability of having a TikTok within these subgroups,</p>
+<p><span class="math display">\[\text{logit}\left(\hat{\text{P}}(Y = 1\mid S = 1, \vec{X})\right) = \hat\beta_0 + \hat\beta_1(\text{Sex = Female}) + \hat\beta_2 (\text{Age})\]</span></p>
+<p>where <span class="math inline">\(\vec{X}\)</span> contains the variables sex and age. Now you can predict the probability of having a TikTok within any subgroup defined by sex and age.</p>
+<p>But how to use these predictions? You might think it would help to have the <a href="https://www.census.gov/data/tables/2020/demo/age-and-sex/2020-age-sex-composition.html">population distribution of sex and age</a> from the U.S. Census Bureau. From these data, you know the population distribution of <span class="math inline">\(\vec{X}\)</span>.</p>
+<p><span class="math display">\[
+{\text{P}}(\vec{X} = \vec{x}) \text{ is known for all }\vec{x}
+\]</span></p>
+<p>You have an estimate of <span class="math inline">\({\text{P}}(Y = 1\mid S, \vec{X} = \vec{x})\)</span> and a known value for <span class="math inline">\({\text{P}}(\vec{X} = \vec{x})\)</span>. We would like to estimate the population mean by averaging the subgroup predictions over the distribution of subgroups.</p>
+<p><span class="math display">\[
+{\text{P}}(Y) = \sum_{\vec{x}}\text{P}(Y\mid\vec{X} = \vec{x}){\text{P}}(\vec{X} = \vec{x})
+\]</span> But unfortunately, you still do not know the population mean TikTok use within groups defined by sex and age! While you have an estimate in your sample <span class="math inline">\(\hat{\text{P}}(Y \mid S = 1, \vec{X} = \vec{x})\)</span> this may not be the same as the population mean <span class="math inline">\(\text{P}(Y\mid\vec{X} = \vec{x})\)</span>.</p>
+<p>Here we will make a heroic assumption<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> of conditionally ignorable sampling:</p>
+<p><span class="math display">\[
+S \unicode{x2AEB} Y \mid \vec{X} \qquad (\text{equivalently}) \qquad {\text{P}}(Y\mid S = 1, \vec{X} = \vec{x}) = {\text{P}}(Y \mid \vec{X} = \vec{x})
+\]</span> This assumption says that whether one is sampled <span class="math inline">\(S\)</span> tells me nothing about TikTok use <span class="math inline">\(Y\)</span> once I am looking within a subgroup of people of a particular age and particular sex (<span class="math inline">\(\vec{X} = \vec{x}\)</span>).</p>
+<blockquote class="blockquote">
+<p><strong>Group task.</strong> Draw a DAG to defend this assumption. Note possible edges that would undermine this assumption.</p>
+</blockquote>
+<p>If the assumption holds, one can use the predicted values from the regression to estimate the population average value of <span class="math inline">\(Y\)</span>.</p>
+<p><span class="math display">\[
+\hat{\text{P}}(Y) = \sum_{\vec{x}}\hat{\text{P}}(Y\mid\vec{X} = \vec{x}){\text{P}}(\vec{X} = \vec{x})
+\]</span></p>
+<p>This suggests a procedure to use regression to estimate population means:</p>
+<ul>
+<li>measure <span class="math inline">\(\vec{X}\)</span> and <span class="math inline">\(Y\)</span> in a non-probability sample</li>
+<li>measure <span class="math inline">\(\vec{X}\)</span> in a probability sample or census</li>
+<li>assume exchangeable sampling given <span class="math inline">\(\vec{X}\)</span>
+<ul>
+<li>(often a heroic assumption!)</li>
+</ul></li>
+<li>model <span class="math inline">\(\text{E}(Y\mid\vec{X})\)</span> or <span class="math inline">\(\text{P}(Y\mid\vec{X})\)</span> in the non-probability sample</li>
+<li>estimate <span class="math inline">\(\text{P}(\vec{X} = \vec{x})\)</span> in the probability sample or census</li>
+<li>re-aggregate <span class="math inline">\(\hat{\text{E}}(Y\mid\vec{X})\)</span> using the weights <span class="math inline">\(\hat{\text{P}}(\vec{X} = \vec{x})\)</span></li>
+</ul>
+<p>You could also use a weighting procedure, to be discussed next class.</p>
+<section id="real-example-xbox-survey" class="level3">
+<h3 class="anchored" data-anchor-id="real-example-xbox-survey">Real example: Xbox survey</h3>
+<p>In a survey carried out in 2012 on the Xbox gaming platform, <a href="https://www.sciencedirect.com/science/article/pii/S0169207014000879">Wang et al.&nbsp;(2015)</a> asked respondents: “If the election were held today, who would you vote for?”</p>
+<p>Why might this survey make for poor forecasts of the election outcome? The respondents looked very different from the U.S. electorate, notably much younger and much more likely to be men (see Fig 1 in the original paper). But the data were also very rich. There were over 700,000 responses. The researchers collected many demographic variables: sex, race, age, education, state, party ID, political ideology, and who they voted for in the 2008 presidential election.</p>
+<p>Using these variables, the authors used a multilevel model to estimate the probability of supporting Obama in the 2012 presidential election. Under an assumption of exchangeable sampoling within subgroups, they were able to proportion supporting Obama within each subgroup <span class="math inline">\(\vec{X} = \vec{x}\)</span>.</p>
+<p><span class="math display">\[
+\hat{\text{P}}(Y = 1\mid S = 1,\vec{X} = \vec{x}) = \text{logit}^{-1}(\text{complicated function of }\vec{x})
+\]</span> Then the authors used exit poll data from the 2008 election to estimate the population distribution of <span class="math inline">\(\vec{X}\)</span>. They worked under the assumption that the 2012 electorate would be demographically similar to the 2008 electorate. Putting these together, they produced an overall estimate:</p>
+<p><span class="math display">\[
+\hat{\text{P}}(Y = 1) = \sum_{\vec{x}}\underbrace{\hat{\text{P}}(\vec{X} = \vec{x})}_{\substack{\text{Stratum size,}\\\text{estimated from}\\\text{2008 exit polls}}}\underbrace{\hat{\text{P}}(Y = 1\mid S = 1,\vec{X} = \vec{x})}_{\substack{\text{Prediction within the stratum,}\\\text{estimated from Xbox survey}}}
+\]</span></p>
+<p>They also made predictions within particular states…and the predictions were remarkably accurate! Conditionally exchangeable sampling may be a heroic assumption, but it worked well in this particular case.</p>
+</section>
+<section id="takeaways-prediction-to-describe" class="level3">
+<h3 class="anchored" data-anchor-id="takeaways-prediction-to-describe">Takeaways: Prediction to describe</h3>
+<p>Predictive outcome models can greatly improve the usefulness of non-probability samples for population inferences. But there are a few key requirements to remember.</p>
+<p>First, you are studying <span class="math inline">\(Y\)</span> but the real key is <span class="math inline">\(\vec{X}\)</span>!</p>
+<ol type="1">
+<li><span class="math inline">\(\vec{X}\)</span> must create conditional exchangeability: <span class="math inline">\(S\indep Y\mid\vec{X}\)</span></li>
+<li><span class="math inline">\(\vec{X}\)</span> must be measured in a probability sample or census</li>
+<li><span class="math inline">\(\vec{X}\)</span> must be measured in the non-probability sample</li>
+</ol>
+<p>Consideration (1) may require a very extensive set of variables be included in <span class="math inline">\(\vec{X}\)</span>. But even if you can measure them in your non-probability sample (2), you need to also be able to estimate their population distribution (3). In practice, the feasibility of (3) often leads to estimates that use only a small set of <span class="math inline">\(\vec{X}\)</span> variables, rendering (1) perhaps less credible.</p>
+<p>Second, the task of moving from a non-probability sample to a population estimate does not necessarily require an outcome model; it can also be carried out by weighting (next class). The added benefit of a model is that it might produce better subgroup mean estimates <span class="math inline">\(\text{E}(Y\mid\vec{X} = \vec{x})\)</span> by pooling information across subgroups (e.g., by a line).</p>
+</section>
+</section>
+<section id="causal-inference-example-on-paper" class="level2">
+<h2 class="anchored" data-anchor-id="causal-inference-example-on-paper">Causal inference: Example on paper</h2>
+<p>Prediction for causal inference proceeds by the same general process. For simplicity, we will assume one probability sample.</p>
+<ul>
+<li>assume conditional exchangeability: <span class="math inline">\(\{Y^1,Y^0\} \unicode{x2AEB} A\mid \vec{X}\)</span></li>
+<li>model <span class="math inline">\(\text{E}(Y\mid A,\vec{X})\)</span></li>
+<li>predict <span class="math inline">\(Y^1\)</span> and <span class="math inline">\(Y^0\)</span> for all units</li>
+<li>average over units</li>
+</ul>
+<p>We will start with a simple example that can be carried out on paper. Suppose a researcher estimates the following regression of <span class="math inline">\(Y\)</span> on treatment <span class="math inline">\(A\)</span> and a confounder <span class="math inline">\(X\)</span>, which we assume is a sufficient adjustment set.</p>
+<p><span class="math display">\[
+\hat{\text{E}}(Y\mid \vec{X}, A) = \hat\beta_\text{Intercept} + \hat\beta_X X + \hat\beta_A A + \hat\beta_{XA} X A
+\]</span></p>
+<p>A hypothetical set of estimates are provided below. <span class="math display">\[
+\begin{aligned}
+\hat\beta_\text{Intercept} &amp;= 0 \\
+\hat\beta_X &amp;= 1 \\
+\hat\beta_A &amp;= 2 \\
+\hat\beta_{XA} &amp;= 1 \\
+\end{aligned}
+\]</span></p>
+<p>You want to estimate the average treatment effect over a population of four units. Using this model, can you fill in estimates for <span class="math inline">\(\hat{Y}^1\)</span> and <span class="math inline">\(\hat{Y}^0\)</span>? What is the average causal effect?</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>ID</th>
+<th><span class="math inline">\(X\)</span></th>
+<th><span class="math inline">\(\hat{Y}^1\)</span></th>
+<th><span class="math inline">\(\hat{Y}^0\)</span></th>
+<th><span class="math inline">\(\hat{Y}^1 - \hat{Y}^0\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>1</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="causal-inference-with-ols-simulated-example-in-code" class="level2">
+<h2 class="anchored" data-anchor-id="causal-inference-with-ols-simulated-example-in-code">Causal inference with OLS: Simulated example in code</h2>
+<p>Next, we consider outcome modeling for causal inference using simulated data in code. The code below will generate a dataset of <span class="math inline">\(n = 100\)</span> observations. Each observation contains several observed variables:</p>
+<ul>
+<li><code>L1</code> A numeric confounder</li>
+<li><code>L2</code> A numeric confounder</li>
+<li><code>A</code> A binary treatment</li>
+<li><code>Y</code> A numeric outcome</li>
+</ul>
+<p>Each observation also contains outcomes that we know only because the data are simulated. These variables are useful as ground truth in simulations.</p>
+<ul>
+<li><code>propensity_score</code> The true propensity score <span class="math inline">\(P(A = 1 \mid \vec{L})\)</span></li>
+<li><code>Y0</code> The potential outcome under control</li>
+<li><code>Y1</code> The potential outcome under treatment</li>
+</ul>
+<p>To run this code, you will need the <code>dplyr</code> package. If you don’t have it, first run the line <code>install.packages("dplyr")</code> in your R console. Then, add this line to your R script to load the package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If you want your simulation to match our numbers exactly, add a line to set your seed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">90095</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">L1 =</span> <span class="fu">rnorm</span>(n),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">L2 =</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Generate potential outcomes as functions of L</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Y0 =</span> <span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="at">mean =</span> L1 <span class="sc">+</span> L2, <span class="at">sd =</span> <span class="dv">1</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">Y1 =</span> <span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="at">mean =</span> Y0 <span class="sc">+</span> <span class="dv">1</span>, <span class="at">sd =</span> <span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Generate treatment as a function of L</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">propensity_score =</span> <span class="fu">plogis</span>(<span class="sc">-</span><span class="dv">2</span> <span class="sc">+</span> L1 <span class="sc">+</span> L2)) <span class="sc">|&gt;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">A =</span> <span class="fu">rbinom</span>(<span class="fu">n</span>(), <span class="dv">1</span>, propensity_score)) <span class="sc">|&gt;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Generate factual outcome</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Y =</span> <span class="fu">case_when</span>(A <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> Y0,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                       A <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> Y1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>A simulation is nice because the answer is known. In this simulation, the conditional average causal effect of <code>A</code> on <code>Y</code> equals 1 at any value of <code>L1</code> and <code>L_2</code>.</p>
+<p>Because the causal effect of <code>A</code> on <code>Y</code> is identified by adjusting for the confounders <code>L1</code> and <code>L2</code>, we can estimate by outcome modeling.</p>
+<ol type="1">
+<li>Model <span class="math inline">\(E(Y\mid A, L_1, L_2)\)</span>, the conditional mean of <span class="math inline">\(Y\)</span> given the treatment and confounders</li>
+<li>Predict potential outcomes
+<ul>
+<li>set <code>A = 1</code> for every unit. Predict <span class="math inline">\(Y^1\)</span></li>
+<li>set <code>A = 0</code> for every unit. Predict <span class="math inline">\(Y^0\)</span></li>
+</ul></li>
+<li>Aggregate to the average causal effect</li>
+</ol>
+<section id="model" class="level3">
+<h3 class="anchored" data-anchor-id="model">1) Model</h3>
+<p>The code below uses Ordinary Least Squares to estimate an outcome model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> A<span class="sc">*</span>(L1 <span class="sc">+</span> L2), <span class="at">data =</span> data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Y ~ A * (L1 + L2), data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.1448 -0.7105  0.0097  0.6998  3.1743 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.01606    0.05699   0.282  0.77827    
+A            1.11555    0.18021   6.190 1.26e-09 ***
+L1           1.06333    0.05938  17.907  &lt; 2e-16 ***
+L2           1.11199    0.05951  18.685  &lt; 2e-16 ***
+A:L1        -0.39475    0.14279  -2.765  0.00591 ** 
+A:L2        -0.28935    0.13940  -2.076  0.03844 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.111 on 494 degrees of freedom
+Multiple R-squared:  0.6732,    Adjusted R-squared:  0.6699 
+F-statistic: 203.6 on 5 and 494 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>We chose a model where treatment <code>A</code> is interacted with an additive function of confounders <code>L1 + L2</code>. This is also known as a t-learner (<a href="https://www.pnas.org/doi/abs/10.1073/pnas.1804597116">Kunzel et al.&nbsp;2019</a>) because it is equivalent to estimating <strong>t</strong>wo separate regression models of outcome on confounders, one among those for whom <code>A == 1</code> and among those for whom <code>A == 0</code>.</p>
+</section>
+<section id="predict" class="level3">
+<h3 class="anchored" data-anchor-id="predict">2) Predict</h3>
+<p>The code below predicts the conditional average potential outcome under treatment and control at the confounder values of each observation.</p>
+<p>First, we create data with <code>A</code> set to the value <code>1</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data_1 <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">A =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 7
+        L1     L2      Y0    Y1 propensity_score     A       Y
+     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+1  0.00304  1.03   0.677   1.59          0.276       1  0.677 
+2 -2.35    -1.66  -4.09   -3.53          0.00244     1 -4.09  
+3  0.104   -0.912  0.0659  1.31          0.0569      1  0.0659
+# ℹ 497 more rows</code></pre>
+</div>
+</div>
+<p>Then, we create data with <code>A</code> set to the value <code>0</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data_0 <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">A =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 7
+        L1     L2      Y0    Y1 propensity_score     A       Y
+     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+1  0.00304  1.03   0.677   1.59          0.276       0  0.677 
+2 -2.35    -1.66  -4.09   -3.53          0.00244     0 -4.09  
+3  0.104   -0.912  0.0659  1.31          0.0569      0  0.0659
+# ℹ 497 more rows</code></pre>
+</div>
+</div>
+<p>We use our outcome model to predict the conditional mean of the potential outcome under each scenario.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>predicted <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Y1_predicted =</span> <span class="fu">predict</span>(model, <span class="at">newdata =</span> data_1),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Y0_predicted =</span> <span class="fu">predict</span>(model, <span class="at">newdata =</span> data_0),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">effect_predicted =</span> Y1_predicted <span class="sc">-</span> Y0_predicted</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 10
+        L1     L2      Y0    Y1 propensity_score     A       Y Y1_predicted
+     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;            &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;        &lt;dbl&gt;
+1  0.00304  1.03   0.677   1.59          0.276       0  0.677         1.98 
+2 -2.35    -1.66  -4.09   -3.53          0.00244     0 -4.09         -1.81 
+3  0.104   -0.912  0.0659  1.31          0.0569      0  0.0659        0.451
+# ℹ 497 more rows
+# ℹ 2 more variables: Y0_predicted &lt;dbl&gt;, effect_predicted &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="aggregate" class="level3">
+<h3 class="anchored" data-anchor-id="aggregate">3) Aggregate</h3>
+<p>The final step is to aggregate to an average causal effect estimate.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>aggregated <span class="ot">&lt;-</span> predicted <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">average_effect_estimate =</span> <span class="fu">mean</span>(effect_predicted))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  average_effect_estimate
+                    &lt;dbl&gt;
+1                    1.13</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="logistic-regression-a-realistic-simulated-example" class="level2">
+<h2 class="anchored" data-anchor-id="logistic-regression-a-realistic-simulated-example">Logistic regression: A realistic simulated example</h2>
+<p>This section illustrates outcome modeling with a more realistic simulated dataset involving many confounders. We also use logistic regression as our outcome model.</p>
+<section id="data-based-simulation" class="level3">
+<h3 class="anchored" data-anchor-id="data-based-simulation">Data-based simulation</h3>
+<p>To what extent does completing a four-year college degree by age 25 increase the probability of having a spouse or residential partner with a four-year college degree at age 35, among the population of U.S. residents who were ages 12–16 at the end of 1996?</p>
+<p>This causal question draws on questions in sociology and demography about assortative mating: the tendency of people with high education, income, or status to form households together<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. One reason to care about assortative mating is that it can contribute to inequality across households: if people with high earnings potential form households together, then income inequality across households will be greater than it would be if people formed households randomly.</p>
+<p>Our question is causal: to what extent is the probability of marrying a four-year college graduate higher if one were hypothetically to finish a four-year degree, versus if that same person were hypothetically to not finish a college degree? But in data that exist in the world, we see only one of these two potential outcomes. The people for whom we see the outcome under a college degree are systematically different from those for whom we see the outcome under no degree: college graduates come from families with higher incomes, higher wealth, and higher parental education, for example. All of these factors may directly shape the probability of marrying a college graduate even in the absence of college. Thus, it will be important to adjust for a set of measured confounders, represented by <span class="math inline">\(\vec{X}\)</span> in our DAG.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="prediction_for_inference_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>By adjusting for the variables <span class="math inline">\(\vec{X}\)</span>, we block all non-causal paths between the treatment <span class="math inline">\(A\)</span> and the outcome <span class="math inline">\(Y\)</span> in the DAG. If this DAG is correct, then conditional exchangeability holds with this adjustment set: <span class="math inline">\(\{Y^1,Y^0\}\unicode{x2AEB} A \mid\vec{X}\)</span>.</p>
+<p>To estimate, we use data from the <a href="https://www.bls.gov/nls/nlsy97.htm">National Longitudinal Survey of Youth 1997</a>, a probability sample of U.S. resident children who were ages 12–16 on Dec 31, 1996. The study followed these children and interviewed them every year through 2011 and then every other year after that.</p>
+<p>We will analyze a simulated version of these data (<a href="data/nlsy97_simulated.csv">nlsy97_simulated.csv</a>), which you can access with this line of code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>all_cases <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://ilundberg.github.io/soc212b/data/nlsy97_simulated.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Expand to learn how to get the actual data
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>To access the actual data, you would need to <a href="https://nlsinfo.org/investigator/pages/register">register</a> for an account, <a href="https://nlsinfo.org/investigator/pages/login">log in</a>, upload the <a href="data/nlsy97.NLSY97">nlsy97.NLSY97</a> tagset that identifies our variables, and then download. Unzip the folder and put the contents in a directory on your computer. Then run our code file <a href="data/prepare_nlsy97.R">prepare_nlsy97.R</a> in that folder. This will produce a new file <code>d.RDS</code>, contains the data. You could analyze that file. In the interest of transparency, we wrote the code <a href="data/nlsy97_simulated.R">nlsy97_simulated.R</a> to convert these real data to simulated data that we can share.</p>
+</div>
+</div>
+</div>
+<p>The data contain several variables</p>
+<ul>
+<li><code>id</code> is an individual identifier for each person</li>
+<li><code>a</code> is the treatment, containing the respondent’s education coded <code>treated</code> if the respondent completed a four-year college degree and <code>untreated</code> if not.</li>
+<li><code>y</code> is the outcome: <code>TRUE</code> if has a spouse or residential partner at age 35 who holds a college degree, and <code>FALSE</code> if no spouse or partner or if the spouse or partner at age 35 does not have a degree.</li>
+<li>There are several pre-treatment variables
+<ul>
+<li><code>sex</code> is coded <code>Female</code> and <code>Male</code></li>
+<li><code>race</code> is race/ethnicity and is coded <code>Hispanic</code>, <code>Non-Hispanic Black</code>, and <code>Non-Hispanic Non-Black</code>.</li>
+<li><code>mom_educ</code> is the respondent’s mother’s education as reported in 1997. It takes the value <code>No mom</code> if the child had no residential mother in 1997, and otherwise is coded with her education: <code>&lt; HS</code>, <code>High school</code>, <code>Some college</code>, or <code>College</code>.</li>
+<li><code>dad_educ</code> is the respondent’s father’s education as reported in 1997. It takes the value <code>No dad</code> if the child had no residential father in 1997, and otherwise is coded with his education: <code>&lt; HS</code>, <code>High school</code>, <code>Some college</code>, or <code>College</code>.</li>
+<li><code>log_parent_income</code> is the log of gross household income in 1997</li>
+<li><code>log_parent_wealth</code> is the log of household net worth in 1997</li>
+<li><code>test_percentile</code> is the respondent’s percentile score on a test of math and verbal skills administered in 1999 (the Armed Services Vocational Aptitude Battery).</li>
+</ul></li>
+</ul>
+<p>When values are missing, we have replcaed them with predicted values. In the simulated data, no row represents a real person because values have been drawn randomly from a probability distribution designed to mimic what exists in the real data. As discussed above, we did this in order to share the file with you by a download on this website.</p>
+</section>
+<section id="model-1" class="level3">
+<h3 class="anchored" data-anchor-id="model-1">1) Model</h3>
+<p>One can estimate outcome models using all the data (as in the example above) or separately by treatment status. In this example, we use the latter option.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>untreated_cases <span class="ot">&lt;-</span> all_cases <span class="sc">|&gt;</span> <span class="fu">filter</span>(a <span class="sc">==</span> <span class="st">"untreated"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>treated_cases <span class="ot">&lt;-</span> all_cases <span class="sc">|&gt;</span> <span class="fu">filter</span>(a <span class="sc">==</span> <span class="st">"treated"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We use the untreated cases to estimate a model for <span class="math inline">\(Y^0\)</span> as a function of <span class="math inline">\(X\)</span>. If our data include sampling weights, then we weight this model by the sampling weights.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>logistic_model_for_y0 <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> sex <span class="sc">+</span> race <span class="sc">+</span> mom_educ <span class="sc">+</span> dad_educ <span class="sc">+</span> log_parent_income <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    log_parent_wealth <span class="sc">+</span> test_percentile, </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> binomial,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> untreated_cases,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">weights =</span> sampling_weight</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Likewise, we estimate a model for <span class="math inline">\(Y^1\)</span> among treated units.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>logistic_model_for_y1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> sex <span class="sc">+</span> race <span class="sc">+</span> mom_educ <span class="sc">+</span> dad_educ <span class="sc">+</span> log_parent_income <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    log_parent_wealth <span class="sc">+</span> test_percentile, </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> binomial,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> treated_cases,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">weights =</span> sampling_weight</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>These models return a warning that there is a non-integer number of successes. This is normal and not a concern when estimating logistic regression models with weights.</p>
+</section>
+<section id="predict-1" class="level3">
+<h3 class="anchored" data-anchor-id="predict-1">2) Predict</h3>
+<p>We then predict the probability of <span class="math inline">\(Y\)</span> under each treatment condition, using <code>type = "response"</code> to predict the probability of <span class="math inline">\(Y\)</span> instead of the log odds of <span class="math inline">\(Y\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>logistic_predicted_potential_outcomes <span class="ot">&lt;-</span> all_cases <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat1 =</span> <span class="fu">predict</span>(</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>      logistic_model_for_y1, </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">newdata =</span> all_cases, </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">type =</span> <span class="st">"response"</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">yhat0 =</span> <span class="fu">predict</span>(</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>      logistic_model_for_y0, </span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">newdata =</span> all_cases, </span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">type =</span> <span class="st">"response"</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">effect =</span> yhat1 <span class="sc">-</span> yhat0</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7,688 × 6
+     id sampling_weight a         yhat1  yhat0 effect
+  &lt;dbl&gt;           &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+1     1           0.989 untreated 0.254 0.0861  0.168
+2     2           0.999 treated   0.726 0.562   0.164
+3     3           0.967 untreated 0.177 0.0261  0.151
+# ℹ 7,685 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="aggregate-1" class="level3">
+<h3 class="anchored" data-anchor-id="aggregate-1">3) Aggregate</h3>
+<p>We can then aggregate the predicted potential outcomes to estimate the average treatment effect over all cases (ATT),</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>logistic_ate_estimate <span class="ot">&lt;-</span> logistic_predicted_potential_outcomes <span class="sc">|&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">ate =</span> <span class="fu">weighted.mean</span>(effect, <span class="at">w =</span> sampling_weight)) <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+    ate
+  &lt;dbl&gt;
+1 0.204</code></pre>
+</div>
+</div>
+<p>or among those who were factually treated or untreated,</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>logistic_predicted_potential_outcomes <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(a) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">conditional_average_effect =</span> <span class="fu">weighted.mean</span>(effect, <span class="at">w =</span> sampling_weight))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  a         conditional_average_effect
+  &lt;chr&gt;                          &lt;dbl&gt;
+1 treated                        0.240
+2 untreated                      0.195</code></pre>
+</div>
+</div>
+<p>or among any subpopulation by grouping by any confounding variables.</p>
+<p>We estimate that completing college increases the probability of having a college-educated by 0.204. This causal conclusion relies both on our causal assumptions (the DAG) and our statistical assumptions (the chosen model).</p>
+</section>
+</section>
+<section id="machine-learning-outcome-models-for-causal-inference" class="level2">
+<h2 class="anchored" data-anchor-id="machine-learning-outcome-models-for-causal-inference">Machine learning outcome models for causal inference</h2>
+<p>Outcome models for causal inference just need to be input-output machines:</p>
+<ul>
+<li>input <span class="math inline">\(\vec{X}\)</span> and a treatment value <span class="math inline">\(a\)</span></li>
+<li>output <span class="math inline">\(\hat{Y}^a = \text{E}(Y\mid A = a, \vec{X})\)</span></li>
+</ul>
+<p>Machine learning estimators can be used as the algorithm to make the predictions.</p>
+<section id="a-promising-story" class="level3">
+<h3 class="anchored" data-anchor-id="a-promising-story">A promising story</h3>
+<p>Many researchers increasingly turn to machine learning estimators in the service of causal inference. Some of the early advances involved direct plug-ins, where a machine learning function</p>
+<p><span class="math display">\[\hat{f}:\{A,\vec{X}\} \rightarrow \hat{Y}\]</span></p>
+<p>is learned to map values of treatment <span class="math inline">\(A\)</span> and confounders <span class="math inline">\(\vec{X}\)</span> to a predicted outcome <span class="math inline">\(\hat{Y}\)</span>. Viewed this way, one can use any machine learning approach as an estimator of an average causal effect.</p>
+<p><span class="math display">\[
+\hat{\text{E}}(Y^1 - Y^0) = \frac{1}{n}\sum_i \left(\hat{f}(1,\vec{x}_i) - \hat{f}(0,\vec{x}_i)\right)
+\]</span></p>
+<p>A widely-cited early application was <a href="https://doi.org/10.1198/jcgs.2010.08162">Hill (2011)</a>, which used Bayesian Additive Regression Trees (BART) to model the response surface and then predict to estimate average causal effects and many conditional average effects. By outsourcing the functional form to an algorithm, approaches like this free the researcher to focus on the causal question and the DAG rather than the assumed functional form of statistical relationships. These algorithmic approaches often performed well in competitions where statisticians applied a series of estimators to simulated data to see who would come closest to the true causal effects (known in simulation, see <a href="https://projecteuclid.org/journals/statistical-science/volume-34/issue-1/Automated-versus-Do-It-Yourself-Methods-for-Causal-Inference/10.1214/18-STS667.full">Dorie et al.&nbsp;2019</a>). Recently, new developments have expanded tree and forest estimators to explicitly address causal questions (e.g., <a href="https://doi.org/10.1073/pnas.1510489113">Athey &amp; Imbens 2016</a>).</p>
+</section>
+<section id="a-warning-example" class="level3">
+<h3 class="anchored" data-anchor-id="a-warning-example">A warning example</h3>
+<p>There are many reasons to be optimistic, but one also must be cautious: it is also possible for a machine learning model that predict <span class="math inline">\(Y\)</span> well to be a poorly performing estimator of a causal effect.</p>
+<ul>
+<li>there may be unmeasured confounding</li>
+<li>the regularization in machine learning models can induce a large bias</li>
+<li>to predict <span class="math inline">\(Y^1\)</span>, the model is trained on treated units. But untreated units may have a very different distribution of <span class="math inline">\(\vec{X}\)</span></li>
+</ul>
+<p>As an example, using our simulated data from <a href="#logistic-regression-a-realistic-simulated-example">above</a>, suppose a researcher models <span class="math inline">\(Y\mid A, \vec{X}\)</span> using a regression tree, which they plan to use to predict <span class="math inline">\(Y^1\)</span> and <span class="math inline">\(Y^0\)</span> for all cases.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">90095</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">rpart</span>(</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> a <span class="sc">+</span> sex <span class="sc">+</span> race <span class="sc">+</span> mom_educ <span class="sc">+</span> dad_educ <span class="sc">+</span> log_parent_income <span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    log_parent_wealth <span class="sc">+</span> test_percentile,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> all_cases</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>rpart.plot<span class="sc">::</span><span class="fu">rpart.plot</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="prediction_for_inference_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There are some concerns with this tree:</p>
+<ol type="1">
+<li>Most variables were never used in splitting</li>
+<li>It split on <code>test_percentile</code>, but only coarsely: each leaf contains a wide range of <code>test_percentile</code> values</li>
+</ol>
+<p>As a result, each leaf contains a wide range of values on the confounding variables <span class="math inline">\(\vec{X}\)</span>. If you imagine predicting <span class="math inline">\(Y^0\)</span> and <span class="math inline">\(Y^1\)</span> for a new unit with <span class="math inline">\(\vec{X} = \vec{x}\)</span>, the untreated cases and the treated cases that are averaged into these predictions will have <span class="math inline">\(\vec{X}\)</span> values that are widely ranging, not equal to <span class="math inline">\(\vec{X}\)</span> and not equally distributed between the treated and the untreated.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>all_cases <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(test_percentile <span class="sc">&lt;</span> <span class="dv">69</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> test_percentile, <span class="at">fill =</span> a)) <span class="sc">+</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Density"</span>) <span class="sc">+</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Test Percentile"</span>) <span class="sc">+</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Treatment"</span>,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Treated:</span><span class="sc">\n</span><span class="st">Completed college"</span>,<span class="st">"Untreated:</span><span class="sc">\n</span><span class="st">Did not complete college"</span>)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.height =</span> <span class="fu">unit</span>(.<span class="dv">4</span>,<span class="st">"in"</span>)) <span class="sc">+</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Coarse leaves do not fully adjust for confounders"</span>,</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Treated and untreated units used to predict for a new unit with</span><span class="sc">\n</span><span class="st">test percentile below 69 have different distributions of that confounder."</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="prediction_for_inference_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There exist work-around solutions for this problem, such as methods to carry out further confounder adjustment within leaves to better estimate causal effects (<a href="https://doi.org/10.1177/0081175021993503">Brand et al.&nbsp;2021</a>). These problems and solutions from causal inference point to a general fact: off-the-shelf algorithms to predict <span class="math inline">\(Y\)</span> typically involve data-driven choices (e.g., prune the tree) that lead to better predictions of <span class="math inline">\(Y\)</span>, but in some cases those same choices can lead to worse estimates of causal effects (<span class="math inline">\(Y^1 - Y^0\)</span>).</p>
+<p>In the coming weeks, we will learn how to make better use of machine learning algorithms for causal inference by combining treatment models and outcome models.</p>
 
 
+</section>
+</section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Heroic assumptions are assumptions that do a lot of work to make our quantities of interest identified. When I use “heroic”, I often mean an assumption that is not very credible.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>For reviews, see <a href="https://doi.org/10.2307/2095670">Mare 1991</a> and <a href="https://doi.org/10.1146/annurev-soc-071312-145544">Schwartz 2013</a>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
