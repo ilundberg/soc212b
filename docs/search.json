@@ -475,7 +475,7 @@
     "href": "weighting_for_inference.html",
     "title": "Weighting for causal and population inference",
     "section": "",
-    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators.",
+    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. Slides are available here and may be updated more before class.\n\nNote. This week does not yet have website materials. I haven’t yet finished updating materials for the website, but you are welcome to see my undergrad course notes which share many similarities to the grad course notes.",
     "crumbs": [
       "Problem Sets",
       "Non-Probability Samples and Observational Causal Inference",

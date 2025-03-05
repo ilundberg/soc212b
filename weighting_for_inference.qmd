@@ -2,4 +2,6 @@
 title: "Weighting for causal and population inference"
 ---
 
-This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators.
+This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. Slides are available [here](slides/lec9/ipw.pdf) and may be updated more before class.
+
+> **Note.** This week does not yet have website materials. I haven't yet finished updating materials for the website, but you are welcome to see my [undergrad course notes](https://soc114.github.io/topics/models_for_causal.html#treatment-modeling) which share many similarities to the grad course notes.
