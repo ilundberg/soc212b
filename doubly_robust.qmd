@@ -206,7 +206,7 @@ In this case, the unweighted average error is `r observed_error |> summarize(err
 If the child corrected for the error, they would be using an augmented inverse probability weighting estimator.
 
 $$
-\hat\tau_\text{AIPW} = \frac{1}{n_\text{Not Surfed}}\sum_{i:A_i=\text{Not Surfed}} \left(\hat{Y}_i^1 - Y_i\right) - \frac{\sum_{i:A_i=\text{Surfed}} w_iY_i}{\sum_{i:A_i=\text{Surfed}} w_i}
+\hat\tau_\text{AIPW} = \frac{1}{n_\text{Not Surfed}}\sum_{i:A_i=\text{Not Surfed}} \left(\hat{Y}_i^1 - Y_i\right) - \frac{\sum_{i:A_i=\text{Surfed}} w_i\left(\hat{Y}^1_i - Y_i\right)}{\sum_{i:A_i=\text{Surfed}} w_i}
 $$
 where $w_i$ is the inverse probability weight for estimating the average treatment effect on the untreated.
 
