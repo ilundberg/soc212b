@@ -418,6 +418,38 @@ $$
 \hat{\text{E}}^1(Y\mid X = x) = \hat{Q}^1(x) = \hat{Q}^0(x) + \hat\gamma \underbrace{\left(\frac{\text{P}(A = \text{Not surfed}\mid X = x)}{\text{P}(A = \text{Surfed}\mid X = x)}\right)}_{\text{Clever covariate }h(x)}
 $$
 
+We can visualize the targeted outcome prediction function $\hat{Q}^1$, which corrects for misspecification of the original model. It does not perfectly match the response surface, but its error equals zero on average over the space where predictions will be made. The targeted fit is nonlinear because the clever covariate is a nonlinear function of $X$.
+
+```{r}
+#| code-fold: true
+#| fig-height: 3
+data |>
+  ggplot(aes(x = x, y = y, color = a)) +
+  geom_jitter(width = .1, height = .1, alpha = .5) +
+  scale_x_continuous(
+    breaks = 1:10,
+    name = "Height of Waves (feet)"
+  ) +
+  labs(
+    y = "Awesomeness of Child's Day\n(Scale 1-10)"
+  ) +
+  scale_color_discrete(
+    name = "Treatment",
+    labels = c("Did not surf","Surfed")
+  ) + 
+  # Add the untargeted line
+  geom_line(
+    data = fitted |> mutate(a = TRUE),
+    aes(linetype = "Initial Fit Q0")
+  ) + 
+  # Add the fitted line
+  geom_line(
+    data = fitted |> mutate(y = q1(x)),
+    aes(linetype = "Targeted Fit Q1")
+  ) +
+  labs(linetype = expression(Predicted~Y^{Surfed}~Values))
+```
+
 Now we return to our goal: estimating the counterfactual awesomeness of non-surfing days if the child had surfed on those days. We can now make two estimates, each of which compares the predicted outcomes under surfing ($\hat{Q}^0(x)$ and $\hat{Q}^1(x)$) to the observed outcomes under no surfing.
 
 $$
