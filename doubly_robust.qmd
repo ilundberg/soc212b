@@ -29,8 +29,6 @@ A child loves to go surfing. Every day, the child either surfs or the child does
 #| fig-height: 3
 
 library(tidyverse)
-theme_set(theme_minimal())
-
 data <- tibble(x = rep(1:9,1:9), a = F) |>
   bind_rows(tibble(x = rep(1:9,9:1), a = T)) |>
   group_by(x) |>
@@ -48,7 +46,8 @@ data <- tibble(x = rep(1:9,1:9), a = F) |>
       a ~ y1
     )
   )
-
+ 
+theme_set(theme_minimal())
 data |>
   ggplot(aes(x = x, y = y, color = a)) +
   geom_jitter(width = .1, height = .1, alpha = .5) +
@@ -214,7 +213,32 @@ $$
 w_i = \frac{\text{P}(A=\text{Not Surfed}\mid X = x_i)}{\text{P}(A=\text{Surfed} \mid X = x_i)}
 $$
 
-In this example, the outcome model is misspecified (a line for a parabola) but the weights are correct. Below, we see that the weights allow us to correct the wrong outcome model. First, we calculate the truth because in the simulation we know the potential outcomes.
+In this example, the outcome model is misspecified (a line for a parabola) but the weights are correct. Below, we see that the weights allow us to correct the wrong outcome model.
+
+First, we generate simulated data for this example.
+
+```{r, message = F, warning = F}
+library(tidyverse)
+data <- tibble(x = rep(1:9,1:9), a = F) |>
+  bind_rows(tibble(x = rep(1:9,9:1), a = T)) |>
+  group_by(x) |>
+  mutate(
+    pi = mean(a)
+  ) |>
+  ungroup() |>
+  mutate(
+    y1 = 9 - 9 * ((x - 5) / 5) ^ 2,
+    y0 = 5,
+    # Shift x to fit story of this DGP
+    x = (x - 1) / 2 + 1,
+    y = case_when(
+      !a ~ y0,
+      a ~ y1
+    )
+  )
+```
+
+We calculate the truth because in the simulation we know the potential outcomes.
 
 ```{r}
 truth <- data |>
@@ -546,7 +570,7 @@ data |>
   geom_jitter(aes(y = y - q0(a,x), color = a), width = .1, height = .1, alpha = .5) +
   geom_line(aes(y = fitted, linetype = "Targeting Fit")) +
   labs(
-    x = "Clever Covariate: Treatment Weight for ATC",
+    x = "Clever Covariate: Treatment Weight for ATE",
     y = "Initial Error Modeling\nAwesomeness of Child's Day\n(Scale 1-10)",
     linetype = "Estimate"
   ) +
