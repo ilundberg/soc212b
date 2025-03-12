@@ -370,7 +370,7 @@ window.Quarto = {
 - flyover of course
 - brainstorm topics for 212c
 -->
-<p>This session will combine prediction and weighting methods for an approach with properties superior to either on its own.</p>
+<p>This session combines prediction and weighting methods for an approach with properties superior to either on its own. Here are <a href="slides/lec10/double_robust.pdf">slides</a>.</p>
 <section id="a-motivating-example" class="level2">
 <h2 class="anchored" data-anchor-id="a-motivating-example">A motivating example</h2>
 <p>A child loves to go surfing. Every day, the child either surfs or the child does not. At the end of every day, the child records the height of the waves that day and whether they surfed. They also record the awesomeness of their day on a scale from 1–10, with 10 being the most awesome. The figure below visualizes some hypothetical data. When the child doesn’t surf (red dots), the day is always mediocre (awesomeness = 5). When the child surfs, the awesomeness of the day depends on the wave quality. When the waves are only 1 foot high, the day is less awesome than surfing because the child is constantly struggling to catch anything. As the wave height increases, the awesomeness increases up to a wave height of 3 feet, which is the peak of awesomeness for this child. Above 3 feet, awesomeness begins to decline up through 5 foot waves, in which the child struggles against the overwhelming power of these large waves.</p>
@@ -783,7 +783,7 @@ H(x) = \frac{\text{P}(A = \text{Not Surfed} \mid X = x)}{\text{P}(A = \text{Surf
 <section id="modeling-both-y0-and-y1" class="level3">
 <h3 class="anchored" data-anchor-id="modeling-both-y0-and-y1">Modeling both <span class="math inline">\(Y^0\)</span> and <span class="math inline">\(Y^1\)</span></h3>
 <p>In the section above, we focused on untreated cases and took the observed <span class="math inline">\(Y\)</span> values as <span class="math inline">\(Y^0\)</span> estimates instead of predicting from a regression model. More generally, we might be interested in both the treated and untreated cases (e.g., for an average treatment effect) and would need model-based estimates for both <span class="math inline">\(Y^0\)</span> and <span class="math inline">\(Y^1\)</span>.</p>
-<p>When modeling both potential outcomes, we begin with an initial estimate of the conditional mean function: linear regresion estimated separately on the treated and untreated observations. As before, the 0 superscripts indicate that this is an initial estimate.</p>
+<p>When modeling both potential outcomes, we begin with an initial estimate of the conditional mean function: linear regression estimated separately on the treated and untreated observations. As before, the 0 superscripts indicate that this is an initial estimate.</p>
 <p><span class="math display">\[
 \begin{aligned}
 \hat{Q}^0(a,\vec{x}) &amp;= \hat{\text{E}}^0(Y\mid A = a, \vec{X} = \vec{x}) = \begin{cases}
@@ -879,7 +879,7 @@ H(a,x) = \begin{cases}
 <p><span class="math display">\[
 \hat{Q}^1(A,\vec{X}) = \text{E}^1\left(Y \mid A, \vec{X}\right) = \hat{Q}^0(A,\vec{X}) + \hat\gamma H(A,\vec{X})
 \]</span></p>
-<p>The slope of the line in the figure above equals the coefficient estimate <span class="math inline">\(\hat\gamma\)</span> in the equation above. In code, below we estimate the targeting regresion model</p>
+<p>The slope of the line in the figure above equals the coefficient estimate <span class="math inline">\(\hat\gamma\)</span> in the equation above. In code, below we estimate the targeting regression model</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>q1_fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">q0</span>(a,x)) <span class="sc">+</span> <span class="fu">h</span>(a,x), <span class="at">data =</span> data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -891,7 +891,7 @@ H(a,x) = \begin{cases}
 </div>
 <p>Using the <span class="math inline">\(\hat{Q}^1\)</span> function, we can produce a targeted estimate of the ATE.</p>
 <p><span class="math display">\[
-\hat\tau_\text{ATE}^1 = \underbrace{\frac{1}{n}\sum_i}_\text{Sample average} \bigg(\underbrace{\hat{Q}^1(1,x_i)}_{\substack{\text{Targeted prediction}\\\text{under treatment}}} - \underbrace{\hat{Q}^0(1,x_i)}_{\substack{\text{Targeted prediction}\\\text{under control}}}\bigg)
+\hat\tau_\text{ATE}^1 = \underbrace{\frac{1}{n}\sum_i}_\text{Sample average} \bigg(\underbrace{\hat{Q}^1(1,x_i)}_{\substack{\text{Targeted prediction}\\\text{under treatment}}} - \underbrace{\hat{Q}^1(0,x_i)}_{\substack{\text{Targeted prediction}\\\text{under control}}}\bigg)
 \]</span></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>

@@ -14,7 +14,7 @@ title: "Doubly-robust estimation"
 - brainstorm topics for 212c
 -->
 
-This session will combine prediction and weighting methods for an approach with properties superior to either on its own.
+This session combines prediction and weighting methods for an approach with properties superior to either on its own. Here are [slides](slides/lec10/double_robust.pdf).
 
 ```{r, echo = F, message = F, warning = F}
 library(foreach)
@@ -338,6 +338,7 @@ data |>
   geom_line(
     data = fitted |> mutate(a = TRUE)
   )
+ggsave("slides/lec10/figures/q0.pdf", height = 3, width = 5)
 ```
 
 The child's model is targeted toward the observed data, but our target is actually to predict the counterfactual under surfing for the observations when the child did not surf. These are disproportionately at the right side of the figure. If we were estimating by inverse probability weighting, we would weight each treated observation by the ratio of untreated to treated observations given $X$. For targeted learning, we will call this a "clever covariate" that we will define as function $H()$.
@@ -384,6 +385,7 @@ data |>
     y = expression(atop('Error '~Y - {hat(Q)^0}(X),'From Initial Outcome Model'))
   ) +
   ggtitle("Prediction errors for surfing days")
+ggsave("slides/lec10/figures/q1.pdf", height = 3, width = 5)
 ```
 
 The graph shows that the observed $Y$ values (awesomeness of the day) were especially far below the predicted $Y$-values at the right side of the graph: big-wave days when the clever covariate is very large. The regression line is a best-fit line for the errors with intercept restricted to equal 0. Equivalently, it is a best-fit line for $Y$ with the initial prediction $\hat{Q}^0(X)$ included as an offset (an intercept with coefficient restricted to equal 1). The latter interpretation will be useful for generalizations.
@@ -433,7 +435,7 @@ data |>
 
 In the section above, we focused on untreated cases and took the observed $Y$ values as $Y^0$ estimates instead of predicting from a regression model. More generally, we might be interested in both the treated and untreated cases (e.g., for an average treatment effect) and would need model-based estimates for both $Y^0$ and $Y^1$.
 
-When modeling both potential outcomes, we begin with an initial estimate of the conditional mean function: linear regresion estimated separately on the treated and untreated observations. As before, the 0 superscripts indicate that this is an initial estimate.
+When modeling both potential outcomes, we begin with an initial estimate of the conditional mean function: linear regression estimated separately on the treated and untreated observations. As before, the 0 superscripts indicate that this is an initial estimate.
 
 $$
 \begin{aligned}
@@ -560,7 +562,7 @@ $$
 \hat{Q}^1(A,\vec{X}) = \text{E}^1\left(Y \mid A, \vec{X}\right) = \hat{Q}^0(A,\vec{X}) + \hat\gamma H(A,\vec{X})
 $$
 
-The slope of the line in the figure above equals the coefficient estimate $\hat\gamma$ in the equation above. In code, below we estimate the targeting regresion model
+The slope of the line in the figure above equals the coefficient estimate $\hat\gamma$ in the equation above. In code, below we estimate the targeting regression model
 
 ```{r}
 q1_fit <- lm(y ~ -1 + offset(q0(a,x)) + h(a,x), data = data)
@@ -577,7 +579,7 @@ q1 <- function(a,x) {
 Using the $\hat{Q}^1$ function, we can produce a targeted estimate of the ATE.
 
 $$
-\hat\tau_\text{ATE}^1 = \underbrace{\frac{1}{n}\sum_i}_\text{Sample average} \bigg(\underbrace{\hat{Q}^1(1,x_i)}_{\substack{\text{Targeted prediction}\\\text{under treatment}}} - \underbrace{\hat{Q}^0(1,x_i)}_{\substack{\text{Targeted prediction}\\\text{under control}}}\bigg)
+\hat\tau_\text{ATE}^1 = \underbrace{\frac{1}{n}\sum_i}_\text{Sample average} \bigg(\underbrace{\hat{Q}^1(1,x_i)}_{\substack{\text{Targeted prediction}\\\text{under treatment}}} - \underbrace{\hat{Q}^1(0,x_i)}_{\substack{\text{Targeted prediction}\\\text{under control}}}\bigg)
 $$
 
 ```{r}

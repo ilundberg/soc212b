@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.20)  5 MAR 2025 07:31
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.20)  12 MAR 2025 08:42
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1100,6 +1100,10 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `\color' on input line 74.
 
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\footnote' on input line 77.
+
 (/usr/local/texlive/2023/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count370
@@ -1280,79 +1284,88 @@ Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 )
 Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 ))
-(./double_robust.nav) [1
+(./double_robust.nav)
+LaTeX Font Info:    Trying to load font information for U+msa on input line 79.
 
-{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 81.
 
- (/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsa.fd
+(/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 81.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 79.
 
- (/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsb.fd
+
+(/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on inp
-ut line 81.
+ut line 79.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/sansmathaccent/ot1mathkerncmss.fd
 File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/ma
 thkerncmss.
-) [2
+) [1
 
-]
-<figures/dr_y.pdf, id=28, 361.35pt x 216.81pt>
+{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+<figures/dr_y.pdf, id=24, 361.35pt x 216.81pt>
 File: figures/dr_y.pdf Graphic file (type pdf)
 <use figures/dr_y.pdf>
 Package pdftex.def Info: figures/dr_y.pdf  used on input line 85.
 (pdftex.def)             Requested size: 307.28987pt x 184.37538pt.
- [3
+
+[2
 
  <./figures/dr_y.pdf>]
-<figures/dr_pscore.pdf, id=42, 361.35pt x 216.81pt>
+<figures/dr_pscore.pdf, id=38, 361.35pt x 216.81pt>
 File: figures/dr_pscore.pdf Graphic file (type pdf)
 <use figures/dr_pscore.pdf>
 Package pdftex.def Info: figures/dr_pscore.pdf  used on input line 89.
 (pdftex.def)             Requested size: 307.28987pt x 184.37538pt.
- [4
+ [3
 
- <./figures/dr_pscore.pdf>] [5
+ <./figures/dr_pscore.pdf>] [4
 
 ]
-<figures/dr_bestFitLine.pdf, id=63, 361.35pt x 216.81pt>
+<figures/dr_bestFitLine.pdf, id=58, 361.35pt x 216.81pt>
 File: figures/dr_bestFitLine.pdf Graphic file (type pdf)
 <use figures/dr_bestFitLine.pdf>
 Package pdftex.def Info: figures/dr_bestFitLine.pdf  used on input line 104.
 (pdftex.def)             Requested size: 307.28987pt x 184.37538pt.
- [6
+ [5
 
  <./figures/dr_bestFitLine.pdf>]
-<figures/dr_predictedEffects.pdf, id=78, 361.35pt x 216.81pt>
+<figures/dr_predictedEffects.pdf, id=73, 361.35pt x 216.81pt>
 File: figures/dr_predictedEffects.pdf Graphic file (type pdf)
 <use figures/dr_predictedEffects.pdf>
 Package pdftex.def Info: figures/dr_predictedEffects.pdf  used on input line 11
 0.
 (pdftex.def)             Requested size: 307.28987pt x 184.37538pt.
- [7
+ [6
 
  <./figures/dr_predictedEffects.pdf>]
 File: figures/dr_bestFitLine.pdf Graphic file (type pdf)
 <use figures/dr_bestFitLine.pdf>
 Package pdftex.def Info: figures/dr_bestFitLine.pdf  used on input line 122.
 (pdftex.def)             Requested size: 307.28987pt x 184.37538pt.
- [8
+ [7
 
 ]
-<figures/dr_observedError.pdf, id=99, 361.35pt x 216.81pt>
+<figures/dr_observedError.pdf, id=95, 361.35pt x 216.81pt>
 File: figures/dr_observedError.pdf Graphic file (type pdf)
 <use figures/dr_observedError.pdf>
 Package pdftex.def Info: figures/dr_observedError.pdf  used on input line 128.
 (pdftex.def)             Requested size: 307.28987pt x 184.37538pt.
- [9
+ [8
 
  <./figures/dr_observedError.pdf>]
-<figures/dr_observedErrorWeighted.pdf, id=114, 361.35pt x 216.81pt>
+<figures/dr_observedErrorWeighted.pdf, id=110, 361.35pt x 216.81pt>
+File: figures/dr_observedErrorWeighted.pdf Graphic file (type pdf)
+<use figures/dr_observedErrorWeighted.pdf>
+Package pdftex.def Info: figures/dr_observedErrorWeighted.pdf  used on input li
+ne 137.
+(pdftex.def)             Requested size: 307.28987pt x 184.37538pt.
+ [9
+
+ <./figures/dr_observedErrorWeighted.pdf>]
 File: figures/dr_observedErrorWeighted.pdf Graphic file (type pdf)
 <use figures/dr_observedErrorWeighted.pdf>
 Package pdftex.def Info: figures/dr_observedErrorWeighted.pdf  used on input li
@@ -1360,7 +1373,7 @@ ne 137.
 (pdftex.def)             Requested size: 307.28987pt x 184.37538pt.
  [10
 
- <./figures/dr_observedErrorWeighted.pdf>]
+]
 File: figures/dr_observedErrorWeighted.pdf Graphic file (type pdf)
 <use figures/dr_observedErrorWeighted.pdf>
 Package pdftex.def Info: figures/dr_observedErrorWeighted.pdf  used on input li
@@ -1369,17 +1382,146 @@ ne 137.
  [11
 
 ]
-File: figures/dr_observedErrorWeighted.pdf Graphic file (type pdf)
-<use figures/dr_observedErrorWeighted.pdf>
-Package pdftex.def Info: figures/dr_observedErrorWeighted.pdf  used on input li
-ne 137.
-(pdftex.def)             Requested size: 307.28987pt x 184.37538pt.
-
 [12
 
 ] [13
 
-] [14
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[14
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[15
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[16
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[17
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[18
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[19
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[20
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[21
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[22
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[23
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[24
+
+]
+Overfull \hbox (7.74504pt too wide) in paragraph at lines 182--182
+[][]  
+ []
+
+[25
+
+] [26
+
+] [27
+
+] [28
+
+] [29
+
+] [30
+
+] [31
+
+] [32
+
+] [33
+
+] [34
+
+]
+<figures/q0.pdf, id=269, 361.35pt x 216.81pt>
+File: figures/q0.pdf Graphic file (type pdf)
+<use figures/q0.pdf>
+Package pdftex.def Info: figures/q0.pdf  used on input line 228.
+(pdftex.def)             Requested size: 215.10196pt x 129.06143pt.
+ [35
+
+ <./figures/q0.pdf>]
+<figures/q1.pdf, id=285, 361.35pt x 216.81pt>
+File: figures/q1.pdf Graphic file (type pdf)
+<use figures/q1.pdf>
+Package pdftex.def Info: figures/q1.pdf  used on input line 238.
+(pdftex.def)             Requested size: 215.10196pt x 129.06143pt.
+
+[36
+
+ <./figures/q1.pdf>]
+File: figures/q1.pdf Graphic file (type pdf)
+<use figures/q1.pdf>
+Package pdftex.def Info: figures/q1.pdf  used on input line 248.
+(pdftex.def)             Requested size: 215.10196pt x 129.06143pt.
+ [37
+
+]
+Overfull \hbox (25.8945pt too wide) detected at line 259
+[][]
+ []
+
+[38
+
+] [39
+
+] [40
 
 ]
 \tf@nav=\write6
@@ -1396,25 +1538,33 @@ Package rerunfilecheck Info: File `double_robust.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 29796 strings out of 476025
- 614716 string characters out of 5790016
- 1858388 words of memory out of 5000000
- 49590 multiletter control sequences out of 15000+600000
- 532684 words of font info for 94 fonts, out of 8000000 for 9000
+ 29956 strings out of 476025
+ 617206 string characters out of 5790016
+ 1863388 words of memory out of 5000000
+ 49682 multiletter control sequences out of 15000+600000
+ 539890 words of font info for 116 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,11n,122p,408b,450s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 128i,15n,122p,408b,562s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
-></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb>
-</usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb><
-/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></u
-sr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></u
-sr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></us
-r/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr
-/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on double_robust.pdf (14 pages, 128340 bytes).
+></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
+</usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></
+usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></us
+r/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr
+/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/
+local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss17.pfb></usr/l
+ocal/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/loc
+al/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local
+/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/local
+/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi12.pfb></usr/local
+/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/local/
+texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi9.pfb></usr/local/t
+exlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/te
+xlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texl
+ive/2023/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
+Output written on double_robust.pdf (40 pages, 251913 bytes).
 PDF statistics:
- 193 PDF objects out of 1000 (max. 8388607)
- 141 compressed objects within 2 object streams
- 29 named destinations out of 1000 (max. 500000)
- 73 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 411 PDF objects out of 1000 (max. 8388607)
+ 311 compressed objects within 4 object streams
+ 81 named destinations out of 1000 (max. 500000)
+ 83 words of extra memory for PDF output out of 10000 (max. 10000000)
 
