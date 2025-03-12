@@ -1,0 +1,263 @@
+---
+title: "Doubly-robust estimation"
+---
+
+### TMLE with a binary outcome
+
+> **Issue.** AIPW never predicts an ATE outside of the (0,1) range when the treatment weights are correct and we have no random noise. May need to introduce random noise for this to happen. May 
+
+```{r, echo = F, eval = F}
+# This chunk is my attempts. It does not appear or run in rendering.
+# Overall, I will instead illustrate logit and say how predictions outside (0,1) are a theoretical possibility but hard to occur in practice, I think.
+simulate_data <- function() {
+  tibble(x = rep(c(1,2,5), each = 10)) |>
+    mutate(
+      a = c(rep(c(F,rep(T,9)),2),
+            T,rep(F,9))
+    ) |>
+    mutate(y = case_when(
+      !a ~ rbinom(n(), 1, .1),
+      a & x == 1 ~ rbinom(n(), 1, .1),
+      a & x == 2 ~ rbinom(n(), 1, .9),
+      a & x == 5 ~ rbinom(n(), 1, .1)
+    ))
+}
+aipw_estimator <- function(data) {
+  fit_a <- glm(a ~ x, data = data, family = binomial)
+  fit_y <- lm(y ~ a*x, data = data)
+  correction <- data |>
+    mutate(
+      pi = predict(fit_a),
+      weight = case_when(
+        a ~ (1 - pi) / pi,
+        !a ~ 1
+      ),
+      resid_y = predict(fit_y) - y
+    ) |>
+    group_by(a) |>
+    summarize(error = weighted.mean(resid_y, w = weight)) |>
+    mutate(quantity = "correction") |>
+    pivot_wider(names_from = "a", values_from = "error", names_prefix = "if_")
+  estimate <- tibble(
+    quantity = "initial_estimate",
+    if_TRUE = mean(predict(fit_y, newdata = data |> filter(!a) |> mutate(a = TRUE))),
+    if_FALSE = mean(predict(fit_y, newdata = data |> filter(!a))),
+  )
+  corrected <- estimate |>
+    bind_rows(correction) |>
+    select(-quantity) |>
+    summarize_all(sum) |>
+    mutate(quantity = "corrected")
+  estimate |>
+    bind_rows(correction) |>
+    bind_rows(corrected)
+}
+many_estimates <- foreach(rep = 1:100, .combine = "rbind") %do% {
+  aipw_estimator(simulate_data())
+}
+many_estimates |>
+  filter(quantity != "correction") |>
+  ggplot(aes(x = if_TRUE)) +
+  geom_histogram() +
+  facet_wrap(~quantity) +
+  geom_vline(xintercept = 1, linetype = "dashed")
+```
+
+
+A key advantage of targeted learning over augmented inverse pribability weighting is that targeted learning accomodates generalized linear models such as logistic regression for bounded outcomes. To illustrate this property, we now consider a binary outcome: whether the child's day scores at least 7 on the awesomeness scale. We focus here on the average treatment effect.
+
+$$
+\tau = \frac{1}{n}\sum_i \left(\mathbb{I}(Y_i^1\geq 7) - \mathbb{I}(Y_i^0\geq 7)\right)
+$$
+
+### Non-enforced bounds (ATC)
+
+We first consider two estimators that do not enforce the bounds: the AIPW estimator and the targeted learning estimator using linear regression.
+
+```{r, eval = F}
+data_binary <- tibble(x = rep(c(1,2,5), each = 10)) |>
+  mutate(
+    a = c(rep(c(F,rep(T,9)),2),
+          T,rep(F,9))
+  ) |>
+  mutate(y = case_when(
+    !a ~ F,
+    a & x == 1 ~ F,
+    a & x == 2 ~ T,
+    a & x == 4 ~ F,
+    a & x == 5 ~ F
+    ))
+```
+
+```{r, eval = F, echo = F}
+data_binary |>
+  ggplot(aes(x = x, y = y, color = a)) +
+  geom_jitter(width = .1, height = .1, alpha = .5) +
+  scale_x_continuous(
+    breaks = 1:10,
+    name = "Height of Waves (feet)"
+  ) +
+  labs(
+    y = "Child Had an Awesome Day"
+  ) +
+  scale_color_discrete(
+    name = "Treatment",
+    labels = c("Did not surf","Surfed")
+  )
+```
+
+```{r, eval = F}
+fit1 <- lm(y ~ x, data = data_binary |> filter(a))
+```
+
+```{r, eval = F, echo = F}
+data_binary |>
+  mutate(fitted = predict(fit1, newdata = data_binary)) |>
+  ggplot(aes(x = x, color = a)) +
+  geom_hline(yintercept = c(0,1), linetype = "dashed") +
+  geom_jitter(aes(y = as.numeric(y)),
+              width = .1, height = .1, alpha = .5) +
+  geom_line(aes(y = fitted)) +
+  scale_x_continuous(
+    breaks = 1:10,
+    name = "Height of Waves (feet)"
+  ) +
+  labs(
+    y = "Child Had an Awesome Day"
+  ) +
+  scale_color_discrete(
+    name = "Treatment",
+    labels = c("Did not surf","Surfed")
+  )
+```
+
+What is the initial estimate of the outcome under treatment?
+
+```{r, eval = F}
+data |> 
+  mutate(yhat1 = predict(fit1, newdata = data)) |>
+  filter(!a) |>
+  summarize(yhat0 = mean(y >= 6), yhat1 = mean(yhat1))
+```
+
+For both estimators, we calculate an initial estimate. For streamlined coding in this comparison, we use the notation of targeted learning and first create a `q0()` function for predictions from our initial outcome model.
+
+```{r, eval = F}
+q0 <- function(a,x) {
+  to_predict <- tibble(a,x)
+  to_predict |>
+    mutate(
+      q0 = case_when(
+        a == 1 ~ predict(fit1, newdata = to_predict),
+        a == 0 ~ predict(fit0, newdata = to_predict)
+      )
+    ) |>
+    pull(q0)
+}
+```
+
+Then we use this function to create an initial estimate.
+
+```{r, eval = F}
+initial_estimate <- data |>
+  transmute(
+    yhat1 = q0(1,x),
+    yhat0 = q0(0,x),
+    effect = yhat1 - yhat0
+  ) |>
+  summarize_all(mean) |>
+  print()
+```
+
+We then calculate the AIPW correction using inverse probability weights.
+
+```{r, eval = F}
+correction <- data |>
+  mutate(
+    yhat = q0(a,x),
+    weight = case_when(
+      a ~ 1 / pi,
+      !a ~ 1 / (1 - pi)
+    )
+  ) |>
+  group_by(a) |>
+  summarize(error = weighted.mean(yhat - I(y >= 3), w = weight)) |>
+  pivot_wider(names_from = "a", values_from = "error", names_prefix = "error_") |>
+  mutate(error_ATE = error_TRUE - error_FALSE) |>
+  select(error_TRUE, error_FALSE, error_ATE) |>
+  print()
+```
+
+The above shows that the model tends to over-predict the probability of awesomeness exceeding 3 if surfing.
+
+```{r, eval = F}
+initial_estimate |> pull(effect) - 
+  (correction |> pull(error_ATE))
+```
+
+
+
+### Non-enforced bounds ($Y^1$ and $Y^0$)
+
+We first consider two estimators that do not enforce the bounds: the AIPW estimator and the targeted learning estimator using linear regression. For these estimators, our initial fits are linear regression models.
+
+```{r, eval = F}
+fit0 <- lm(I(y >= 4) ~ x, data = data |> filter(!a))
+fit1 <- lm(I(y >= 4) ~ x, data = data |> filter(a))
+```
+
+For both estimators, we calculate an initial estimate. For streamlined coding in this comparison, we use the notation of targeted learning and first create a `q0()` function for predictions from our initial outcome model.
+
+```{r, eval = F}
+q0 <- function(a,x) {
+  to_predict <- tibble(a,x)
+  to_predict |>
+    mutate(
+      q0 = case_when(
+        a == 1 ~ predict(fit1, newdata = to_predict),
+        a == 0 ~ predict(fit0, newdata = to_predict)
+      )
+    ) |>
+    pull(q0)
+}
+```
+
+Then we use this function to create an initial estimate.
+
+```{r, eval = F}
+initial_estimate <- data |>
+  transmute(
+    yhat1 = q0(1,x),
+    yhat0 = q0(0,x),
+    effect = yhat1 - yhat0
+  ) |>
+  summarize_all(mean) |>
+  print()
+```
+
+We then calculate the AIPW correction using inverse probability weights.
+
+```{r, eval = F}
+correction <- data |>
+  mutate(
+    yhat = q0(a,x),
+    weight = case_when(
+      a ~ 1 / pi,
+      !a ~ 1 / (1 - pi)
+    )
+  ) |>
+  group_by(a) |>
+  summarize(error = weighted.mean(yhat - I(y >= 3), w = weight)) |>
+  pivot_wider(names_from = "a", values_from = "error", names_prefix = "error_") |>
+  mutate(error_ATE = error_TRUE - error_FALSE) |>
+  select(error_TRUE, error_FALSE, error_ATE) |>
+  print()
+```
+
+The above shows that the model tends to over-predict the probability of awesomeness exceeding 3 if surfing.
+
+```{r, eval = F}
+initial_estimate |> pull(effect) - 
+  (correction |> pull(error_ATE))
+```
+

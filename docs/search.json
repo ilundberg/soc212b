@@ -312,6 +312,90 @@
     ]
   },
   {
+    "objectID": "doubly_robust.html",
+    "href": "doubly_robust.html",
+    "title": "Doubly-robust estimation",
+    "section": "",
+    "text": "This session will combine prediction and weighting methods for an approach with properties superior to either on its own.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Doubly-robust estimation"
+    ]
+  },
+  {
+    "objectID": "doubly_robust.html#a-motivating-example",
+    "href": "doubly_robust.html#a-motivating-example",
+    "title": "Doubly-robust estimation",
+    "section": "A motivating example",
+    "text": "A motivating example\nA child loves to go surfing. Every day, the child either surfs or the child does not. At the end of every day, the child records the height of the waves that day and whether they surfed. They also record the awesomeness of their day on a scale from 1–10, with 10 being the most awesome. The figure below visualizes some hypothetical data. When the child doesn’t surf (red dots), the day is always mediocre (awesomeness = 5). When the child surfs, the awesomeness of the day depends on the wave quality. When the waves are only 1 foot high, the day is less awesome than surfing because the child is constantly struggling to catch anything. As the wave height increases, the awesomeness increases up to a wave height of 3 feet, which is the peak of awesomeness for this child. Above 3 feet, awesomeness begins to decline up through 5 foot waves, in which the child struggles against the overwhelming power of these large waves.\n\n\nCode\nlibrary(tidyverse)\ntheme_set(theme_minimal())\n\ndata &lt;- tibble(x = rep(1:9,1:9), a = F) |&gt;\n  bind_rows(tibble(x = rep(1:9,9:1), a = T)) |&gt;\n  group_by(x) |&gt;\n  mutate(\n    pi = mean(a)\n  ) |&gt;\n  ungroup() |&gt;\n  mutate(\n    y1 = 9 - 9 * ((x - 5) / 5) ^ 2,\n    y0 = 5,\n    # Shift x to fit story of this DGP\n    x = (x - 1) / 2 + 1,\n    y = case_when(\n      !a ~ y0,\n      a ~ y1\n    )\n  )\n\ndata |&gt;\n  ggplot(aes(x = x, y = y, color = a)) +\n  geom_jitter(width = .1, height = .1, alpha = .5) +\n  scale_x_continuous(\n    breaks = 1:10,\n    name = \"Height of Waves (feet)\"\n  ) +\n  labs(\n    y = \"Awesomeness of Child's Day\\n(Scale 1-10)\"\n  ) +\n  scale_color_discrete(\n    name = \"Treatment\",\n    labels = c(\"Did not surf\",\"Surfed\")\n  )\n\n\n\n\n\n\n\n\n\nThe parent also plays an improtant role here. When the waves are small, the parent almost always allows the child to surf. As the waves get larger, there are more days when the parent does not allow the chid to surf. When the waves are 5 feet tall, the child surfs only very rarely (when the parent misjudges the size of the waves). As a result, when the child thinks about days that they surf, the child’s experience of surfing tends to be in 1–3 foot waves.\nThe child secretly aspires to be a statistician, and thus asks a causal question: how much more awesome would the days I did not surf have been, if I had counterfactually surfed on those days? The child’s causal estimand is the average treatment effect on the untreated observations.\n\\[\\tau = \\frac{1}{n_\\text{Not Surfed}}\\sum_{i:A_i=\\text{Not Surfed}} \\left(Y_i^\\text{Surfed} - Y_i^\\text{Not Surfed}\\right)\\]\nTo answer this causal question, the child uses linear regression:\n\nModel (awesomeness) given (wave height), among days when they surfed\nPredict the counterfactual awesomeness under surfing, for the days when they did not surf\n\nBecause most of the child’s surfing experiences are at the left side of the plot, the child fits a positive trend line: surfing days just get more awesome as the wave height increases. The child can easily forget about that bad 5-foot day; it was an anomaly that happened only once.\n\n\nCode\nfit1 &lt;- lm(y ~ x, data = data |&gt; filter(a))\n\nfitted &lt;- data |&gt;\n  mutate(y = predict(fit1, newdata = data))\n\ndata |&gt;\n  ggplot(aes(x = x, y = y, color = a)) +\n  geom_jitter(width = .1, height = .1, alpha = .5) +\n  scale_x_continuous(\n    breaks = 1:10,\n    name = \"Height of Waves (feet)\"\n  ) +\n  labs(\n    y = \"Awesomeness of Child's Day\\n(Scale 1-10)\"\n  ) +\n  scale_color_discrete(\n    name = \"Treatment\",\n    labels = c(\"Did not surf\",\"Surfed\")\n  ) + \n  # Add the fitted line\n  geom_line(\n    data = fitted |&gt; mutate(a = TRUE)\n  )\n\n\n\n\n\n\n\n\n\nKnowledgable about outcome modeling for causal inference, the child proceeds to focus on the red dots: the days that they did not surf. For every red dot, the child predicts the counterfactual outcome: how awesome that day would have been if they had surfed. Especially on large-wave days, the model suggests the awesomeness would have been so much higher if the child had surfed!\n\n\nCode\ndata |&gt;\n  ggplot(aes(x = x, y = y, color = a)) +\n  geom_point(alpha = 0, show.legend = F) +\n  geom_jitter(data = data |&gt; filter(!a), width = .1, height = .1) +\n  geom_jitter(data = fitted |&gt; filter(!a) |&gt; mutate(a = T), width = .1, height = .1) +\n  # Add the fitted line\n  geom_line(\n    data = fitted |&gt; filter(!a) |&gt; mutate(a = TRUE)\n  ) +\n  #geom_segment(aes(yend = fitted), linetype = \"dashed\", color = \"gray\") +\n  scale_x_continuous(\n    breaks = 1:10,\n    name = \"Height of Waves (feet)\"\n  ) +\n  labs(\n    y = \"Awesomeness of Child's Day\\n(Scale 1-10)\"\n  ) +\n  scale_color_discrete(\n    name = \"Treatment\",\n    labels = c(\"Did not surf\\n(factual data)\",\"Surfed\\n(counterfactual predictions)\"),\n    guide = guide_legend(reverse = T)\n  ) +\n  annotate(geom = \"text\", x = 4.5, y = 6.5, label = \"big\\ncausal\\neffect\\nestimates\") +\n  annotate(geom = \"segment\", x = c(4,5), y = c(5.5,5.5), yend = c(7.5,8.5), arrow = arrow(length = unit(.1,\"in\")),\n           color = \"gray\", linewidth = 1.5) +\n  theme(legend.key.height = unit(.5,\"in\"))\n\n\n\n\n\n\n\n\n\nAs a result, the child overestimates the value of \\(\\tau\\): the average non-surfing day would have been 1.6 points more awesome on average if the child had surfed, but the child’s linear model mistakenly estimates that it would have been 2.94 points more awesome.\nWhat went wrong with the child’s model? The child’s model minimized squared error over the distribution of wave heights where surfing days were observed. These tended to be small-wave days. But the prediction task was to predict on the non-surfing days, which tended to be big-wave days!\n\nWe are always the child\nWhen carrying out model-based causal inference, we must realize we are always the child. We always have a treatment (surfing) that is unequally distributed across the values of one or more confounders (wave height). We fit an outcome model on the data we observe (surfing on small-wave days) and then use that model to predict counterfactuals we don’t observe (which tend to be big-wave days). Finally, just like the child we often assume a simple model (e.g., a line) without realizing that the world is more complicated (in this case, a parabola).\nThe solution to the child’s problem will be a solution that we can apply in many cases.\n\n\nCorrecting the child’s wrong model\nThe child actually has other information relevant to the problem: the child knows the proportion of days surfed at each wave height. In this case, the probability of surfing declines linearly from 90% on 1-foot days to 10% on 5-foot days.\n\n\nCode\ndata |&gt;\n  ggplot(aes(x = x, y = pi)) +\n  geom_line() +\n  geom_point() +\n  ggtitle(\"Propensity Score\") +\n  labs(\n    x = \"Height of Waves (feet)\",\n    y = \"Probability that Parent\\nAllows Child to Surf\"\n  )\n\n\n\n\n\n\n\n\n\nTo be even more concrete, consider 5-foot wave days. The child knows that they surfed only 10% of these days. Every day surfed really stands in for 9 days not surfed. If we were estimating the average treatment effect on the untreated by weighting, we would weight the 5-foot day by \\(\\text{P}(\\text{Not Surfed}\\mid X = 5) / \\text{P}(\\text{Surfed} \\mid X = 5) = .9 / .1 = 9\\). We therefore might estimate the weighted error of the linear model, weighted by these weights.\n\n\nCode\nobserved_error &lt;- data |&gt;\n  mutate(fitted = predict(fit1, newdata = data)) |&gt;\n  filter(a) |&gt;\n  mutate(weight = (1 - pi) / pi)\n\nobserved_error |&gt;\n  ggplot(aes(x = x, y = y1)) +\n  geom_line(aes(y = fitted)) +\n  geom_jitter(aes(y = y1, size = weight), width = .1, height = .1, alpha = .5) + \n  geom_segment(aes(yend = fitted), linetype = \"dashed\", color = \"gray\") +\n  scale_x_continuous(\n    breaks = 1:10,\n    name = \"Height of Waves (feet)\"\n  ) +\n  labs(\n    y = \"Awesomeness of Child's Day\\n(Scale 1-10)\",\n    size = \"Inverse Probability\\nof Treatment Weight\"\n  ) +\n  scale_color_discrete(\n    name = \"Treatment\",\n    labels = c(\"Did not surf\",\"Surfed\")\n  )\n\n\n\n\n\n\n\n\n\nIn this case, the unweighted average error is 0 which is unsurprising: in OLS the average error in the training data is always 0! But here the goal is to predict in a shifted distribution of wave height. The inverse-probability-weighted error estimates the error on average over the space where we are making predictions: the model predictions are on average 1.34 points too high.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Doubly-robust estimation"
+    ]
+  },
+  {
+    "objectID": "doubly_robust.html#augmented-inverse-probability-weighting",
+    "href": "doubly_robust.html#augmented-inverse-probability-weighting",
+    "title": "Doubly-robust estimation",
+    "section": "Augmented inverse probability weighting",
+    "text": "Augmented inverse probability weighting\nIf the child corrected for the error, they would be using an augmented inverse probability weighting estimator.\n\\[\n\\hat\\tau_\\text{AIPW} = \\frac{1}{n_\\text{Not Surfed}}\\sum_{i:A_i=\\text{Not Surfed}} \\left(\\hat{Y}_i^1 - Y_i\\right) - \\frac{\\sum_{i:A_i=\\text{Surfed}} w_iY_i}{\\sum_{i:A_i=\\text{Surfed}} w_i}\n\\] where \\(w_i\\) is the inverse probability weight for estimating the average treatment effect on the untreated.\n\\[\nw_i = \\frac{\\text{P}(A=\\text{Not Surfed}\\mid X = x_i)}{\\text{P}(A=\\text{Surfed} \\mid X = x_i)}\n\\]\nIn this example, the outcome model is misspecified (a line for a parabola) but the weights are correct. Below, we see that the weights allow us to correct the wrong outcome model. First, we calculate the truth because in the simulation we know the potential outcomes.\n\ntruth &lt;- data |&gt;\n  # Restrict to the untreated\n  filter(!a) |&gt;\n  # Average difference in potential outcomes\n  summarize(true_atc = mean(y1 - y0)) |&gt;\n  print()\n\n# A tibble: 1 × 1\n  true_atc\n     &lt;dbl&gt;\n1      1.6\n\n\nThen we calculate an initial estimate via outcome modeling.\n\ninitial_estimate &lt;- data |&gt;\n  # Predict Y1\n  mutate(yhat1 = predict(fit1, newdata = data)) |&gt;\n  # Focus on the untreated\n  filter(!a) |&gt;\n  # Summarize an average effect estimate:\n  # average of (predicted y1) - (observed y0)\n  summarize(initial_estimate = mean(yhat1 - y)) |&gt;\n  print()\n\n# A tibble: 1 × 1\n  initial_estimate\n             &lt;dbl&gt;\n1             2.94\n\n\nThird, we estimate the weighted mean error in the observed data.\n\nweighted_mean_error &lt;- data |&gt;\n  # Predict Y1\n  mutate(yhat1 = predict(fit1, newdata = data)) |&gt;\n  # Focus on the treated\n  filter(a) |&gt;\n  # Construct inverse probability weights\n  # where pi is the probability of treatment\n  mutate(weight = (1 - pi) / pi) |&gt;\n  # Summarize a weighted mean error:\n  # weighted average of (predicted y1) - (observed y1)\n  summarize(weighted_mean_error = weighted.mean(yhat1 - y, w = weight)) |&gt;\n  print()\n\n# A tibble: 1 × 1\n  weighted_mean_error\n                &lt;dbl&gt;\n1                1.34\n\n\nFinally, our corrected estimate is the initial estimate with the weighted mean error subtracted.\n\ncorrected_estimate &lt;- initial_estimate |&gt; \n  bind_cols(weighted_mean_error) |&gt;\n  mutate(corrected_estimate = initial_estimate - weighted_mean_error) |&gt;\n  print()\n\n# A tibble: 1 × 3\n  initial_estimate weighted_mean_error corrected_estimate\n             &lt;dbl&gt;               &lt;dbl&gt;              &lt;dbl&gt;\n1             2.94                1.34                1.6\n\n\nIn this case, the corrected estimate equals the true average treatment effect among the untreated! This numerical equivalence occurs because this simulation has known propensity scores and zero random error.\n\nDouble robustness\nThe example above illustrates a key property of the AIPW estimator: it is doubly robust, meaning that it is a consistent estimator as long as either\n\nthe model for treatment probabilities is consistent at each value of \\(\\vec{X}\\), or\nthe model for potential outcomes is consistent at each value of \\(\\vec{X}\\)\n\nBelow, we consider each of these in turn.\nThe example above illustrated the first property: as long as the estimator of the treatment probabilities is consistent for the true probabilities of treatment, then the AIPW estimator is consistent for the truth. This is true even if the outcome model is wrong, as shown by the child’s line above!\n\\[\n\\begin{aligned}\n&\\text{if}\\quad &&\\hat{\\text{P}}(A = 1 \\mid\\vec{X} = \\vec{x})\\rightarrow \\text{P}(A = 1 \\mid\\vec{X} = \\vec{x})\\quad \\text{ for all }\\vec{x},\\\\\n&\\text{then}\\qquad &&\\hat\\tau_{\\text{AIPW}}\\rightarrow \\tau\n\\end{aligned}\n\\]\nAlthough not illustrated above, the AIPW estimator is also correct if the outcome model is correct and the treatment model is wrong. To illustrate this, consider that at every value of \\(\\vec{X}\\) an outcome model will be correct on average. Thus in a large sample, the average error at every value of \\(\\vec{X}\\) will be 0. No matter how we take a weighted average across the \\(\\vec{X}\\) values, the AIPW correction will always be 0! Thus the correct outcome model estimate will remain.\n\\[\n\\begin{aligned}\n&\\text{if}\\quad &&\\hat{\\text{E}}(Y\\mid A = 1, \\vec{X} = \\vec{x})\\rightarrow \\text{E}(Y\\mid A = 1, \\vec{X} = \\vec{x})\\quad \\text{ for all }\\vec{x},\\\\\n&\\text{then}\\qquad &&\\hat\\tau_{\\text{AIPW}}\\rightarrow \\tau\n\\end{aligned}\n\\]",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Doubly-robust estimation"
+    ]
+  },
+  {
+    "objectID": "doubly_robust.html#targeted-learning",
+    "href": "doubly_robust.html#targeted-learning",
+    "title": "Doubly-robust estimation",
+    "section": "Targeted learning",
+    "text": "Targeted learning\nAIPW is not the only way to update a model. Another option is called targeted learning (Van der Laan and Rose 2011). We first introduce targeted learning through one concrete example, then generalize the procedure in the sections that follows.\n\nModeling \\(Y^1\\) for the ATC\nIn the surfing example, our goal is to estimate the mean outcome under surfing, for the observations on days when there was surfing. We begin with the child’s initial fit: linear regression. Following notation that is common in targeted learning,1 we will refer to this regression line as \\(\\hat{Q}^0\\),\n\\[\n\\underbrace{\\hat{Q}^0(\\vec{x})}_{\\substack{\\text{The 0 superscript}\\\\\\text{indicates an untargeted}\\\\\\text{initial estimate}}} = \\hat{\\text{E}}(Y\\mid A = 1, \\vec{X}) = \\hat\\alpha + \\hat\\beta\\vec{x}\n\\]\nwhere \\(\\hat\\alpha\\) and \\(\\hat\\beta\\) are the OLS coefficients when modeling \\(Y\\) given \\(X\\) among the treated observations.\n\n# Fitted model\nq0_fit &lt;- lm(y ~ x, data = data |&gt; filter(a))\n# Function to return predictions\nq0 &lt;- function(x) {\n  predict(q0_fit, newdata = tibble(x))\n}\n\n\n\n\n\n\n\n\n\n\nThe child’s model is targeted toward the observed data, but our target is actually to predict the counterfactual under surfing for the observations when the child did not surf. These are disproportionately at the right side of the figure. If we were estimating by inverse probability weighting, we would weight each treated observation by the ratio of untreated to treated observations given \\(X\\). For targeted learning, we will call this a “clever covariate” that we will define as function \\(H()\\).\n\\[\nH(x) = \\frac{\\text{P}(A = \\text{Not Surfed} \\mid X = x)}{\\text{P}(A = \\text{Surfed}\\mid X = x)}\n\\]\n\n# Define the propensity scores\n# (assumed known in this example)\npropensity_scores &lt;- data |&gt;\n  distinct(x,pi)\n# Define the clever covariate function\nh &lt;- function(x) {\n  tibble(x) |&gt;\n    left_join(propensity_scores, by = join_by(x)) |&gt;\n    mutate(h = (1 - pi) / pi) |&gt;\n    pull(h)\n}\n\nThe problem of non-targeted estimation is that our model errors are systematically related to the importance of each observation. To visualize this, create a graph with the clever covariate on the \\(x\\)-axis and the initial estimate errors on the \\(y\\)-axis.\n\n\n\n\n\n\n\n\n\nThe graph shows that the observed \\(Y\\) values (awesomeness of the day) were especially far below the predicted \\(Y\\)-values at the right side of the graph: big-wave days when the clever covariate is very large. The regression line is a best-fit line for the errors with intercept restricted to equal 0. Equivalently, it is a best-fit line for \\(Y\\) with the initial prediction \\(\\hat{Q}^0(X)\\) included as an offset (an intercept with coefficient restricted to equal 1). The latter interpretation will be useful for generalizations.\n\\[\n\\hat{\\text{E}}^1(Y\\mid X = x) = \\hat{Q}^1(x) = \\hat{Q}^0(x) + \\hat\\gamma \\underbrace{\\left(\\frac{\\text{P}(A = \\text{Not surfed}\\mid X = x)}{\\text{P}(A = \\text{Surfed}\\mid X = x)}\\right)}_{\\text{Clever covariate }h(x)}\n\\]\nNow we return to our goal: estimating the counterfactual awesomeness of non-surfing days if the child had surfed on those days. We can now make two estimates, each of which compares the predicted outcomes under surfing (\\(\\hat{Q}^0(x)\\) and \\(\\hat{Q}^1(x)\\)) to the observed outcomes under no surfing.\n\\[\n\\begin{aligned}\n\\text{Initial estimate:}\\qquad &&\\hat\\tau^0 &= \\frac{1}{n_{\\text{NotSurfed}}}\\sum_{i:A_i=\\text{NotSurfed}}\\left(\\hat{Q}^0(x_i) - y_i\\right)\\\\\n\\text{Targeted estimate:}\\qquad &&\\hat\\tau^1 &= \\frac{1}{n_{\\text{NotSurfed}}}\\sum_{i:A_i=\\text{NotSurfed}}\\left(\\hat{Q}^1(x_i) - y_i\\right)\n\\end{aligned}\n\\]\n\n\n\n\n\n\n\n\n\n\n\nname\nInitial Estimate\nTargeted Estimate\nTruth (Y1 Not Observed)\n\n\n\n\nMean Predicted Outcome Under Surfing\n7.9\n6.6\n6.6\n\n\nMean Observed Outcome Under No Surfing\n5.0\n5.0\n5.0\n\n\nEffect of Surfing\n2.9\n1.6\n1.6\n\n\n\n\n\n\n\nModeling both \\(Y^0\\) and \\(Y^1\\)\nIn the section above, we focused on untreated cases and took the observed \\(Y\\) values as \\(Y^0\\) estimates instead of predicting from a regression model. More generally, we might be interested in both the treated and untreated cases (e.g., for an average treatment effect) and would need model-based estimates for both \\(Y^0\\) and \\(Y^1\\).\nWhen modeling both potential outcomes, we begin with an initial estimate of the conditional mean function: linear regresion estimated separately on the treated and untreated observations. As before, the 0 superscripts indicate that this is an initial estimate.\n\\[\n\\begin{aligned}\n\\hat{Q}^0(a,\\vec{x}) &= \\hat{\\text{E}}^0(Y\\mid A = a, \\vec{X} = \\vec{x}) = \\begin{cases}\n\\hat\\alpha_0 + \\vec{x}'\\hat\\beta_0 &\\text{if }a = 0 \\\\\n\\hat\\alpha_1 + \\vec{x}'\\hat\\beta_1 &\\text{if }a = 1\n\\end{cases}\n\\end{aligned}\n\\] In code, we can estimate these two regression models\n\nfit0 &lt;- lm(y ~ x, data = data |&gt; filter(!a))\nfit1 &lt;- lm(y ~ x, data = data |&gt; filter(a))\n\nand construct the \\(\\hat{Q}^0\\) function.\n\nq0 &lt;- function(a,x) {\n  to_predict &lt;- tibble(a,x)\n  to_predict |&gt;\n    mutate(\n      q0 = case_when(\n        a == 1 ~ predict(fit1, newdata = to_predict),\n        a == 0 ~ predict(fit0, newdata = to_predict)\n      )\n    ) |&gt;\n    pull(q0)\n}\n\n\n\n\n\n\n\n\n\n\nUsing the \\(\\hat{Q}^0\\) function, we can produce an initial estimate of the ATE.\n\\[\n\\hat\\tau_\\text{ATE}^0 = \\underbrace{\\frac{1}{n}\\sum_i}_\\text{Sample average} \\bigg(\\underbrace{\\hat{Q}^0(1,x_i)}_{\\substack{\\text{Initial prediction}\\\\\\text{under treatment}}} - \\underbrace{\\hat{Q}^0(0,x_i)}_{\\substack{\\text{Initial prediction}\\\\\\text{under control}}}\\bigg)\n\\]\n\ndata |&gt;\n  summarize(\n    initial_ate_estimate = mean(\n      q0(1,x) - q0(0,x)\n    )\n  )\n\n# A tibble: 1 × 1\n  initial_ate_estimate\n                 &lt;dbl&gt;\n1                 2.27\n\n\nWe know that this estimate is wrong because of the misspecified outcome model optimized over the observed data instead of the data to be predicted. To correct this misspecification, we define the clever covariate.\n\nbecause the goal is the ATE, this is the inverse probability of treatment\nbecause we difference (treatment) – (control), the control weight is negative\n\n\\[\nH(a,x) = \\begin{cases}\n\\frac{1}{P(A = 1\\mid X)}&\\text{if }a=1 \\\\\n\\frac{-1}{P(A = 0\\mid X)}&\\text{if }a=0\n\\end{cases}\n\\] To create this in code, we first note the propensity scores which are known in this example,\n\npropensity_score &lt;- data |&gt; distinct(x,pi)\n\nand then we write an h() function.\n\nh &lt;- function(a,x) {\n  tibble(a, x) |&gt;\n    left_join(propensity_score, by = join_by(x)) |&gt;\n    mutate(\n      h = case_when(\n        a == 1 ~ 1 / pi,\n        a == 0 ~ -1 / (1 - pi)\n      )\n    ) |&gt;\n    pull(h)\n}\n\nThe graph below visualizes our \\(h\\) values on the \\(x\\)-axis and the errors of our initial model on the \\(y\\)-axis, with a line that corresponds to the targeting step to be completed below.\n\n\n\n\n\n\n\n\n\nThe targeting fit visualized in the model above is the linear regression of \\(Y\\) on \\(H(A,X)\\) (the clever covariate, which involves inverse probability weights), estimated with offset equal to the intial predictions \\(Q^0(A,X)\\).\n\\[\n\\hat{Q}^1(A,\\vec{X}) = \\text{E}^1\\left(Y \\mid A, \\vec{X}\\right) = \\hat{Q}^0(A,\\vec{X}) + \\hat\\gamma H(A,\\vec{X})\n\\]\nThe slope of the line in the figure above equals the coefficient estimate \\(\\hat\\gamma\\) in the equation above. In code, below we estimate the targeting regresion model\n\nq1_fit &lt;- lm(y ~ -1 + offset(q0(a,x)) + h(a,x), data = data)\n\nand then write a q1() function that will return targeted predictions at treatment value a and confounder value x.\n\nq1 &lt;- function(a,x) {\n  predict(q1_fit, newdata = tibble(a,x))\n}\n\nUsing the \\(\\hat{Q}^1\\) function, we can produce a targeted estimate of the ATE.\n\\[\n\\hat\\tau_\\text{ATE}^1 = \\underbrace{\\frac{1}{n}\\sum_i}_\\text{Sample average} \\bigg(\\underbrace{\\hat{Q}^1(1,x_i)}_{\\substack{\\text{Targeted prediction}\\\\\\text{under treatment}}} - \\underbrace{\\hat{Q}^0(1,x_i)}_{\\substack{\\text{Targeted prediction}\\\\\\text{under control}}}\\bigg)\n\\]\n\ndata |&gt;\n  summarize(\n    targeted_ate_estimate = mean(\n      q1(1,x) - q1(0,x)\n    )\n  )\n\n# A tibble: 1 × 1\n  targeted_ate_estimate\n                  &lt;dbl&gt;\n1                   1.6\n\n\nBecause this example is constructed with no random noise and known treatment probabilities, the targeted ATE estimate exactly matches the true ATE of 1.6.\n\n\nWhy TMLE vs AIPW?\nWhy would one choose TMLE over AIPW?\nBoth approaches solve the same problem: when building an outcome model for \\(Y^1\\), the model is learned over the confounder distribution \\(\\vec{X}\\mid A = 1\\) among treated units, but the goal is to predict over the distribution \\(\\vec{X}\\mid A = 0\\) among untreated units. When the outcome model is going to fit poorly in part of the space (e.g., due to model misspecification), then the first-stage model will optimize fit in the part of the space where it observes more data. But this may not be the same as the part of the space where predictions are to be made.\nAIPW and TMLE solve this problem in related but distinct ways. In AIPW, the outcome model is corrected by the weighted average error where weights equal inverse probability of treatment weights. In TMLE, the outcome model is corrected by a second-stage regression that uses inverse probability of treatment weights as a “clever covariate” in a regression model.\nUltimately, both approaches are doubly robust. One advantage of TMLE arises when the outcome is binary, because then the second-stage regression can be a generalized linear model where the TMLE correction occurs on the space of the linear predictor. Thus, TMLE can be constructed to enforce boundaries such as never predicting probabilities below 0 or greater than 1.\nIn practice, I have not seen a clear resolution in favor of one or the other approach, and both approaches are likely to be good estimators. Any doubly-robust method may be preferable to the more typical approach of relying entirely on an outcome or treatment model!",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Doubly-robust estimation"
+    ]
+  },
+  {
+    "objectID": "doubly_robust.html#sample-splitting-for-machine-learning",
+    "href": "doubly_robust.html#sample-splitting-for-machine-learning",
+    "title": "Doubly-robust estimation",
+    "section": "Sample splitting for machine learning",
+    "text": "Sample splitting for machine learning\nUnder classical statistical approaches to inference, one often worries about model misspecification. The problem of model misspecification is that if one approximates \\(\\text{E}(Y\\mid A, \\vec{X})\\) by an additive regression and the true response function is nonlinear, then the model will be an inconsistent estimator of \\(\\text{E}(Y\\mid\\vec{X} = \\vec{x})\\) for at least some \\(\\vec{x}\\). Double robustness solves this problem: as long as \\(\\text{E}(Y\\mid\\vec{X})\\) or \\(\\text{P}(A = 1\\mid\\vec{X})\\) is estimated by a consistent estimator, then the causal effect estimate is consistent.\nMachine learning approaches seem to upend this logic: flexible models can be consistent estimators by construction. Without any assumption of a statistical model, a random forest can yield a consistent estimator of \\(\\text{E}(Y\\mid A,\\vec{X})\\) and \\(\\text{P}(A = 1\\mid\\vec{X})\\). By consistent, we mean that the forest would come to equal these estimands in an infinite sample. Does double robustness then have any use?\nThe problem with flexible machine learning estimators is that they converge to the true response surface at slower rates than parametric regression models. In finite samples, the estimators will be biased at some \\(\\vec{X} = \\vec{x}\\) values due to regularization. Thus, the key to machine learning estimators is to do use the same doubly robust formulation, with a small twist.\n\nUsing sample \\(\\mathcal{S}_1\\), estimate two prediction functions \\[\n\\begin{aligned}\n\\hat{g}(\\mathcal{S}_1,a,\\vec{x}) &= \\hat{\\text{E}}(Y\\mid A = a, \\vec{X} = \\vec{x}) \\\\\n\\hat{m}(\\mathcal{S}_1,a,\\vec{x}) &= \\hat{\\text{P}}(A = a \\mid \\vec{X} = \\vec{x}) \\\\\n\\end{aligned}\n\\]\nIn sample \\(\\mathcal{S}_2\\), apply the AIPW estimator. \\[\n\\begin{aligned}\n\\hat{\\text{E}}(Y^a) &= \\underbrace{\\frac{1}{\\lvert\\mathcal{S}_2\\rvert}\\sum_{i\\in\\mathcal{S}_2}\\hat{g}(\\mathcal{S}_1,a,\\vec{X}_i)}_{\\text{outcome modeling estimator}} -\n\\underbrace{\\frac{1}{\\sum_{i\\in\\mathcal{S}_2}\\frac{\\mathbb{I}(A_i=a)}{\\hat{m}(\\mathcal{S}_1, A_i,\\vec{X}_i)}}\\sum_{i\\in\\mathcal{S}_2}\\frac{\\mathbb{I}(A_i=a)\\bigg(\\hat{g}(\\mathcal{S}_1, A_i,\\vec{X}_i) - y_i\\bigg)}{\\hat{m}(\\mathcal{S}_1, A_i,\\vec{X}_i)}}_\\text{debiasing correction}\n\\end{aligned}\n\\]\n\nIf we drop the normalizing constant on the weights in the debiasing correction (which on asymptotically equals the number of treated observations), we get an estimator that can be written as an empirical mean \\(\\hat{\\text{E}}_{\\mathcal{S}_2}\\) over the cases in sample \\(\\mathcal{S}_2\\).\n\\[\n\\hat\\tau(a) = \\hat{\\text{E}}_{\\mathcal{S}_2}\\left(\n  \\hat{g}(\\mathcal{S}_1,a,\\vec{X})\n  -\n  \\frac{\\mathbb{I}(A=a)\\bigg(\\hat{g}(\\mathcal{S}_1, A,\\vec{X}) - Y\\bigg)}{\\hat{m}(\\mathcal{S}_1, A,\\vec{X})}\n\\right)\n\\]\nWhen \\(\\hat{g}\\rightarrow g\\) and \\(\\hat{m}\\rightarrow m\\) at slower asymptotic rates than we ordinarily observe for linear regression, it is still possible for \\(\\hat\\tau\\rightarrow \\tau\\) at the ordinary \\(\\sqrt{n}\\) asymptotic rate. In other words, even if you estimate a \\(\\hat{g}\\) and \\(\\hat{m}\\) with random forests, it is possible for \\(\\hat\\tau\\) to converge to the true expected potential outcome at a rate with good properties! A key for this to happen is that \\(\\hat{g}\\) and \\(\\hat{m}\\) are learned in a separate sample from the one in which they are applied.\n\nCross fitting\nSimilar to the move from a train-test split to cross-validation, one can make a similar move from sample splitting to a technique called cross fitting.\n\nIn sample \\(\\mathcal{S}_1\\), estimate the outcome model \\(g(\\mathcal{S}_1,a,\\vec{x})\\) and treatment model \\(\\hat{m}(\\mathcal{S}_1,a)\\).\nIn sample \\(\\mathcal{S}_2\\), produce an AIPW estimate.\nRepeat steps (1) and (2), swapping the roles of \\(\\mathcal{S}_1\\) and \\(\\mathcal{S}_2\\).\nAverage the results.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Doubly-robust estimation"
+    ]
+  },
+  {
+    "objectID": "doubly_robust.html#exercises",
+    "href": "doubly_robust.html#exercises",
+    "title": "Doubly-robust estimation",
+    "section": "Exercises",
+    "text": "Exercises\nCarry out the child’s analysis by\n\nan outcome model.\ninverse probability weighting, with weights estimated by logistic regression\naugmented inverse probability weighting",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Doubly-robust estimation"
+    ]
+  },
+  {
+    "objectID": "doubly_robust.html#footnotes",
+    "href": "doubly_robust.html#footnotes",
+    "title": "Doubly-robust estimation",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nThe targeted learning literature typically uses \\(Q^0\\) instead of \\(\\hat{Q}^0\\), but we use the hat for consistency within this webpage that estimated quantities always have hats.↩︎",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Doubly-robust estimation"
+    ]
+  },
+  {
     "objectID": "prediction_for_inference.html",
     "href": "prediction_for_inference.html",
     "title": "Prediction for causal and population inference",
@@ -394,227 +478,6 @@
       "Non-Probability Samples and Observational Causal Inference",
       "Estimation by prediction"
     ]
-  },
-  {
-    "objectID": "problem_sets.html",
-    "href": "problem_sets.html",
-    "title": "Problem Sets",
-    "section": "",
-    "text": "This page will contain a problem set corresponding to each class meeting. The problem sets are very open-ended and are designed to connect the material from class to your ongoing project.\nFor every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.\nWe chose together the following weekly pattern for problem sets:\nWe will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another’s projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer’s work as well as offering suggestions for improvement or future directions."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-1",
-    "href": "problem_sets.html#problem-set-1",
-    "title": "Problem Sets",
-    "section": "Problem Set 1",
-    "text": "Problem Set 1\n\n1. Your ongoing paper.\n1.1. (15 points) Write an abstract of your research paper.\n1.2. (5 points) What is one unit-specific quantity in your paper?\n1.3. (5 points) What is one target population in your paper?\n\n\n2. Regression for a conditional mean\n(25 points)\nIn class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-2",
-    "href": "problem_sets.html#problem-set-2",
-    "title": "Problem Sets",
-    "section": "Problem Set 2",
-    "text": "Problem Set 2\n\n(20 points) In your project, do you have something analogous to many groups with a few observations per group? This could more generally be any case where the number of parameters to be estimated is somewhat large for the sample size available. If not in your project, think of an example in your general research area. Write a few sentences about why one might want penalized regression in that setting.\n\nThe remainder of this problem set is based in the idea of multilevel models, though you can alternatively estimate by LASSO or ridge regression if you prefer. You can complete parts (2) and (3) in your own dataset if you can define at least 10 groups with at least 20 units per group. Wherever we say “team”, substitute whatever group is in your dataset. You may also use the baseball_population.csv data, in which the group variable is team.\n\n(15 points) Draw a sample of 5 units per group. Estimate an unpenalized OLS regression and a penalized regression (multilevel, ridge, or LASSO). Produce a graph that compares the predicted values.\n(15 points) Repeat the exercise above but with a sample of 20 units per group. Visualize the estimates. How do your results change?\n\nNote that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-3",
-    "href": "problem_sets.html#problem-set-3",
-    "title": "Problem Sets",
-    "section": "Problem Set 3",
-    "text": "Problem Set 3\nUsing the simulation data from class or data from your own project:\n\n(15 points) Estimate a regression tree and visualize it. If you are using R, there are packages to visualize the tree. If you are using Stata, there may be packages or you are welcome to use the summary text output.\n(10 points) Write 3-4 sentences for someone who has never heard of this method. Pick some predictor vector value and explain how the tree produces a prediction for that predictor vector.\n(15 points) Estimate a random forest. Visualize the predicted values as a function of the predictors. If your data have only two predictors, this could be as in class with one on the \\(x\\)-axis and one for colors. If you have many predictors, you may need to find a creative way to visualize your predictions. You may choose to make predictions while holding one or more variables at a single value.\n(10 points) In a few sentences, give an example of a problem in your area of research (possibly your paper) where the functional form linking \\(\\vec{X}\\) to \\(E(Y\\mid\\vec{X})\\) is unknown, such that a random forest might be a way to learn the functional form from the data."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-4",
-    "href": "problem_sets.html#problem-set-4",
-    "title": "Problem Sets",
-    "section": "Problem Set 4",
-    "text": "Problem Set 4\nWrite the abstract of your research paper. If you do not have results yet, pretend that your results are really amazing! You can make up any estimates that you want. As an added challenge, try writing the abstract twice with two sets of possible results. It would be ideal if all possible results are interesting.\nAs you write, minimize jargon so that you are writing for a New York Times reader. Emphasize big claims and don’t bury them in statistical terminology. The goal of this exercise is to help us ask and frame a high-impact question that will speak to a broad audience. Possibly, the exercise will lead you to change your question.\nYour peer reviewer should comment on things that may include:\n\nwhat about this abstract is especially compelling?\nwhat parts (if any) about this abstract are directed to a small subset of academia and perhaps should be broadened? This may be parts with jargon.\nwhat claims could be emphasized more?\n\nThe hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-5",
-    "href": "problem_sets.html#problem-set-5",
-    "title": "Problem Sets",
-    "section": "Problem Set 5",
-    "text": "Problem Set 5\nThis problem set is unlike the preceding ones in two ways. It is entirely conceptual, with no data analysis, and it is entirely about hypothetical examples rather than your paper. It is a chance to reinforce a few basic ideas from our class on panel data. Questions 1–5 are on difference in difference. Questions 6–7 are on regression discontinuity.\nIn the figures below, the treated group becomes treated between time 1 and time 2. The control group never becomes treated. Figures are hypothetical scenarios that depict true potential outcomes even if those outcomes would not be observed in an actual study.\n\n\n\n\n\n\n\n\n\n1 (10 points). In which setting does the parallel trends assumption hold: A, B, neither, or both?\n2 (10 points). In actual data analysis, can we ever know for certain whether we are in Setting A or Setting B? If the answer is no, then tell us which outcome cannot be observed.\n3 (10 points) A researcher comes to you with the data below, which depict only observed outcomes. That researcher wants to run a difference in difference analysis. Here, we have not depicted the counterfactual outcome because the researcher would not know it. Why is the parallel trends assumption doubtful in this setting?\n\n\n\n\n\n\n\n\n\n4 (10 points). A researcher is interested in the causal effect of a minimum wage increase on employment. They plan to analyze data on the U.S. only, and they are interested in a time when the minimum wage rose simultaneously at every place in the U.S. Why won’t a difference in difference design work for the researcher’s question?\n5 (10 points). Propose another design that the researcher could use to answer the question in (1.4), which may involve data outside the U.S. or may involve a different analysis of data within the U.S. Answer this question in no more than 3 sentences. Many answers are possible."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-6",
-    "href": "problem_sets.html#problem-set-6",
-    "title": "Problem Sets",
-    "section": "Problem Set 6",
-    "text": "Problem Set 6\nConstruct a bootstrap confidence interval using data from your project. Some things to tell us in writing include:\n\nwhat is your population parameter?\nwhat is your estimator?\nhow many bootstrap samples did you draw?\ndid you use the Normal approximation or the percentile method?\n\nIf your data are not suitable for a bootstrap confidence interval for some reason (e.g., you have the entire population so that confidence intervals don’t make sense), go ahead and carry out the steps for practice and then tell us why the bootstrap might not be appropriate in your setting."
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-7",
-    "href": "problem_sets.html#problem-set-7",
-    "title": "Problem Sets",
-    "section": "Problem Set 7",
-    "text": "Problem Set 7\nFor (1) to (5),\n\nList all paths connecting \\(A\\) and \\(Y\\). Remember that a path can be written in one line as a sequence of nodes connected by edges.\nFor each path, answer\n\nis this path open before we condition on anything?\nis this path open conditional on \\(X\\)?\n\nAre any non-causal paths between \\(A\\) and \\(Y\\) open once we condition on \\(X\\)? In other words, other than causal paths from \\(A\\) to \\(Y\\) is there any other reason \\(A\\) and \\(Y\\) would be associated conditional on \\(X\\)?"
-  },
-  {
-    "objectID": "problem_sets.html#problem-set-8",
-    "href": "problem_sets.html#problem-set-8",
-    "title": "Problem Sets",
-    "section": "Problem Set 8",
-    "text": "Problem Set 8\n1 (25 points). A DAG in your research area.\nIn your research project or field of research, define a causal question. Define the treatment variable and potential outcomes. Draw a DAG and identify a sufficient adjustment set given your DAG.\nCoding help: How to draw a DAG.\nFor this class, you can draw your DAG by hand and take a picture of it, and include the picture in your writeup. Alternatively, you can learn to type a DAG as a tikzpicture in LaTeX, as I do. Both are equally good!\nTo produce a DAG with code, I include the following in my LaTeX document header:\n\n\\usepackage{tikz}\n\\usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}\n\nThen I use code like the below to draw a DAG.\n\n\\begin{tikzpicture}[x = .3in, y = .3in]\n    \\node (x) at (0,-1) {$X$};\n    \\node (a) at (0,0) {$A$};\n    \\node (y) at (1,0) {$Y$};\n    \\draw[-&gt;, thick] (x) -- (a);\n    \\draw[-&gt;, thick] (a) -- (y);\n    \\draw[-&gt;, thick] (x) -- (y);\n\\end{tikzpicture}\n\n2 (25 points). Outcome model for causal inference.\nDefine a causal estimand and estimate it using an outcome model. You are welcome to use any causal estimand you are interested in, in any dataset you like (potentially from your project). The outcome model can be statistical (e.g., OLS) or a more data-science model (e.g., random forest).\nIf you’d rather use data we provide, feel free to use the data from my analogous undergrad problem set. This is a simulated version of data from an ongoing project with Soonhong."
-  },
-  {
-    "objectID": "yhat_regression.html",
-    "href": "yhat_regression.html",
-    "title": "Regression for Y-hat",
-    "section": "",
-    "text": "slides\nThis class is about regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.\nSome of this class relies on an ongoing project on description: ilundberg.github.io/description",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Regression for Y-hat"
-    ]
-  },
-  {
-    "objectID": "weighting_for_inference.html",
-    "href": "weighting_for_inference.html",
-    "title": "Weighting for causal and population inference",
-    "section": "",
-    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. Slides are available here and may be updated more before class.\n\nNote. This week does not yet have website materials. I haven’t yet finished updating materials for the website, but you are welcome to see my undergrad course notes which share many similarities to the grad course notes.",
-    "crumbs": [
-      "Problem Sets",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Estimation by weighting"
-    ]
-  },
-  {
-    "objectID": "panel_data.html",
-    "href": "panel_data.html",
-    "title": "Panel data",
-    "section": "",
-    "text": "Here are slides for today.\n\nThis session will cover a series of estimators that apply when\n\nmany units are observed over many time periods each\none or more units become treated at some point in the observation window\n\nThese estimators include difference in difference, interrupted time series, regression discontinuity, and synthetic control. In order to cover many estimators, today’s class will focus more on conceptual ideas than on coding. Thus, material is currently available in slide form rather than in written note form.",
-    "crumbs": [
-      "Problem Sets",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Panel data"
-    ]
-  },
-  {
-    "objectID": "mediation.html",
-    "href": "mediation.html",
-    "title": "Mediation",
-    "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
-    "crumbs": [
-      "Problem Sets",
-      "Additional topics",
-      "Mediation"
-    ]
-  },
-  {
-    "objectID": "asking_a_research_question.html",
-    "href": "asking_a_research_question.html",
-    "title": "Asking a research question",
-    "section": "",
-    "text": "slides\nThis class is about how to ask a quantitative research question. The focus will be on summarizing outcomes over well-defined populations, for which a regression coefficient \\(\\hat\\beta\\) may or may not be a meaningful summary. We will focus on summarizing subgroups by the average value of \\(Y\\), or in small samples by summarizing subgroup means using predicted values (\\(\\hat{Y}\\)) from regression models.",
-    "crumbs": [
-      "Problem Sets",
-      "Asking a Research Question"
-    ]
-  },
-  {
-    "objectID": "doubly_robust.html",
-    "href": "doubly_robust.html",
-    "title": "Doubly-robust estimation",
-    "section": "",
-    "text": "This session will combine prediction and weighting methods for an approach with properties superior to either on its own.",
-    "crumbs": [
-      "Problem Sets",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Doubly-robust estimation"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Welcome!",
-    "section": "",
-    "text": "Welcome to UCLA SOCIOL 212B (Winter 2025). See the syllabus.\nW 9–11:50am. Powell 320B.\nThis course is about answering social science questions using quantitative data. We will especially focus on how computational power is transforming the ways we can carry out quantitative research, covering both statistical and machine learning tools from the perspective of social science applications. The course especially emphasizes how to translate social science theories into quantities that can be estimated by algorithms designed for prediction. We will consider prediction in the service of both description and causal inference, building on ideas from SOCIOL 212A. The end product of the course is an extended abstract containing data analysis using the ideas from the course. For students continuing to 212C, the abstract can serve as the basis for the research project in that course. Students will leave the course prepared to connect social science theories to empirical evidence that can be produced by algorithms designed for prediction."
-  },
-  {
-    "objectID": "index.html#learning-goals",
-    "href": "index.html#learning-goals",
-    "title": "Welcome!",
-    "section": "Learning goals",
-    "text": "Learning goals\nStudents will learn to\n\ndefine a precise quantitative research question\nconnect that question to predictions that can be made by statistical or machine learning algorithms\nmake a principled argument for the choice of a particular learning approach"
-  },
-  {
-    "objectID": "index.html#schedule-of-topics-tentative",
-    "href": "index.html#schedule-of-topics-tentative",
-    "title": "Welcome!",
-    "section": "Schedule of topics (tentative)",
-    "text": "Schedule of topics (tentative)\nPart 1. Descriptive data science with probability samples.\n\nJan 8. Asking research questions without \\(\\hat\\beta\\) and regression for \\(\\hat{Y}\\)\nJan 15 and 22. Algorithms for prediction\nJan 29. Data-driven selection of an estimator\nFeb 5. Panel data (actually a Part 2 topic, presented out of order to align with afternoon CCPR workshop)\nFeb 12. Statistical uncertainty by resampling\n\nPart 2. Non-probability samples and observational causal inference\n\nFeb 19. Nonparametric identification\nFeb 26. Estimation by prediction\nMar 5. Estimation by weighting\nMar 12. Doubly-robust estimation"
-  },
-  {
-    "objectID": "index.html#who-should-take-this-course",
-    "href": "index.html#who-should-take-this-course",
-    "title": "Welcome!",
-    "section": "Who should take this course?",
-    "text": "Who should take this course?\nThe course is designed to support the development of quantitative social science research projects. The course is a good fit for PhD students in sociology, statistics, political science, economics, and other social sciences. PhD students from disciplines other than sociology should request a code from the instructor to enroll."
-  },
-  {
-    "objectID": "index.html#prerequisite",
-    "href": "index.html#prerequisite",
-    "title": "Welcome!",
-    "section": "Prerequisite",
-    "text": "Prerequisite\nFamiliarity with basic probability and statistics (e.g., random variables, expectation, confidence intervals). Soc 212A is formally a prerequisite, but students who did not take Soc 212A are welcome to talk with me about whether Soc 212B would be a good fit for them."
-  },
-  {
-    "objectID": "index.html#instructional-format",
-    "href": "index.html#instructional-format",
-    "title": "Welcome!",
-    "section": "Instructional format",
-    "text": "Instructional format\nLecture with in-class exercises. Bring computers to class."
-  },
-  {
-    "objectID": "index.html#course-readings",
-    "href": "index.html#course-readings",
-    "title": "Welcome!",
-    "section": "Course readings",
-    "text": "Course readings\nReadings will be available online for free. See the course website for an updated schedule of readings and topics.\nMany readings from books with free PDFs available online:\n\nEfron, B., & T Hastie. 2016. Computer Age Statistical Inference: Algorithms, Evidence and Data Science. Cambridge: Cambridge University Press.\nHastie, T., R. Tibshirani, & J. Friedman. 2009. The Elements of Statistical Learning: Data Mining, Inference, and Prediction. New York: Springer.\nHernán, M.A., & J.M. Robins. 2024. Causal Inference: What If? Boca Raton: Chapman & Hall / CRC."
-  },
-  {
-    "objectID": "index.html#statistical-software",
-    "href": "index.html#statistical-software",
-    "title": "Welcome!",
-    "section": "Statistical software",
-    "text": "Statistical software\nYou can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language."
-  },
-  {
-    "objectID": "missing_data.html",
-    "href": "missing_data.html",
-    "title": "Missing data",
-    "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
-    "crumbs": [
-      "Problem Sets",
-      "Additional topics",
-      "Missing data"
-    ]
-  },
-  {
-    "objectID": "scales.html",
-    "href": "scales.html",
-    "title": "Scale construction",
-    "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
-    "crumbs": [
-      "Problem Sets",
-      "Additional topics",
-      "Scale construction"
-    ]
-  },
-  {
-    "objectID": "who_we_are.html",
-    "href": "who_we_are.html",
-    "title": "Who We Are",
-    "section": "",
-    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
   },
   {
     "objectID": "nonparametric_identification.html",
@@ -855,6 +718,222 @@
       "Non-Probability Samples and Observational Causal Inference",
       "Nonparametric identification"
     ]
+  },
+  {
+    "objectID": "who_we_are.html",
+    "href": "who_we_are.html",
+    "title": "Who We Are",
+    "section": "",
+    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
+  },
+  {
+    "objectID": "scales.html",
+    "href": "scales.html",
+    "title": "Scale construction",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Scale construction"
+    ]
+  },
+  {
+    "objectID": "missing_data.html",
+    "href": "missing_data.html",
+    "title": "Missing data",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Missing data"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome!",
+    "section": "",
+    "text": "Welcome to UCLA SOCIOL 212B (Winter 2025). See the syllabus.\nW 9–11:50am. Powell 320B.\nThis course is about answering social science questions using quantitative data. We will especially focus on how computational power is transforming the ways we can carry out quantitative research, covering both statistical and machine learning tools from the perspective of social science applications. The course especially emphasizes how to translate social science theories into quantities that can be estimated by algorithms designed for prediction. We will consider prediction in the service of both description and causal inference, building on ideas from SOCIOL 212A. The end product of the course is an extended abstract containing data analysis using the ideas from the course. For students continuing to 212C, the abstract can serve as the basis for the research project in that course. Students will leave the course prepared to connect social science theories to empirical evidence that can be produced by algorithms designed for prediction."
+  },
+  {
+    "objectID": "index.html#learning-goals",
+    "href": "index.html#learning-goals",
+    "title": "Welcome!",
+    "section": "Learning goals",
+    "text": "Learning goals\nStudents will learn to\n\ndefine a precise quantitative research question\nconnect that question to predictions that can be made by statistical or machine learning algorithms\nmake a principled argument for the choice of a particular learning approach"
+  },
+  {
+    "objectID": "index.html#schedule-of-topics-tentative",
+    "href": "index.html#schedule-of-topics-tentative",
+    "title": "Welcome!",
+    "section": "Schedule of topics (tentative)",
+    "text": "Schedule of topics (tentative)\nPart 1. Descriptive data science with probability samples.\n\nJan 8. Asking research questions without \\(\\hat\\beta\\) and regression for \\(\\hat{Y}\\)\nJan 15 and 22. Algorithms for prediction\nJan 29. Data-driven selection of an estimator\nFeb 5. Panel data (actually a Part 2 topic, presented out of order to align with afternoon CCPR workshop)\nFeb 12. Statistical uncertainty by resampling\n\nPart 2. Non-probability samples and observational causal inference\n\nFeb 19. Nonparametric identification\nFeb 26. Estimation by prediction\nMar 5. Estimation by weighting\nMar 12. Doubly-robust estimation"
+  },
+  {
+    "objectID": "index.html#who-should-take-this-course",
+    "href": "index.html#who-should-take-this-course",
+    "title": "Welcome!",
+    "section": "Who should take this course?",
+    "text": "Who should take this course?\nThe course is designed to support the development of quantitative social science research projects. The course is a good fit for PhD students in sociology, statistics, political science, economics, and other social sciences. PhD students from disciplines other than sociology should request a code from the instructor to enroll."
+  },
+  {
+    "objectID": "index.html#prerequisite",
+    "href": "index.html#prerequisite",
+    "title": "Welcome!",
+    "section": "Prerequisite",
+    "text": "Prerequisite\nFamiliarity with basic probability and statistics (e.g., random variables, expectation, confidence intervals). Soc 212A is formally a prerequisite, but students who did not take Soc 212A are welcome to talk with me about whether Soc 212B would be a good fit for them."
+  },
+  {
+    "objectID": "index.html#instructional-format",
+    "href": "index.html#instructional-format",
+    "title": "Welcome!",
+    "section": "Instructional format",
+    "text": "Instructional format\nLecture with in-class exercises. Bring computers to class."
+  },
+  {
+    "objectID": "index.html#course-readings",
+    "href": "index.html#course-readings",
+    "title": "Welcome!",
+    "section": "Course readings",
+    "text": "Course readings\nReadings will be available online for free. See the course website for an updated schedule of readings and topics.\nMany readings from books with free PDFs available online:\n\nEfron, B., & T Hastie. 2016. Computer Age Statistical Inference: Algorithms, Evidence and Data Science. Cambridge: Cambridge University Press.\nHastie, T., R. Tibshirani, & J. Friedman. 2009. The Elements of Statistical Learning: Data Mining, Inference, and Prediction. New York: Springer.\nHernán, M.A., & J.M. Robins. 2024. Causal Inference: What If? Boca Raton: Chapman & Hall / CRC."
+  },
+  {
+    "objectID": "index.html#statistical-software",
+    "href": "index.html#statistical-software",
+    "title": "Welcome!",
+    "section": "Statistical software",
+    "text": "Statistical software\nYou can use any statistical software you prefer. I use R and will best be able to support you in R. In addition to R, we will attempt to provide Stata support where possible. Not all algorithms are available in Stata. If you are fluent in another software, you are welcome to use that. The focus of this course is on conceptual ideas, not a programming language."
+  },
+  {
+    "objectID": "asking_a_research_question.html",
+    "href": "asking_a_research_question.html",
+    "title": "Asking a research question",
+    "section": "",
+    "text": "slides\nThis class is about how to ask a quantitative research question. The focus will be on summarizing outcomes over well-defined populations, for which a regression coefficient \\(\\hat\\beta\\) may or may not be a meaningful summary. We will focus on summarizing subgroups by the average value of \\(Y\\), or in small samples by summarizing subgroup means using predicted values (\\(\\hat{Y}\\)) from regression models.",
+    "crumbs": [
+      "Problem Sets",
+      "Asking a Research Question"
+    ]
+  },
+  {
+    "objectID": "mediation.html",
+    "href": "mediation.html",
+    "title": "Mediation",
+    "section": "",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Mediation"
+    ]
+  },
+  {
+    "objectID": "panel_data.html",
+    "href": "panel_data.html",
+    "title": "Panel data",
+    "section": "",
+    "text": "Here are slides for today.\n\nThis session will cover a series of estimators that apply when\n\nmany units are observed over many time periods each\none or more units become treated at some point in the observation window\n\nThese estimators include difference in difference, interrupted time series, regression discontinuity, and synthetic control. In order to cover many estimators, today’s class will focus more on conceptual ideas than on coding. Thus, material is currently available in slide form rather than in written note form.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Panel data"
+    ]
+  },
+  {
+    "objectID": "weighting_for_inference.html",
+    "href": "weighting_for_inference.html",
+    "title": "Weighting for causal and population inference",
+    "section": "",
+    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. Slides are available here and may be updated more before class.\n\nNote. This week does not yet have website materials. I haven’t yet finished updating materials for the website, but you are welcome to see my undergrad course notes which share many similarities to the grad course notes.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Estimation by weighting"
+    ]
+  },
+  {
+    "objectID": "yhat_regression.html",
+    "href": "yhat_regression.html",
+    "title": "Regression for Y-hat",
+    "section": "",
+    "text": "slides\nThis class is about regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.\nSome of this class relies on an ongoing project on description: ilundberg.github.io/description",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Regression for Y-hat"
+    ]
+  },
+  {
+    "objectID": "problem_sets.html",
+    "href": "problem_sets.html",
+    "title": "Problem Sets",
+    "section": "",
+    "text": "This page will contain a problem set corresponding to each class meeting. The problem sets are very open-ended and are designed to connect the material from class to your ongoing project.\nFor every problem set, submit a PDF. If your code is not embedded in your PDF, then also submit a code file.\nWe chose together the following weekly pattern for problem sets:\nWe will be using identified peer reviews. The reason these are not anonymous is that we are a small class, and we will get to know one another’s projects. Your peer reviewer will not be grading you or assigning point values, but they will be commenting on your work. A good peer review is a short paragraph that comments on promising aspects of your peer’s work as well as offering suggestions for improvement or future directions."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-1",
+    "href": "problem_sets.html#problem-set-1",
+    "title": "Problem Sets",
+    "section": "Problem Set 1",
+    "text": "Problem Set 1\n\n1. Your ongoing paper.\n1.1. (15 points) Write an abstract of your research paper.\n1.2. (5 points) What is one unit-specific quantity in your paper?\n1.3. (5 points) What is one target population in your paper?\n\n\n2. Regression for a conditional mean\n(25 points)\nIn class, we used OLS regression to predict the mean outcome in a subgroup. Do the same thing in a dataset of your choosing, which might be the dataset from your project. Define the outcome variable and the population subgroup you are describing."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-2",
+    "href": "problem_sets.html#problem-set-2",
+    "title": "Problem Sets",
+    "section": "Problem Set 2",
+    "text": "Problem Set 2\n\n(20 points) In your project, do you have something analogous to many groups with a few observations per group? This could more generally be any case where the number of parameters to be estimated is somewhat large for the sample size available. If not in your project, think of an example in your general research area. Write a few sentences about why one might want penalized regression in that setting.\n\nThe remainder of this problem set is based in the idea of multilevel models, though you can alternatively estimate by LASSO or ridge regression if you prefer. You can complete parts (2) and (3) in your own dataset if you can define at least 10 groups with at least 20 units per group. Wherever we say “team”, substitute whatever group is in your dataset. You may also use the baseball_population.csv data, in which the group variable is team.\n\n(15 points) Draw a sample of 5 units per group. Estimate an unpenalized OLS regression and a penalized regression (multilevel, ridge, or LASSO). Produce a graph that compares the predicted values.\n(15 points) Repeat the exercise above but with a sample of 20 units per group. Visualize the estimates. How do your results change?\n\nNote that on (3) it is likely that the estimates will look different from (2), but it is also possible that they will be similar depending on your setting. For example, if your algorithm sets a very large penalty in your setting then all the group-specific deviations could be shrunk to zero in both (2) and (3). There are many right answers."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-3",
+    "href": "problem_sets.html#problem-set-3",
+    "title": "Problem Sets",
+    "section": "Problem Set 3",
+    "text": "Problem Set 3\nUsing the simulation data from class or data from your own project:\n\n(15 points) Estimate a regression tree and visualize it. If you are using R, there are packages to visualize the tree. If you are using Stata, there may be packages or you are welcome to use the summary text output.\n(10 points) Write 3-4 sentences for someone who has never heard of this method. Pick some predictor vector value and explain how the tree produces a prediction for that predictor vector.\n(15 points) Estimate a random forest. Visualize the predicted values as a function of the predictors. If your data have only two predictors, this could be as in class with one on the \\(x\\)-axis and one for colors. If you have many predictors, you may need to find a creative way to visualize your predictions. You may choose to make predictions while holding one or more variables at a single value.\n(10 points) In a few sentences, give an example of a problem in your area of research (possibly your paper) where the functional form linking \\(\\vec{X}\\) to \\(E(Y\\mid\\vec{X})\\) is unknown, such that a random forest might be a way to learn the functional form from the data."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-4",
+    "href": "problem_sets.html#problem-set-4",
+    "title": "Problem Sets",
+    "section": "Problem Set 4",
+    "text": "Problem Set 4\nWrite the abstract of your research paper. If you do not have results yet, pretend that your results are really amazing! You can make up any estimates that you want. As an added challenge, try writing the abstract twice with two sets of possible results. It would be ideal if all possible results are interesting.\nAs you write, minimize jargon so that you are writing for a New York Times reader. Emphasize big claims and don’t bury them in statistical terminology. The goal of this exercise is to help us ask and frame a high-impact question that will speak to a broad audience. Possibly, the exercise will lead you to change your question.\nYour peer reviewer should comment on things that may include:\n\nwhat about this abstract is especially compelling?\nwhat parts (if any) about this abstract are directed to a small subset of academia and perhaps should be broadened? This may be parts with jargon.\nwhat claims could be emphasized more?\n\nThe hope is that by writing an abstract (or abstracts) with findings that you could produce, we might come up with better ways of asking and presenting our questions."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-5",
+    "href": "problem_sets.html#problem-set-5",
+    "title": "Problem Sets",
+    "section": "Problem Set 5",
+    "text": "Problem Set 5\nThis problem set is unlike the preceding ones in two ways. It is entirely conceptual, with no data analysis, and it is entirely about hypothetical examples rather than your paper. It is a chance to reinforce a few basic ideas from our class on panel data. Questions 1–5 are on difference in difference. Questions 6–7 are on regression discontinuity.\nIn the figures below, the treated group becomes treated between time 1 and time 2. The control group never becomes treated. Figures are hypothetical scenarios that depict true potential outcomes even if those outcomes would not be observed in an actual study.\n\n\n\n\n\n\n\n\n\n1 (10 points). In which setting does the parallel trends assumption hold: A, B, neither, or both?\n2 (10 points). In actual data analysis, can we ever know for certain whether we are in Setting A or Setting B? If the answer is no, then tell us which outcome cannot be observed.\n3 (10 points) A researcher comes to you with the data below, which depict only observed outcomes. That researcher wants to run a difference in difference analysis. Here, we have not depicted the counterfactual outcome because the researcher would not know it. Why is the parallel trends assumption doubtful in this setting?\n\n\n\n\n\n\n\n\n\n4 (10 points). A researcher is interested in the causal effect of a minimum wage increase on employment. They plan to analyze data on the U.S. only, and they are interested in a time when the minimum wage rose simultaneously at every place in the U.S. Why won’t a difference in difference design work for the researcher’s question?\n5 (10 points). Propose another design that the researcher could use to answer the question in (1.4), which may involve data outside the U.S. or may involve a different analysis of data within the U.S. Answer this question in no more than 3 sentences. Many answers are possible."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-6",
+    "href": "problem_sets.html#problem-set-6",
+    "title": "Problem Sets",
+    "section": "Problem Set 6",
+    "text": "Problem Set 6\nConstruct a bootstrap confidence interval using data from your project. Some things to tell us in writing include:\n\nwhat is your population parameter?\nwhat is your estimator?\nhow many bootstrap samples did you draw?\ndid you use the Normal approximation or the percentile method?\n\nIf your data are not suitable for a bootstrap confidence interval for some reason (e.g., you have the entire population so that confidence intervals don’t make sense), go ahead and carry out the steps for practice and then tell us why the bootstrap might not be appropriate in your setting."
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-7",
+    "href": "problem_sets.html#problem-set-7",
+    "title": "Problem Sets",
+    "section": "Problem Set 7",
+    "text": "Problem Set 7\nFor (1) to (5),\n\nList all paths connecting \\(A\\) and \\(Y\\). Remember that a path can be written in one line as a sequence of nodes connected by edges.\nFor each path, answer\n\nis this path open before we condition on anything?\nis this path open conditional on \\(X\\)?\n\nAre any non-causal paths between \\(A\\) and \\(Y\\) open once we condition on \\(X\\)? In other words, other than causal paths from \\(A\\) to \\(Y\\) is there any other reason \\(A\\) and \\(Y\\) would be associated conditional on \\(X\\)?"
+  },
+  {
+    "objectID": "problem_sets.html#problem-set-8",
+    "href": "problem_sets.html#problem-set-8",
+    "title": "Problem Sets",
+    "section": "Problem Set 8",
+    "text": "Problem Set 8\n1 (25 points). A DAG in your research area.\nIn your research project or field of research, define a causal question. Define the treatment variable and potential outcomes. Draw a DAG and identify a sufficient adjustment set given your DAG.\nCoding help: How to draw a DAG.\nFor this class, you can draw your DAG by hand and take a picture of it, and include the picture in your writeup. Alternatively, you can learn to type a DAG as a tikzpicture in LaTeX, as I do. Both are equally good!\nTo produce a DAG with code, I include the following in my LaTeX document header:\n\n\\usepackage{tikz}\n\\usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}\n\nThen I use code like the below to draw a DAG.\n\n\\begin{tikzpicture}[x = .3in, y = .3in]\n    \\node (x) at (0,-1) {$X$};\n    \\node (a) at (0,0) {$A$};\n    \\node (y) at (1,0) {$Y$};\n    \\draw[-&gt;, thick] (x) -- (a);\n    \\draw[-&gt;, thick] (a) -- (y);\n    \\draw[-&gt;, thick] (x) -- (y);\n\\end{tikzpicture}\n\n2 (25 points). Outcome model for causal inference.\nDefine a causal estimand and estimate it using an outcome model. You are welcome to use any causal estimand you are interested in, in any dataset you like (potentially from your project). The outcome model can be statistical (e.g., OLS) or a more data-science model (e.g., random forest).\nIf you’d rather use data we provide, feel free to use the data from my analogous undergrad problem set. This is a simulated version of data from an ongoing project with Soonhong."
+  },
+  {
+    "objectID": "doubly_robust_outtakes.html",
+    "href": "doubly_robust_outtakes.html",
+    "title": "Doubly-robust estimation",
+    "section": "",
+    "text": "TMLE with a binary outcome\n\nIssue. AIPW never predicts an ATE outside of the (0,1) range when the treatment weights are correct and we have no random noise. May need to introduce random noise for this to happen. May\n\nA key advantage of targeted learning over augmented inverse pribability weighting is that targeted learning accomodates generalized linear models such as logistic regression for bounded outcomes. To illustrate this property, we now consider a binary outcome: whether the child’s day scores at least 7 on the awesomeness scale. We focus here on the average treatment effect.\n\\[\n\\tau = \\frac{1}{n}\\sum_i \\left(\\mathbb{I}(Y_i^1\\geq 7) - \\mathbb{I}(Y_i^0\\geq 7)\\right)\n\\]\n\n\nNon-enforced bounds (ATC)\nWe first consider two estimators that do not enforce the bounds: the AIPW estimator and the targeted learning estimator using linear regression.\n\ndata_binary &lt;- tibble(x = rep(c(1,2,5), each = 10)) |&gt;\n  mutate(\n    a = c(rep(c(F,rep(T,9)),2),\n          T,rep(F,9))\n  ) |&gt;\n  mutate(y = case_when(\n    !a ~ F,\n    a & x == 1 ~ F,\n    a & x == 2 ~ T,\n    a & x == 4 ~ F,\n    a & x == 5 ~ F\n    ))\n\n\nfit1 &lt;- lm(y ~ x, data = data_binary |&gt; filter(a))\n\nWhat is the initial estimate of the outcome under treatment?\n\ndata |&gt; \n  mutate(yhat1 = predict(fit1, newdata = data)) |&gt;\n  filter(!a) |&gt;\n  summarize(yhat0 = mean(y &gt;= 6), yhat1 = mean(yhat1))\n\nFor both estimators, we calculate an initial estimate. For streamlined coding in this comparison, we use the notation of targeted learning and first create a q0() function for predictions from our initial outcome model.\n\nq0 &lt;- function(a,x) {\n  to_predict &lt;- tibble(a,x)\n  to_predict |&gt;\n    mutate(\n      q0 = case_when(\n        a == 1 ~ predict(fit1, newdata = to_predict),\n        a == 0 ~ predict(fit0, newdata = to_predict)\n      )\n    ) |&gt;\n    pull(q0)\n}\n\nThen we use this function to create an initial estimate.\n\ninitial_estimate &lt;- data |&gt;\n  transmute(\n    yhat1 = q0(1,x),\n    yhat0 = q0(0,x),\n    effect = yhat1 - yhat0\n  ) |&gt;\n  summarize_all(mean) |&gt;\n  print()\n\nWe then calculate the AIPW correction using inverse probability weights.\n\ncorrection &lt;- data |&gt;\n  mutate(\n    yhat = q0(a,x),\n    weight = case_when(\n      a ~ 1 / pi,\n      !a ~ 1 / (1 - pi)\n    )\n  ) |&gt;\n  group_by(a) |&gt;\n  summarize(error = weighted.mean(yhat - I(y &gt;= 3), w = weight)) |&gt;\n  pivot_wider(names_from = \"a\", values_from = \"error\", names_prefix = \"error_\") |&gt;\n  mutate(error_ATE = error_TRUE - error_FALSE) |&gt;\n  select(error_TRUE, error_FALSE, error_ATE) |&gt;\n  print()\n\nThe above shows that the model tends to over-predict the probability of awesomeness exceeding 3 if surfing.\n\ninitial_estimate |&gt; pull(effect) - \n  (correction |&gt; pull(error_ATE))\n\n\n\nNon-enforced bounds (\\(Y^1\\) and \\(Y^0\\))\nWe first consider two estimators that do not enforce the bounds: the AIPW estimator and the targeted learning estimator using linear regression. For these estimators, our initial fits are linear regression models.\n\nfit0 &lt;- lm(I(y &gt;= 4) ~ x, data = data |&gt; filter(!a))\nfit1 &lt;- lm(I(y &gt;= 4) ~ x, data = data |&gt; filter(a))\n\nFor both estimators, we calculate an initial estimate. For streamlined coding in this comparison, we use the notation of targeted learning and first create a q0() function for predictions from our initial outcome model.\n\nq0 &lt;- function(a,x) {\n  to_predict &lt;- tibble(a,x)\n  to_predict |&gt;\n    mutate(\n      q0 = case_when(\n        a == 1 ~ predict(fit1, newdata = to_predict),\n        a == 0 ~ predict(fit0, newdata = to_predict)\n      )\n    ) |&gt;\n    pull(q0)\n}\n\nThen we use this function to create an initial estimate.\n\ninitial_estimate &lt;- data |&gt;\n  transmute(\n    yhat1 = q0(1,x),\n    yhat0 = q0(0,x),\n    effect = yhat1 - yhat0\n  ) |&gt;\n  summarize_all(mean) |&gt;\n  print()\n\nWe then calculate the AIPW correction using inverse probability weights.\n\ncorrection &lt;- data |&gt;\n  mutate(\n    yhat = q0(a,x),\n    weight = case_when(\n      a ~ 1 / pi,\n      !a ~ 1 / (1 - pi)\n    )\n  ) |&gt;\n  group_by(a) |&gt;\n  summarize(error = weighted.mean(yhat - I(y &gt;= 3), w = weight)) |&gt;\n  pivot_wider(names_from = \"a\", values_from = \"error\", names_prefix = \"error_\") |&gt;\n  mutate(error_ATE = error_TRUE - error_FALSE) |&gt;\n  select(error_TRUE, error_FALSE, error_ATE) |&gt;\n  print()\n\nThe above shows that the model tends to over-predict the probability of awesomeness exceeding 3 if surfing.\n\ninitial_estimate |&gt; pull(effect) - \n  (correction |&gt; pull(error_ATE))"
   },
   {
     "objectID": "data_driven_selection.html",

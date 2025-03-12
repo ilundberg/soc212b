@@ -2,4 +2,969 @@
 title: "Doubly-robust estimation"
 ---
 
+<!-- Class plan
+- discuss open project questions
+- walk through example again
+- doubly robust in math
+- see what terms are zero in each case
+- doubly robust in code
+- TMLE in visuals / math / code
+- why would the line be flat if outcome model correct?
+- flyover of course
+- brainstorm topics for 212c
+-->
+
 This session will combine prediction and weighting methods for an approach with properties superior to either on its own.
+
+```{r, echo = F, message = F, warning = F}
+library(foreach)
+```
+
+## A motivating example
+
+A child loves to go surfing. Every day, the child either surfs or the child does not. At the end of every day, the child records the height of the waves that day and whether they surfed. They also record the awesomeness of their day on a scale from 1--10, with 10 being the most awesome. The figure below visualizes some hypothetical data. When the child doesn't surf (red dots), the day is always mediocre (awesomeness = 5). When the child surfs, the awesomeness of the day depends on the wave quality. When the waves are only 1 foot high, the day is less awesome than surfing because the child is constantly struggling to catch anything. As the wave height increases, the awesomeness increases up to a wave height of 3 feet, which is the peak of awesomeness for this child. Above 3 feet, awesomeness begins to decline up through 5 foot waves, in which the child struggles against the overwhelming power of these large waves.
+
+```{r, message = F, warning = F}
+#| code-fold: true
+#| fig-height: 3
+
+library(tidyverse)
+theme_set(theme_minimal())
+
+data <- tibble(x = rep(1:9,1:9), a = F) |>
+  bind_rows(tibble(x = rep(1:9,9:1), a = T)) |>
+  group_by(x) |>
+  mutate(
+    pi = mean(a)
+  ) |>
+  ungroup() |>
+  mutate(
+    y1 = 9 - 9 * ((x - 5) / 5) ^ 2,
+    y0 = 5,
+    # Shift x to fit story of this DGP
+    x = (x - 1) / 2 + 1,
+    y = case_when(
+      !a ~ y0,
+      a ~ y1
+    )
+  )
+
+data |>
+  ggplot(aes(x = x, y = y, color = a)) +
+  geom_jitter(width = .1, height = .1, alpha = .5) +
+  scale_x_continuous(
+    breaks = 1:10,
+    name = "Height of Waves (feet)"
+  ) +
+  labs(
+    y = "Awesomeness of Child's Day\n(Scale 1-10)"
+  ) +
+  scale_color_discrete(
+    name = "Treatment",
+    labels = c("Did not surf","Surfed")
+  )
+```
+
+The parent also plays an improtant role here. When the waves are small, the parent almost always allows the child to surf. As the waves get larger, there are more days when the parent does not allow the chid to surf. When the waves are 5 feet tall, the child surfs only very rarely (when the parent misjudges the size of the waves). As a result, when the child thinks about days that they surf, the child's experience of surfing tends to be in 1--3 foot waves.
+
+The child secretly aspires to be a statistician, and thus asks a causal question: how much more awesome would the days I did not surf have been, if I had counterfactually surfed on those days? The child's causal estimand is the average treatment effect on the untreated observations.
+
+$$\tau = \frac{1}{n_\text{Not Surfed}}\sum_{i:A_i=\text{Not Surfed}} \left(Y_i^\text{Surfed} - Y_i^\text{Not Surfed}\right)$$
+
+To answer this causal question, the child uses linear regression:
+
+1. Model (awesomeness) given (wave height), among days when they surfed
+2. Predict the counterfactual awesomeness under surfing, for the days when they did not surf
+
+Because most of the child's surfing experiences are at the left side of the plot, the child fits a positive trend line: surfing days just get more awesome as the wave height increases. The child can easily forget about that bad 5-foot day; it was an anomaly that happened only once.
+
+```{r}
+#| code-fold: true 
+#| fig-height: 3
+
+fit1 <- lm(y ~ x, data = data |> filter(a))
+
+fitted <- data |>
+  mutate(y = predict(fit1, newdata = data))
+
+data |>
+  ggplot(aes(x = x, y = y, color = a)) +
+  geom_jitter(width = .1, height = .1, alpha = .5) +
+  scale_x_continuous(
+    breaks = 1:10,
+    name = "Height of Waves (feet)"
+  ) +
+  labs(
+    y = "Awesomeness of Child's Day\n(Scale 1-10)"
+  ) +
+  scale_color_discrete(
+    name = "Treatment",
+    labels = c("Did not surf","Surfed")
+  ) + 
+  # Add the fitted line
+  geom_line(
+    data = fitted |> mutate(a = TRUE)
+  )
+```
+
+Knowledgable about outcome modeling for causal inference, the child proceeds to focus on the red dots: the days that they did not surf. For every red dot, the child predicts the counterfactual outcome: how awesome that day would have been if they had surfed. Especially on large-wave days, the model suggests the awesomeness would have been so much higher if the child had surfed!
+
+```{r}
+#| code-fold: true
+
+data |>
+  ggplot(aes(x = x, y = y, color = a)) +
+  geom_point(alpha = 0, show.legend = F) +
+  geom_jitter(data = data |> filter(!a), width = .1, height = .1) +
+  geom_jitter(data = fitted |> filter(!a) |> mutate(a = T), width = .1, height = .1) +
+  # Add the fitted line
+  geom_line(
+    data = fitted |> filter(!a) |> mutate(a = TRUE)
+  ) +
+  #geom_segment(aes(yend = fitted), linetype = "dashed", color = "gray") +
+  scale_x_continuous(
+    breaks = 1:10,
+    name = "Height of Waves (feet)"
+  ) +
+  labs(
+    y = "Awesomeness of Child's Day\n(Scale 1-10)"
+  ) +
+  scale_color_discrete(
+    name = "Treatment",
+    labels = c("Did not surf\n(factual data)","Surfed\n(counterfactual predictions)"),
+    guide = guide_legend(reverse = T)
+  ) +
+  annotate(geom = "text", x = 4.5, y = 6.5, label = "big\ncausal\neffect\nestimates") +
+  annotate(geom = "segment", x = c(4,5), y = c(5.5,5.5), yend = c(7.5,8.5), arrow = arrow(length = unit(.1,"in")),
+           color = "gray", linewidth = 1.5) +
+  theme(legend.key.height = unit(.5,"in"))
+```
+
+As a result, the child overestimates the value of $\tau$: the average non-surfing day would have been `r data |> filter(!a) |> summarize(effect = mean(y1 - y0)) |> pull(effect) |> round(2)` points more awesome on average if the child had surfed, but the child's linear model mistakenly estimates that it would have been `r fitted |> filter(!a) |> summarize(effect = mean(y - y0)) |> pull(effect) |> round(2)` points more awesome.
+
+What went wrong with the child's model? The child's model minimized squared error over the distribution of wave heights where surfing days were observed. These tended to be small-wave days. But the prediction task was to predict on the non-surfing days, which tended to be big-wave days!
+
+### We are always the child
+
+When carrying out model-based causal inference, we must realize we are always the child. We always have a treatment (surfing) that is unequally distributed across the values of one or more confounders (wave height). We fit an outcome model on the data we observe (surfing on small-wave days) and then use that model to predict counterfactuals we don't observe (which tend to be big-wave days). Finally, just like the child we often assume a simple model (e.g., a line) without realizing that the world is more complicated (in this case, a parabola).
+
+The solution to the child's problem will be a solution that we can apply in many cases.
+
+### Correcting the child's wrong model
+
+The child actually has other information relevant to the problem: the child knows the proportion of days surfed at each wave height. In this case, the probability of surfing declines linearly from 90\% on 1-foot days to 10\% on 5-foot days.
+
+```{r}
+#| code-fold: true
+#| fig-height: 3
+
+data |>
+  ggplot(aes(x = x, y = pi)) +
+  geom_line() +
+  geom_point() +
+  ggtitle("Propensity Score") +
+  labs(
+    x = "Height of Waves (feet)",
+    y = "Probability that Parent\nAllows Child to Surf"
+  )
+```
+
+To be even more concrete, consider 5-foot wave days. The child knows that they surfed only 10\% of these days. Every day surfed really stands in for 9 days not surfed. If we were estimating the average treatment effect on the untreated by weighting, we would weight the 5-foot day by $\text{P}(\text{Not Surfed}\mid X = 5) / \text{P}(\text{Surfed} \mid X = 5) = .9 / .1 = 9$. We therefore might estimate the weighted error of the linear model, weighted by these weights.
+
+```{r}
+#| code-fold: true
+#| fig-height: 3
+
+observed_error <- data |>
+  mutate(fitted = predict(fit1, newdata = data)) |>
+  filter(a) |>
+  mutate(weight = (1 - pi) / pi)
+
+observed_error |>
+  ggplot(aes(x = x, y = y1)) +
+  geom_line(aes(y = fitted)) +
+  geom_jitter(aes(y = y1, size = weight), width = .1, height = .1, alpha = .5) + 
+  geom_segment(aes(yend = fitted), linetype = "dashed", color = "gray") +
+  scale_x_continuous(
+    breaks = 1:10,
+    name = "Height of Waves (feet)"
+  ) +
+  labs(
+    y = "Awesomeness of Child's Day\n(Scale 1-10)",
+    size = "Inverse Probability\nof Treatment Weight"
+  ) +
+  scale_color_discrete(
+    name = "Treatment",
+    labels = c("Did not surf","Surfed")
+  )
+```
+
+In this case, the unweighted average error is `r observed_error |> summarize(error = mean(fitted - y1)) |> pull(error) |> round(2)` which is unsurprising: in OLS the average error in the training data is always 0! But here the goal is to predict in a shifted distribution of wave height. The inverse-probability-weighted error estimates the error on average over the space where we are making predictions: the model predictions are on average `r observed_error |> summarize(error = weighted.mean(fitted - y1, w = weight)) |> pull(error) |> round(2)` points too high.
+
+## Augmented inverse probability weighting
+
+If the child corrected for the error, they would be using an augmented inverse probability weighting estimator.
+
+$$
+\hat\tau_\text{AIPW} = \frac{1}{n_\text{Not Surfed}}\sum_{i:A_i=\text{Not Surfed}} \left(\hat{Y}_i^1 - Y_i\right) - \frac{\sum_{i:A_i=\text{Surfed}} w_iY_i}{\sum_{i:A_i=\text{Surfed}} w_i}
+$$
+where $w_i$ is the inverse probability weight for estimating the average treatment effect on the untreated.
+
+$$
+w_i = \frac{\text{P}(A=\text{Not Surfed}\mid X = x_i)}{\text{P}(A=\text{Surfed} \mid X = x_i)}
+$$
+
+In this example, the outcome model is misspecified (a line for a parabola) but the weights are correct. Below, we see that the weights allow us to correct the wrong outcome model. First, we calculate the truth because in the simulation we know the potential outcomes.
+
+```{r}
+truth <- data |>
+  # Restrict to the untreated
+  filter(!a) |>
+  # Average difference in potential outcomes
+  summarize(true_atc = mean(y1 - y0)) |>
+  print()
+```
+
+Then we calculate an initial estimate via outcome modeling.
+
+```{r}
+initial_estimate <- data |>
+  # Predict Y1
+  mutate(yhat1 = predict(fit1, newdata = data)) |>
+  # Focus on the untreated
+  filter(!a) |>
+  # Summarize an average effect estimate:
+  # average of (predicted y1) - (observed y0)
+  summarize(initial_estimate = mean(yhat1 - y)) |>
+  print()
+```
+
+Third, we estimate the weighted mean error in the observed data.
+
+```{r}
+weighted_mean_error <- data |>
+  # Predict Y1
+  mutate(yhat1 = predict(fit1, newdata = data)) |>
+  # Focus on the treated
+  filter(a) |>
+  # Construct inverse probability weights
+  # where pi is the probability of treatment
+  mutate(weight = (1 - pi) / pi) |>
+  # Summarize a weighted mean error:
+  # weighted average of (predicted y1) - (observed y1)
+  summarize(weighted_mean_error = weighted.mean(yhat1 - y, w = weight)) |>
+  print()
+```
+
+Finally, our corrected estimate is the initial estimate with the weighted mean error subtracted.
+
+```{r}
+corrected_estimate <- initial_estimate |> 
+  bind_cols(weighted_mean_error) |>
+  mutate(corrected_estimate = initial_estimate - weighted_mean_error) |>
+  print()
+```
+
+In this case, the corrected estimate equals the true average treatment effect among the untreated! This numerical equivalence occurs because this simulation has known propensity scores and zero random error.
+
+### Double robustness
+
+The example above illustrates a key property of the AIPW estimator: it is doubly robust, meaning that it is a consistent estimator as long as either
+
+
+* the model for treatment probabilities is consistent at each value of $\vec{X}$, or
+* the model for potential outcomes is consistent at each value of $\vec{X}$
+
+Below, we consider each of these in turn.
+
+The example above illustrated the first property: as long as the estimator of the treatment probabilities is consistent for the true probabilities of treatment, then the AIPW estimator is consistent for the truth. This is true even if the outcome model is wrong, as shown by the child's line above!
+
+$$
+\begin{aligned}
+&\text{if}\quad &&\hat{\text{P}}(A = 1 \mid\vec{X} = \vec{x})\rightarrow \text{P}(A = 1 \mid\vec{X} = \vec{x})\quad \text{ for all }\vec{x},\\
+&\text{then}\qquad &&\hat\tau_{\text{AIPW}}\rightarrow \tau
+\end{aligned}
+$$
+
+Although not illustrated above, the AIPW estimator is also correct if the outcome model is correct and the treatment model is wrong. To illustrate this, consider that at every value of $\vec{X}$ an outcome model will be correct on average. Thus in a large sample, the average error at every value of $\vec{X}$ will be 0. No matter how we take a weighted average across the $\vec{X}$ values, the AIPW correction will always be 0! Thus the correct outcome model estimate will remain.
+
+$$
+\begin{aligned}
+&\text{if}\quad &&\hat{\text{E}}(Y\mid A = 1, \vec{X} = \vec{x})\rightarrow \text{E}(Y\mid A = 1, \vec{X} = \vec{x})\quad \text{ for all }\vec{x},\\
+&\text{then}\qquad &&\hat\tau_{\text{AIPW}}\rightarrow \tau
+\end{aligned}
+$$
+
+## Targeted learning
+
+AIPW is not the only way to update a model. Another option is called targeted learning ([Van der Laan and Rose 2011](https://link.springer.com/book/10.1007/978-1-4419-9782-1)). We first introduce targeted learning through one concrete example, then generalize the procedure in the sections that follows.
+
+### Modeling $Y^1$ for the ATC
+
+In the surfing example, our goal is to estimate the mean outcome under surfing, for the observations on days when there was surfing. We begin with the child's initial fit: linear regression. Following notation that is common in targeted learning,^[The targeted learning literature typically uses $Q^0$ instead of $\hat{Q}^0$, but we use the hat for consistency within this webpage that estimated quantities always have hats.] we will refer to this regression line as $\hat{Q}^0$,
+
+$$
+\underbrace{\hat{Q}^0(\vec{x})}_{\substack{\text{The 0 superscript}\\\text{indicates an untargeted}\\\text{initial estimate}}} = \hat{\text{E}}(Y\mid A = 1, \vec{X}) = \hat\alpha + \hat\beta\vec{x}
+$$
+
+where $\hat\alpha$ and $\hat\beta$ are the OLS coefficients when modeling $Y$ given $X$ among the treated observations.
+
+```{r}
+# Fitted model
+q0_fit <- lm(y ~ x, data = data |> filter(a))
+# Function to return predictions
+q0 <- function(x) {
+  predict(q0_fit, newdata = tibble(x))
+}
+```
+
+```{r, echo = F}
+#| fig-height: 3
+data |>
+  ggplot(aes(x = x, y = y, color = a)) +
+  geom_jitter(width = .1, height = .1, alpha = .5) +
+  scale_x_continuous(
+    breaks = 1:10,
+    name = "Height of Waves (feet)"
+  ) +
+  labs(
+    y = "Awesomeness of Child's Day\n(Scale 1-10)"
+  ) +
+  scale_color_discrete(
+    name = "Treatment",
+    labels = c("Did not surf","Surfed")
+  ) + 
+  # Add the fitted line
+  geom_line(
+    data = fitted |> mutate(a = TRUE)
+  )
+```
+
+The child's model is targeted toward the observed data, but our target is actually to predict the counterfactual under surfing for the observations when the child did not surf. These are disproportionately at the right side of the figure. If we were estimating by inverse probability weighting, we would weight each treated observation by the ratio of untreated to treated observations given $X$. For targeted learning, we will call this a "clever covariate" that we will define as function $H()$.
+
+$$
+H(x) = \frac{\text{P}(A = \text{Not Surfed} \mid X = x)}{\text{P}(A = \text{Surfed}\mid X = x)}
+$$
+```{r}
+# Define the propensity scores
+# (assumed known in this example)
+propensity_scores <- data |>
+  distinct(x,pi)
+# Define the clever covariate function
+h <- function(x) {
+  tibble(x) |>
+    left_join(propensity_scores, by = join_by(x)) |>
+    mutate(h = (1 - pi) / pi) |>
+    pull(h)
+}
+```
+
+The problem of non-targeted estimation is that our model errors are systematically related to the importance of each observation. To visualize this, create a graph with the clever covariate on the $x$-axis and the initial estimate errors on the $y$-axis.
+
+```{r, echo = F}
+q1_fit <- lm(y ~ -1 + offset(q0(x)) + h(x), data = data |> filter(a))
+# Function to return predictions
+q1 <- function(x) {
+  predict(q1_fit, newdata = tibble(x))
+}
+data |>
+  filter(a) |>
+  mutate(
+    q0 = q0(x),
+    error = y - q0,
+    h = h(x),
+    correction = predict(q1_fit) - q0
+  ) |>
+  ggplot(aes(x = h, y = correction)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_jitter(aes(y = error), width = .1, height = .1, alpha = .5) +
+  geom_line(aes(y = correction)) +
+  labs(
+    x = "Clever Covariate: Weight from Treatment Weighting\n(Importance of Each Observation for Counterfactual Prediction)",
+    y = expression(atop('Error '~Y - {hat(Q)^0}(X),'From Initial Outcome Model'))
+  ) +
+  ggtitle("Prediction errors for surfing days")
+```
+
+The graph shows that the observed $Y$ values (awesomeness of the day) were especially far below the predicted $Y$-values at the right side of the graph: big-wave days when the clever covariate is very large. The regression line is a best-fit line for the errors with intercept restricted to equal 0. Equivalently, it is a best-fit line for $Y$ with the initial prediction $\hat{Q}^0(X)$ included as an offset (an intercept with coefficient restricted to equal 1). The latter interpretation will be useful for generalizations.
+
+$$
+\hat{\text{E}}^1(Y\mid X = x) = \hat{Q}^1(x) = \hat{Q}^0(x) + \hat\gamma \underbrace{\left(\frac{\text{P}(A = \text{Not surfed}\mid X = x)}{\text{P}(A = \text{Surfed}\mid X = x)}\right)}_{\text{Clever covariate }h(x)}
+$$
+
+Now we return to our goal: estimating the counterfactual awesomeness of non-surfing days if the child had surfed on those days. We can now make two estimates, each of which compares the predicted outcomes under surfing ($\hat{Q}^0(x)$ and $\hat{Q}^1(x)$) to the observed outcomes under no surfing.
+
+$$
+\begin{aligned}
+\text{Initial estimate:}\qquad &&\hat\tau^0 &= \frac{1}{n_{\text{NotSurfed}}}\sum_{i:A_i=\text{NotSurfed}}\left(\hat{Q}^0(x_i) - y_i\right)\\
+\text{Targeted estimate:}\qquad &&\hat\tau^1 &= \frac{1}{n_{\text{NotSurfed}}}\sum_{i:A_i=\text{NotSurfed}}\left(\hat{Q}^1(x_i) - y_i\right)
+\end{aligned}
+$$
+```{r, echo = F}
+data |> 
+  filter(!a) |>
+  mutate(q0 = q0(x), q1 = q1(x)) |>
+  select(y, q0, q1, y1) |>
+  pivot_longer(cols = -y) |>
+  group_by(name) |>
+  summarize_all(mean) |>
+  mutate(
+    name = factor(
+      case_when(
+        name == "q0" ~ "Initial Estimate",
+        name == "q1" ~ "Targeted Estimate",
+        name == "y1" ~ "Truth (Y1 Not Observed)"
+      )
+    ),
+    effect = value - y
+  ) |>
+  select(
+    Method = name,
+    `Mean Predicted Outcome Under Surfing` = value,
+    `Mean Observed Outcome Under No Surfing` = y,
+    `Effect of Surfing` = effect
+  ) |>
+  pivot_longer(cols = -Method) |>
+  pivot_wider(names_from = Method) |>
+  knitr::kable(digits = 1)
+```
+
+### Modeling both $Y^0$ and $Y^1$
+
+In the section above, we focused on untreated cases and took the observed $Y$ values as $Y^0$ estimates instead of predicting from a regression model. More generally, we might be interested in both the treated and untreated cases (e.g., for an average treatment effect) and would need model-based estimates for both $Y^0$ and $Y^1$.
+
+When modeling both potential outcomes, we begin with an initial estimate of the conditional mean function: linear regresion estimated separately on the treated and untreated observations. As before, the 0 superscripts indicate that this is an initial estimate.
+
+$$
+\begin{aligned}
+\hat{Q}^0(a,\vec{x}) &= \hat{\text{E}}^0(Y\mid A = a, \vec{X} = \vec{x}) = \begin{cases}
+\hat\alpha_0 + \vec{x}'\hat\beta_0 &\text{if }a = 0 \\
+\hat\alpha_1 + \vec{x}'\hat\beta_1 &\text{if }a = 1
+\end{cases}
+\end{aligned}
+$$
+In code, we can estimate these two regression models
+
+```{r}
+fit0 <- lm(y ~ x, data = data |> filter(!a))
+fit1 <- lm(y ~ x, data = data |> filter(a))
+```
+
+and construct the $\hat{Q}^0$ function.
+
+```{r}
+q0 <- function(a,x) {
+  to_predict <- tibble(a,x)
+  to_predict |>
+    mutate(
+      q0 = case_when(
+        a == 1 ~ predict(fit1, newdata = to_predict),
+        a == 0 ~ predict(fit0, newdata = to_predict)
+      )
+    ) |>
+    pull(q0)
+}
+```
+
+```{r, echo = F}
+data |>
+  mutate(q0 = q0(a,x)) |>
+  ggplot(aes(x = x, color = a)) +
+  geom_jitter(aes(y = y), width = .1, height = .1, alpha = .5) +
+  geom_line(aes(y = q0, linetype = "Initial Estimate Q0")) +
+  scale_x_continuous(
+    breaks = 1:10,
+    name = "Height of Waves (feet)"
+  ) +
+  labs(
+    y = "Awesomeness of Child's Day\n(Scale 1-10)",
+    linetype = "Estimate"
+  ) +
+  scale_color_discrete(
+    name = "Treatment",
+    labels = c("Did not surf","Surfed")
+  )
+```
+
+Using the $\hat{Q}^0$ function, we can produce an initial estimate of the ATE.
+
+$$
+\hat\tau_\text{ATE}^0 = \underbrace{\frac{1}{n}\sum_i}_\text{Sample average} \bigg(\underbrace{\hat{Q}^0(1,x_i)}_{\substack{\text{Initial prediction}\\\text{under treatment}}} - \underbrace{\hat{Q}^0(0,x_i)}_{\substack{\text{Initial prediction}\\\text{under control}}}\bigg)
+$$
+
+```{r}
+data |>
+  summarize(
+    initial_ate_estimate = mean(
+      q0(1,x) - q0(0,x)
+    )
+  )
+```
+
+We know that this estimate is wrong because of the misspecified outcome model optimized over the observed data instead of the data to be predicted. To correct this misspecification, we define the clever covariate.
+
+* because the goal is the ATE, this is the inverse probability of treatment
+* because we difference (treatment) -- (control), the control weight is negative
+
+$$
+H(a,x) = \begin{cases}
+\frac{1}{P(A = 1\mid X)}&\text{if }a=1 \\
+\frac{-1}{P(A = 0\mid X)}&\text{if }a=0
+\end{cases}
+$$
+To create this in code, we first note the propensity scores which are known in this example,
+
+```{r}
+propensity_score <- data |> distinct(x,pi)
+```
+
+and then we write an `h()` function.
+```{r}
+h <- function(a,x) {
+  tibble(a, x) |>
+    left_join(propensity_score, by = join_by(x)) |>
+    mutate(
+      h = case_when(
+        a == 1 ~ 1 / pi,
+        a == 0 ~ -1 / (1 - pi)
+      )
+    ) |>
+    pull(h)
+}
+```
+
+The graph below visualizes our $h$ values on the $x$-axis and the errors of our initial model on the $y$-axis, with a line that corresponds to the targeting step to be completed below.
+
+```{r, echo = F}
+#| fig-height: 3
+resid_fit <- lm((y - q0(a,x)) ~ -1 + h(a,x), data = data)
+data |>
+  mutate(fitted = predict(resid_fit)) |>
+  ggplot(aes(x = h(a,x))) +
+  geom_jitter(aes(y = y - q0(a,x), color = a), width = .1, height = .1, alpha = .5) +
+  geom_line(aes(y = fitted, linetype = "Targeting Fit")) +
+  labs(
+    x = "Clever Covariate: Treatment Weight for ATC",
+    y = "Initial Error Modeling\nAwesomeness of Child's Day\n(Scale 1-10)",
+    linetype = "Estimate"
+  ) +
+  scale_color_discrete(
+    name = "Treatment",
+    labels = c("Did not surf","Surfed")
+  )
+```
+
+The targeting fit visualized in the model above is the linear regression of $Y$ on $H(A,X)$ (the clever covariate, which involves inverse probability weights), estimated with offset equal to the intial predictions $Q^0(A,X)$.
+
+$$
+\hat{Q}^1(A,\vec{X}) = \text{E}^1\left(Y \mid A, \vec{X}\right) = \hat{Q}^0(A,\vec{X}) + \hat\gamma H(A,\vec{X})
+$$
+
+The slope of the line in the figure above equals the coefficient estimate $\hat\gamma$ in the equation above. In code, below we estimate the targeting regresion model
+
+```{r}
+q1_fit <- lm(y ~ -1 + offset(q0(a,x)) + h(a,x), data = data)
+```
+
+and then write a `q1()` function that will return targeted predictions at treatment value `a` and confounder value `x`.
+
+```{r}
+q1 <- function(a,x) {
+  predict(q1_fit, newdata = tibble(a,x))
+}
+```
+
+Using the $\hat{Q}^1$ function, we can produce a targeted estimate of the ATE.
+
+$$
+\hat\tau_\text{ATE}^1 = \underbrace{\frac{1}{n}\sum_i}_\text{Sample average} \bigg(\underbrace{\hat{Q}^1(1,x_i)}_{\substack{\text{Targeted prediction}\\\text{under treatment}}} - \underbrace{\hat{Q}^0(1,x_i)}_{\substack{\text{Targeted prediction}\\\text{under control}}}\bigg)
+$$
+
+```{r}
+data |>
+  summarize(
+    targeted_ate_estimate = mean(
+      q1(1,x) - q1(0,x)
+    )
+  )
+```
+
+Because this example is constructed with no random noise and known treatment probabilities, the targeted ATE estimate exactly matches the true ATE of `r data |> summarize(truth = mean(y1 - y0)) |> pull(truth)`.
+
+### Why TMLE vs AIPW?
+
+Why would one choose TMLE over AIPW?
+
+Both approaches solve the same problem: when building an outcome model for $Y^1$, the model is learned over the confounder distribution $\vec{X}\mid A = 1$ among treated units, but the goal is to predict over the distribution $\vec{X}\mid A = 0$ among untreated units. When the outcome model is going to fit poorly in part of the space (e.g., due to model misspecification), then the first-stage model will optimize fit in the part of the space where it observes more data. But this may not be the same as the part of the space where predictions are to be made.
+
+AIPW and TMLE solve this problem in related but distinct ways. In AIPW, the outcome model is corrected by the weighted average error where weights equal inverse probability of treatment weights. In TMLE, the outcome model is corrected by a second-stage regression that uses inverse probability of treatment weights as a "clever covariate" in a regression model.
+
+Ultimately, both approaches are doubly robust. One advantage of TMLE arises when the outcome is binary, because then the second-stage regression can be a generalized linear model where the TMLE correction occurs on the space of the linear predictor. Thus, TMLE can be constructed to enforce boundaries such as never predicting probabilities below 0 or greater than 1.
+
+In practice, I have not seen a clear resolution in favor of one or the other approach, and both approaches are likely to be good estimators. Any doubly-robust method may be preferable to the more typical approach of relying entirely on an outcome or treatment model!
+
+<!-- ### TMLE with a binary outcome -->
+
+<!-- A benefit of TMLE is that it can be carried out with a binary outcome. -->
+
+
+
+<!-- Note: I tried to construct a setting where -->
+
+<!-- * treatment model is correctly specified -->
+<!-- * outcome model is incorrectly specified -->
+<!-- * AIPW makes an estimate outside (0,1) -->
+
+<!-- Other than a few numerical edge cases that may have come from logit not converging, I am not able to create such a simulation. I think this is analogous to how a linear probability model only leads to the problem of predicting outside the (0,1) interval when that model is incorrectly specified. -->
+
+<!-- ```{r} -->
+<!-- base_data <- tibble(x = c(rep(1:2, each = 99), 3), a = TRUE) |> -->
+<!--   bind_rows( -->
+<!--     tibble(x = c(1:2,rep(3, 99)), a = FALSE) -->
+<!--   ) -->
+<!-- base_data |> -->
+<!--   table() -->
+<!-- data <- base_data |> -->
+<!--   mutate( -->
+<!--     pi = case_when( -->
+<!--       x == 1 ~ .99, -->
+<!--       x == 2 ~ .99, -->
+<!--       x == 3 ~ .01 -->
+<!--     ), -->
+<!--     y1 = case_when( -->
+<!--       x == 1 ~ .5, -->
+<!--       x == 2 ~ .5, -->
+<!--       x == 3 ~ .9 -->
+<!--     ), -->
+<!--     y0 = 0, -->
+<!--     y = ifelse(a, y1, y0) -->
+<!--   ) -->
+
+<!-- fit <- lm(y ~ x, data = data |> filter(a)) -->
+
+<!-- correction <- data |> -->
+<!--   filter(a) |> -->
+<!--   mutate( -->
+<!--     error = predict(fit) - y, -->
+<!--     weight = (1 - pi) / pi -->
+<!--   ) |> -->
+<!--   summarize(correction = weighted.mean(error, w = weight)) |> -->
+<!--   print() -->
+
+<!-- data |>  -->
+<!--   filter(a) |> -->
+<!--   mutate(yhat = predict(fit, newdata = data |> filter(a))) |> -->
+<!--   mutate(weight = (1 - pi) / pi) |> -->
+<!--   ggplot(aes(x = x)) + -->
+<!--   geom_hline(yintercept = 1, linetype = "dashed") + -->
+<!--   geom_jitter(aes(y = y, size = weight), width = .1, height = .005, alpha = .2) + -->
+<!--   geom_line(aes(y = yhat)) + -->
+<!--   ylab("Observed Outcomes\nof Treated Units") + -->
+<!--   xlab("Confounder X") + -->
+<!--   scale_size_continuous( -->
+<!--     name = "Treatment\nWeight for\nATC", -->
+<!--     breaks = c(.01,99), -->
+<!--     limits = c(.01,99) -->
+<!--   ) + -->
+<!--   labs( -->
+<!--     subtitle = paste( -->
+<!--       "Weighted mean error:\nLine is", -->
+<!--       correction |> pull(correction) |> round(2), -->
+<!--       "too low" -->
+<!--     ) -->
+<!--   ) -->
+
+<!-- data |> -->
+<!--   filter(!a) |> -->
+<!--   mutate(initial = predict(fit, newdata = data |> filter(!a))) |> -->
+<!--   select(x, initial) |> -->
+<!--   mutate(corrected = initial - correction$correction) |> -->
+<!--   pivot_longer(cols = -x) |> -->
+<!--   ggplot(aes(x = x, y = value, linetype = name)) + -->
+<!--   geom_hline(yintercept = 1, linetype = "dashed") + -->
+<!--   geom_jitter(width = .1, height = .01, alpha = .2) + -->
+<!--   geom_line() -->
+
+<!-- # Run many times with sampling variability -->
+<!-- simulate <- function() { -->
+<!--   data_simulated <- data |> -->
+<!--     # Randomize Y from Bernoulli with existing probability -->
+<!--     mutate( -->
+<!--       y = rbinom(n(), 1, y) -->
+<!--     ) -->
+<!--   fit <- lm(y ~ x, data = data_simulated |> filter(a)) -->
+
+<!--   correction <- data_simulated |> -->
+<!--     filter(a) |> -->
+<!--     mutate( -->
+<!--       error = predict(fit) - y, -->
+<!--       weight = (1 - pi) / pi -->
+<!--     ) |> -->
+<!--     summarize(correction = weighted.mean(error, w = weight)) -->
+
+<!--   estimate <- data_simulated |> -->
+<!--     filter(!a) |> -->
+<!--     mutate(yhat1 = predict(fit, newdata = data_simulated |> filter(!a))) |> -->
+<!--     summarize(initial = mean(yhat1)) |> -->
+<!--     mutate(corrected = initial - correction$correction) -->
+<!--   return(estimate) -->
+<!-- } -->
+<!-- simulations <- foreach(r = 1:500, .combine = "rbind") %do% simulate() -->
+<!-- simulations |> -->
+<!--   pivot_longer(cols = everything()) |> -->
+<!--   ggplot(aes(x = value)) + -->
+<!--   geom_histogram() + -->
+<!--   facet_wrap(~name) -->
+
+<!-- simulations |> -->
+<!--   arrange(-corrected) -->
+<!-- ``` -->
+
+## Sample splitting for machine learning
+
+Under classical statistical approaches to inference, one often worries about model misspecification. The problem of model misspecification is that if one approximates $\text{E}(Y\mid A, \vec{X})$ by an additive regression and the true response function is nonlinear, then the model will be an inconsistent estimator of $\text{E}(Y\mid\vec{X} = \vec{x})$ for at least some $\vec{x}$. Double robustness solves this problem: as long as $\text{E}(Y\mid\vec{X})$ or $\text{P}(A = 1\mid\vec{X})$ is estimated by a consistent estimator, then the causal effect estimate is consistent.
+
+Machine learning approaches seem to upend this logic: flexible models can be consistent estimators by construction. Without any assumption of a statistical model, a random forest can yield a consistent estimator of $\text{E}(Y\mid A,\vec{X})$ and $\text{P}(A = 1\mid\vec{X})$. By consistent, we mean that the forest would come to equal these estimands in an infinite sample. Does double robustness then have any use?
+
+The problem with flexible machine learning estimators is that they converge to the true response surface at slower rates than parametric regression models. In finite samples, the estimators will be biased at some $\vec{X} = \vec{x}$ values due to regularization. Thus, the key to machine learning estimators is to do use the same doubly robust formulation, with a small twist.
+
+1. Using sample $\mathcal{S}_1$, estimate two prediction functions
+$$
+\begin{aligned}
+\hat{g}(\mathcal{S}_1,a,\vec{x}) &= \hat{\text{E}}(Y\mid A = a, \vec{X} = \vec{x}) \\
+\hat{m}(\mathcal{S}_1,a,\vec{x}) &= \hat{\text{P}}(A = a \mid \vec{X} = \vec{x}) \\
+\end{aligned}
+$$
+
+2. In sample $\mathcal{S}_2$, apply the AIPW estimator.
+$$
+\begin{aligned}
+\hat{\text{E}}(Y^a) &= \underbrace{\frac{1}{\lvert\mathcal{S}_2\rvert}\sum_{i\in\mathcal{S}_2}\hat{g}(\mathcal{S}_1,a,\vec{X}_i)}_{\text{outcome modeling estimator}} - 
+\underbrace{\frac{1}{\sum_{i\in\mathcal{S}_2}\frac{\mathbb{I}(A_i=a)}{\hat{m}(\mathcal{S}_1, A_i,\vec{X}_i)}}\sum_{i\in\mathcal{S}_2}\frac{\mathbb{I}(A_i=a)\bigg(\hat{g}(\mathcal{S}_1, A_i,\vec{X}_i) - y_i\bigg)}{\hat{m}(\mathcal{S}_1, A_i,\vec{X}_i)}}_\text{debiasing correction}
+\end{aligned}
+$$
+
+If we drop the normalizing constant on the weights in the debiasing correction (which on asymptotically equals the number of treated observations), we get an estimator that can be written as an empirical mean $\hat{\text{E}}_{\mathcal{S}_2}$ over the cases in sample $\mathcal{S}_2$.
+
+$$
+\hat\tau(a) = \hat{\text{E}}_{\mathcal{S}_2}\left(
+  \hat{g}(\mathcal{S}_1,a,\vec{X})
+  -
+  \frac{\mathbb{I}(A=a)\bigg(\hat{g}(\mathcal{S}_1, A,\vec{X}) - Y\bigg)}{\hat{m}(\mathcal{S}_1, A,\vec{X})}
+\right)
+$$
+
+When $\hat{g}\rightarrow g$ and $\hat{m}\rightarrow m$ at slower asymptotic rates than we ordinarily observe for linear regression, it is still possible for $\hat\tau\rightarrow \tau$ at the ordinary $\sqrt{n}$ asymptotic rate. In other words, even if you estimate a $\hat{g}$ and $\hat{m}$ with random forests, it is possible for $\hat\tau$ to converge to the true expected potential outcome at a rate with good properties! A key for this to happen is that $\hat{g}$ and $\hat{m}$ are learned in a separate sample from the one in which they are applied.
+
+### Cross fitting
+
+Similar to the move from a train-test split to cross-validation, one can make a similar move from sample splitting to a technique called cross fitting.
+
+1. In sample $\mathcal{S}_1$, estimate the outcome model $g(\mathcal{S}_1,a,\vec{x})$ and treatment model $\hat{m}(\mathcal{S}_1,a)$.
+2. In sample $\mathcal{S}_2$, produce an AIPW estimate.
+3. Repeat steps (1) and (2), swapping the roles of $\mathcal{S}_1$ and $\mathcal{S}_2$.
+4. Average the results.
+
+## Exercises
+
+Carry out the child's analysis by
+
+* an outcome model.
+* inverse probability weighting, with weights estimated by logistic regression
+* augmented inverse probability weighting
+
+<!-- Child's analysis by machine learning. -->
+
+<!-- ```{r} -->
+<!-- generate_data <- function(n = 90, noise = .1, replace = T) { -->
+<!--   tibble(x = rep(1:9,1:9), a = F) |> -->
+<!--     bind_rows(tibble(x = rep(1:9,9:1), a = T)) |> -->
+<!--     sample_n(n, replace = replace) |> -->
+<!--     mutate( -->
+<!--       y1 = 9 - 9 * ((x - 5) / 5) ^ 2, -->
+<!--       y0 = 5, -->
+<!--       # Shift x to fit story of this DGP -->
+<!--       x = (x - 1) / 2 + 1, -->
+<!--       y = case_when( -->
+<!--         !a ~ y0, -->
+<!--         a ~ y1 -->
+<!--       ) + runif(n(), -noise, noise) -->
+<!--     ) -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- ### Statistical estimator -->
+
+<!-- ```{r} -->
+<!-- estimator <- function(n = 100) { -->
+<!--   full_data <- generate_data(n) -->
+<!--   g_fit <- glm(y ~ x + a, data = full_data) -->
+<!--   m_fit <- glm(a ~ x, data = full_data, family = binomial) -->
+
+<!--   set_to_treated <- full_data |> mutate(a = T) -->
+
+<!--   # Truth -->
+<!--   truth <- generate_data(noise = 0, replace = F) |> -->
+<!--     summarize(truth = mean(y1)) |> -->
+<!--     pull(truth) -->
+
+<!--   # Outcome modeling -->
+<!--   outcome_estimate <- set_to_treated |> -->
+<!--     mutate(ghat = predict(g_fit, newdata = set_to_treated)) |> -->
+<!--     summarize(estimate = mean(ghat)) |> -->
+<!--     pull(estimate) -->
+
+<!--   # IPW -->
+<!--   ipw_estimate <- full_data |> -->
+<!--     mutate(mhat = predict(m_fit, data = full_data, type = "response")) |> -->
+<!--     filter(a) |> -->
+<!--     summarize(estimate = weighted.mean(y, w = 1 / mhat)) |> -->
+<!--     pull(estimate) -->
+
+<!--   # Doubly robust estimator -->
+<!--   treated_cases <- full_data |> filter(a) -->
+<!--   correction <- treated_cases |> -->
+<!--     mutate( -->
+<!--       mhat = predict(m_fit, newdata = treated_cases, type = "response"), -->
+<!--       ghat = predict(g_fit, newdata = treated_cases) -->
+<!--     ) |> -->
+<!--     summarize( -->
+<!--       correction = weighted.mean( -->
+<!--         ghat - y, w = 1 / mhat -->
+<!--       ) -->
+<!--     ) |> -->
+<!--     pull(correction) -->
+
+<!--   tibble( -->
+<!--     outcome = outcome_estimate, -->
+<!--     ipw = ipw_estimate, -->
+<!--     dr = outcome_estimate - correction, -->
+<!--     truth = truth -->
+<!--   ) -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- Repeat on many samples -->
+
+<!-- ```{r} -->
+<!-- results <- foreach(sample_size = c(seq(100,500,100)), .combine = "rbind") %do% { -->
+<!--   foreach(rep = 1:100, .combine = "rbind") %do% { -->
+<!--     estimator(n = sample_size) |> -->
+<!--       mutate(sample_size = sample_size) -->
+<!--   } -->
+<!-- } -->
+
+<!-- results |> -->
+<!--   select(-truth) |> -->
+<!--   pivot_longer(cols = -sample_size) |> -->
+<!--   ggplot(aes(x = sample_size, y = value, color = name)) + -->
+<!--   #geom_line() + -->
+<!--   geom_point() + -->
+<!--   facet_wrap(~name) -->
+
+<!-- results |> -->
+<!--   group_by(sample_size) |> -->
+<!--   summarize_all(mean) |> -->
+<!--   pivot_longer(cols = -sample_size) |> -->
+<!--   ggplot(aes(x = sample_size, y = value, color = name)) + -->
+<!--   geom_line() + -->
+<!--   geom_point() -->
+
+<!-- truth_value <- results$truth[1] -->
+<!-- results |> -->
+<!--   select(-truth) |> -->
+<!--   group_by(sample_size) |> -->
+<!--   summarize_all(\(x) mean((x - truth_value) ^ 2)) |> -->
+<!--   pivot_longer(cols = -sample_size) |> -->
+<!--   ggplot(aes(x = sample_size, y = value, color = name)) + -->
+<!--   geom_line() + -->
+<!--   geom_point() + -->
+<!--   labs( -->
+<!--     y = "Mean Squared Error", -->
+<!--     x = "Sample Size", -->
+<!--     name = "Estimator" -->
+<!--   ) -->
+<!-- ``` -->
+
+
+<!-- ### Machine learning estimator -->
+
+<!-- ```{r} -->
+<!-- estimator <- function(n = 100) { -->
+<!--   full_data <- generate_data(n) -->
+<!--   g_fit <- ranger(y ~ x + a, data = full_data) -->
+<!--   m_fit <- ranger(as.numeric(a) ~ x, data = full_data) -->
+
+<!--   set_to_treated <- full_data |> mutate(a = T) -->
+
+<!--   # Truth -->
+<!--   truth <- generate_data(noise = 0, replace = F) |> -->
+<!--     summarize(truth = mean(y1)) -->
+
+<!--   # Outcome modeling -->
+<!--   outcome_estimate <- set_to_treated |> -->
+<!--     mutate(ghat = predict(g_fit, data = set_to_treated)$predictions) |> -->
+<!--     summarize(outcome_model_estimate = mean(ghat)) -->
+
+<!--   # IPW -->
+<!--   ipw_estimate <- full_data |> -->
+<!--     mutate(mhat = predict(m_fit, data = full_data)$predictions) |> -->
+<!--     filter(a) |> -->
+<!--     summarize(estimate = weighted.mean(y, w = 1 / mhat)) -->
+
+<!--   # Doubly robust estimator -->
+<!--   treated_cases <- full_data |> filter(a) -->
+<!--   correction <- treated_cases |> -->
+<!--     mutate( -->
+<!--       mhat = predict(m_fit, data = treated_cases)$predictions, -->
+<!--       ghat = predict(g_fit, data = treated_cases)$predictions -->
+<!--     ) |> -->
+<!--     summarize( -->
+<!--       correction = weighted.mean( -->
+<!--         ghat - y, w = 1 / mhat -->
+<!--       ) -->
+<!--     ) -->
+
+<!--   tibble( -->
+<!--     outcome = outcome_estimate$outcome_model_estimate, -->
+<!--     ipw = ipw_estimate$estimate, -->
+<!--     dr = outcome_estimate$outcome_model_estimate -  -->
+<!--       correction$correction, -->
+<!--     truth = truth$truth -->
+<!--   ) -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- What happens as sample size grows? -->
+
+<!-- ```{r} -->
+<!-- results <- foreach(sample_size = c(250,500,1000,2000,4000), .combine = "rbind") %do% { -->
+<!--   foreach(rep = 1:10, .combine = "rbind") %do% { -->
+<!--     estimator(n = sample_size) |> -->
+<!--       mutate(sample_size = sample_size) -->
+<!--   } -->
+<!-- } -->
+<!-- results |> -->
+<!--   group_by(sample_size) |> -->
+<!--   summarize_all(mean) |> -->
+<!--   pivot_longer(cols = -sample_size) |> -->
+<!--   ggplot(aes(x = sample_size, y = value, color = name)) + -->
+<!--   geom_line() + -->
+<!--   geom_point() -->
+<!-- ``` -->
+
+<!-- # ```{r, echo = F} -->
+<!-- # data <- tibble( -->
+<!-- #   x = c(1,1,1,2,2,3,1,2,2,3,3,3), -->
+<!-- #   a = c(F,F,F,F,F,F,T,T,T,T,T,T), -->
+<!-- #   y = c(1,1,1,2,2,2,2,3,3,3,3,3) -->
+<!-- # ) |> -->
+<!-- #   group_by(x) |> -->
+<!-- #   mutate(pi = mean(a)) |> -->
+<!-- #   ungroup() -->
+<!-- #  -->
+<!-- # data |> -->
+<!-- #   ggplot(aes(x = x, y = y, color = a)) + -->
+<!-- #   geom_point() -->
+<!-- # ``` -->
+
