@@ -1,0 +1,7 @@
+\beamer@sectionintoc {1}{Motivation}{3}{0}{1}
+\beamer@sectionintoc {2}{Concrete Example}{32}{0}{2}
+\beamer@sectionintoc {3}{MCAR Assumption}{35}{0}{3}
+\beamer@sectionintoc {4}{MAR Assumption}{36}{0}{4}
+\beamer@sectionintoc {5}{Multivariate Missingness}{39}{0}{5}
+\beamer@sectionintoc {6}{Standard Errors}{40}{0}{6}
+\beamer@sectionintoc {7}{Closing}{43}{0}{7}

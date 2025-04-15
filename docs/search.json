@@ -756,34 +756,123 @@
     ]
   },
   {
-    "objectID": "who_we_are.html",
-    "href": "who_we_are.html",
-    "title": "Who We Are",
-    "section": "",
-    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
-  },
-  {
-    "objectID": "scales.html",
-    "href": "scales.html",
-    "title": "Scale construction",
-    "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
-    "crumbs": [
-      "Problem Sets",
-      "Additional topics",
-      "Scale construction"
-    ]
-  },
-  {
     "objectID": "missing_data.html",
     "href": "missing_data.html",
     "title": "Missing data",
     "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "text": "This is a supplemental topic which in 2025 was covered in 212C (the quarter following 212B). Here are slides\nStatistics classes often present examples in which all variables have valid values for all cases. But in practice, values are often missing in data used in social science research. This page introduces missing data and connects approaches to missing data to existing approaches you have already learned for causal inference.",
     "crumbs": [
       "Problem Sets",
       "Additional topics",
       "Missing data"
+    ]
+  },
+  {
+    "objectID": "missing_data.html#think-carefully-about-data-you-dont-see",
+    "href": "missing_data.html#think-carefully-about-data-you-dont-see",
+    "title": "Missing data",
+    "section": "Think carefully about data you don’t see",
+    "text": "Think carefully about data you don’t see\n\nThis section presents a historical account, drawing on Mangel and Samaniego (1984). Our use of this example is inspired by Joe Blitzstein’s presentation “The Soul of Statistics” at Harvard Thinks Big.\n\nAbraham Wald (of Wald test fame) was born in 1902 in Austria-Hungary. As a Jewish statistician, he faced persecution from the Nazis and fled to the U.S. in 1938. As a statistical consultant to the U.S. Navy, he was tasked with an important question: where should reinforce the armor on planes used in battle?\nThe Navy presented Wald with data on planes that returned from battle, where it was possible to see where those planes had been hit by enemy fire. As a simplified example, suppose that many returning planes showed evidence of hits to the fuselage. A naive adviser might recommend reinforcing the planes’ armor around the fuselage.\nWald had a different insight: think carefully about the planes that did not return. For example, very few of the returning planes had a single hit to the engine. Did this mean that the engine was less likely to take enemy fire? No, instead Wald deduced that this implied that a single hit to the engine had a high likelihood of downing the plane—so that such a plane would never appear in the data.\nThe example of Wald’s analysis of planes illustrates a key concept in statistical analysis with missing data: one must carefully theorize why some data in the population may be missing in one’s analysis.",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Missing data"
+    ]
+  },
+  {
+    "objectID": "missing_data.html#missing-completely-at-random-a-social-scientists-hope",
+    "href": "missing_data.html#missing-completely-at-random-a-social-scientists-hope",
+    "title": "Missing data",
+    "section": "Missing completely at random: A social scientist’s hope",
+    "text": "Missing completely at random: A social scientist’s hope\nThe simplest approach to missing data is to drop any cases with missing values, analyzing only the cases with observed values. This approach is sometimes called listwise deletion.\nConsider the population of 4 people below, each of whom has an outcome value: \\(Y = 1\\) if employed or \\(Y = 0\\) if not. Each person also has a missingness indicator: \\(M_Y = 0\\) if they answered a survey question about employment and \\(M_Y = 1\\) if the data are missing. The researcher does not see the true value of \\(Y\\), but rather only sees the missingness indicator \\(M_Y\\) and the survey response \\(Y_\\text{Observed}\\).\n\nA simplified setting in which MCAR holds: \\(Y ⫫ M_Y\\), so listwise deletion is ok.\n\n\n\n\n\n\n\n\nPerson ID\nTrue Outcome \\(Y\\)\nMissingness \\(M_Y\\)\nObserved Outcome \\(Y_\\text{Observed}\\)\n\n\n\n\n1\n0\n0\n0\n\n\n2\n0\n1\nNA\n\n\n3\n1\n0\n1\n\n\n4\n1\n1\nNA\n\n\n\nThe researcher follows the simple approach and simply drops cases 2 and 4, for which the outcome data were missing. Taking the average of the observed cases (1 and 3), the researcher estimates that 50% of the population is employed. By luck, this researcher’s estimate is correct! In this case \\(\\text{E}(Y_\\text{Observed}\\mid \\text{M_Y} = 0) = \\text{E}(Y)\\).\nThe setting above is constructed so that a key assumption holds.\n\nMissing Completely at Random (MCAR). Missingness is independent of true values. In the univariate case, \\(Y⫫ M_Y\\). In the multivariate case, \\(\\vec{X}⫫ \\vec{M}\\) where \\(\\vec{X}\\) is a vector of variables and \\(\\vec{M}\\) is a vector of missingness indicators on those variables.\n\nThe MCAR assumption is highly doubtful in many settings. In the present example, perhaps people who are not employed are busy searching for jobs and thus have no time to answer surveys. Then the data might follow the pattern below, in which MCAR does not hold and a researcher who dropped missing cases would mistakenly conclude that 100% of the population is employed!\n\nA simplified setting in which MCAR does not hold: \\(Y\\not⫫ M_Y\\), so listwise deletion introduces problems.\n\n\n\n\n\n\n\n\nPerson ID\nTrue Outcome \\(Y\\)\nMissingness \\(M_Y\\)\nObserved Outcome \\(Y_\\text{Observed}\\)\n\n\n\n\n1\n0\n1\nNA\n\n\n2\n0\n1\nNA\n\n\n3\n1\n0\n1\n\n\n4\n1\n0\n1\n\n\n\nConnection to causal inference. In missing data, we do not observe \\(Y\\) when the missingness indicator is \\(M = 1\\). This is analogous to the causal inference setting, in which we do not observe \\(Y^0\\) when the treatment indicator is \\(A = 1\\). The MCAR assumption is identical to the marginal exchangeability assumption that holds in a simple randomized experiment.",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Missing data"
+    ]
+  },
+  {
+    "objectID": "missing_data.html#missing-at-random-exchangeability-within-subgroups",
+    "href": "missing_data.html#missing-at-random-exchangeability-within-subgroups",
+    "title": "Missing data",
+    "section": "Missing at random: Exchangeability within subgroups",
+    "text": "Missing at random: Exchangeability within subgroups\nBecause the MCAR assumption rarely holds, one might hope that a conditional version of this assumption holds: that missingness is independent of true values within subgroups of observed variables.\nAs a concrete example, suppose we now have a population of 6 people: 4 high school graduates and 2 non-graduates.\n\nA simplified setting in which MCAR does not hold, but MAR holds: \\(Y\\not⫫ M_Y\\), but \\(Y⫫ M_Y\\mid X\\). Listwise deletion introduces problems but multiple imputation is consistent.\n\n\n\n\n\n\n\n\n\nPerson ID\nHigh school grad \\(X\\)\nTrue Outcome \\(Y\\)\nMissingness \\(M_Y\\)\nObserved Outcome \\(Y_\\text{Observed}\\)\n\n\n\n\n1\n1\n0\n0\n0\n\n\n2\n1\n0\n1\nNA\n\n\n3\n1\n1\n0\n1\n\n\n4\n1\n1\n1\nNA\n\n\n5\n0\n0\n0\n0\n\n\n6\n0\n0\n0\n0\n\n\n\nIn this example, missingness is not independent of \\(Y\\): the employment rate is 25% among observed cases but 50% among missing cases. The overall rate of employment among the 6 people is 33%, but a researcher who analyzed only the observed outcomes would mistakenly conclude that the employment rate is 25%.\nThere is hope for the example above, however. Among high school graduates, the responders have the same employment rate as those who don’t respond. Among non-graduates, everyone responds. Thus, a conditional assumption known as missing at random holds.\n\nMissing at random. Missingness is independent of true values, given observed values. In the univariate case, \\(Y⫫ M_Y\\mid X\\). In the multivariate case, \\(\\vec{X}⫫ \\vec{M}\\mid \\vec{X}_\\text{Observed}\\) where \\(\\vec{X}\\) is a vector of variables and \\(\\vec{M}\\) is a vector of missingness indicators on those variables, and \\(\\vec{X}_\\text{Observed}\\) is a vector of observed values.\n\nWhen missing at random holds, it would be safe to\n\nstratify by \\(X\\)\nconduct analysis by listwise deletion\nre-aggregate over \\(X\\)\n\nIn math, we can carry out a proof using the missing at random assumption.\n\\[\\begin{aligned}\n\\text{E}(Y) &= \\text{E}_X\\bigg(\\text{E}(Y\\mid X)\\bigg) &\\text{law of iterated expectation} \\\\\n&= \\text{E}_X\\bigg(\\text{E}(Y\\mid X, M_Y = 0)\\bigg) &\\text{missing at random assumption}\n\\end{aligned}\\]\nwhere the second line can be estimated directly since we observe \\(Y = Y_\\text{Observed}\\) for the non-missing cases (for whom \\(M_Y = 0\\)).\nConnection to causal inference. The MAR assumption is identical to the conditional exchangeability assumption of invoked for causal inference.\n\\[\n\\underbrace{M ⫫ Y\\mid X}_\\text{Missing at Random} \\qquad \\underbrace{A⫫ Y^a\\mid X}_\\text{Conditional Exchangeability}\n\\]\nDAGs are also helpful for missing data. In the example above, we might assume that dependence between \\(M_Y\\) and \\(Y\\) arises because being a high school graduate (\\(X\\)) affects both. In this case, the only path connecting \\(Y\\) and \\(M_Y\\) is the path \\(Y\\leftarrow X\\rightarrow M_Y\\), which becomes blocked by conditioning on \\(X\\).",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Missing data"
+    ]
+  },
+  {
+    "objectID": "missing_data.html#swiss-cheese-missingness",
+    "href": "missing_data.html#swiss-cheese-missingness",
+    "title": "Missing data",
+    "section": "Swiss cheese missingness",
+    "text": "Swiss cheese missingness\nIn practice, researchers often face missingness on multiple variables, so that the dataset has holes in various places. We will refer to this as “Swiss cheese missingness” because the holes in the data are like a piece of Swiss cheese. If one analyzed these data with listwise deletion, only case 6 would remain since it is the only case with entirely valid values.\n\n\n\n\n\n\n\n\n\nWith Swiss cheese missingness, researchers often rely on a multivariate version of the Missing at Random assumption: a vector of missingness \\(\\vec{M}\\) is independent of the true values of the variables \\(\\vec{X}\\) given the observed values \\(\\vec{X}_\\text{Observed}\\).\nIt is very difficult to reason about when the multivariate MAR assumption holds. Using the simplified example below with only two variables, one would hope that\n\n\\(M_Y\\) is independent of \\(Y\\) conditional on \\(X\\)\n\nholds in the DAG below, where \\(X\\) blocks the only path \\(Y\\leftarrow X \\rightarrow M_Y\\) between \\(Y\\) and \\(M_Y\\)\n\n\\(M_X\\) is independent of \\(X\\) conditional on \\(Y\\)\n\nholds in the DAG below, where \\(Y\\) blocks the only path \\(X\\rightarrow Y \\rightarrow M_X\\) between \\(X\\) and \\(M_X\\)\n\n\n\nIn general, researchers almost never draw a missingness DAG like the one above. The assumptions are very difficult to satisfy, and with more than a few variables the DAG becomes intractably complicated. Thus, it is important to remember that the Missing at Random assumption in the setting of Swiss cheese missingness is a truly heroic assumption that we simply hope will hold.\nNonetheless, readers and reviewers are often more amenable to MAR than MCAR. You may also find that as a researcher, listwise deletion would remove so many observations that your analysis becomes impossible. Thus, many of us make a heroic MAR assumption and then proceed with a common empirical strategy that can be valid under MAR: multiple imputation.",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Missing data"
+    ]
+  },
+  {
+    "objectID": "missing_data.html#imputation-of-missing-values",
+    "href": "missing_data.html#imputation-of-missing-values",
+    "title": "Missing data",
+    "section": "Imputation of missing values",
+    "text": "Imputation of missing values\nWhen the MAR assumption holds, one can model the conditional distribution of each variable as a function of all the other variables. When focusing on the \\(p\\)-th variable,\n\\[\nX_p \\mid X_{-p} \\sim \\text{a model}\n\\] Then one can use the model to impute hypothetical values of \\(X_p\\) given its conditional distribution, using them to replace missing values.\n\\[\nx^\\text{Imputed}_{ip} = \\begin{cases}\nx^\\text{Observed}_{ip} &\\text{if }M_{ip}=0 \\\\\n\\text{Draw from model for }X_p\\mid X_{-p}=x_{i,-p}&\\text{if }M_{ip}=1\n\\end{cases}\n\\] One can then carry out analysis on the imputed data exactly as one would have if the full data had been observed. One can think of the entire process as falling within an estimator function, which is represented below in pseudocode.\n\nestimator &lt;- function(data) {\n  # Impute missing values with some impute() function\n  # from a software package for multiple imputation.\n  imputed &lt;- impute(data)\n  # Apply a point estimtor that you write\n  estimate &lt;- point_estimator(imputed)\n  return(estimate)\n}",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Missing data"
+    ]
+  },
+  {
+    "objectID": "missing_data.html#statistical-uncertainty",
+    "href": "missing_data.html#statistical-uncertainty",
+    "title": "Missing data",
+    "section": "Statistical uncertainty",
+    "text": "Statistical uncertainty\nBecause imputation above is incorporated into an estimator function, you can assess statistical uncertainty by resampling methods in which the estimator() function is applied repeatedly to resampled datasets data^* such as via a bootstrap.\nFor practical purposes, the procedure above is a good one to choose. It works well regardless of whether there exists an analytical variance formula for your estimator. But for historical purposes, it is worthwhile to know about the most common approach to statistical uncertainty in current practice: Rubin’s rules.\n\nHistorical note: Rubin’s rules\nA widely-used approach to statistical uncertainty was developed by Rubin (1987). In an era of limited computational resources, one might use the observed data to create a small number (e.g., 5) of imputed datasets. Then, one could conduct analysis on each of these and pool the point estimates and variances after the fact. For a target estimand \\(\\theta\\), one could then produce imputation-specific point estimates \\(\\hat\\theta_1,\\dots,\\hat\\theta_5\\) as well as within-imputation variance estimate \\(\\text{V}(\\hat\\theta_1),\\dots,\\text{V}(\\hat\\theta_5)\\). As a point estimate, one would use the mean of the \\(m\\) imputation-specific estimates: \\(\\frac{1}{m}\\sum_{i=1}^m \\hat\\theta_i\\). The variance of this point estimate equal a combination of the average within-imputation variance and the between-imputation variance, which captures our uncertainty about the missing values.\n\nRubin’s rules are widely used. They work well in settings where each imputation-specific variance \\(\\text{V}(\\hat\\theta_i)\\) can be estimated from an analytic formula. But when this within-imputation variance is going to be estimated by a bootstrap, Rubin’s rules would require you to repeat your bootstrap \\(m\\) times (once per imputation). For this reason and in favor of simplicity, I personally use the bootstrap strategy instead: carry out single imputation within an estimator function, with variance calculated by bootstrapping that estimator function.",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Missing data"
+    ]
+  },
+  {
+    "objectID": "yhat_regression.html",
+    "href": "yhat_regression.html",
+    "title": "Regression for Y-hat",
+    "section": "",
+    "text": "slides\nThis class is about regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.\nSome of this class relies on an ongoing project on description: ilundberg.github.io/description",
+    "crumbs": [
+      "Problem Sets",
+      "Descriptive Data Science with Probability Samples",
+      "Regression for Y-hat"
+    ]
+  },
+  {
+    "objectID": "weighting_for_inference.html",
+    "href": "weighting_for_inference.html",
+    "title": "Weighting for causal and population inference",
+    "section": "",
+    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. Slides are available here and may be updated more before class.\n\nNote. This week does not yet have website materials. I haven’t yet finished updating materials for the website, but you are welcome to see my undergrad course notes which share many similarities to the grad course notes.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Estimation by weighting"
+    ]
+  },
+  {
+    "objectID": "panel_data.html",
+    "href": "panel_data.html",
+    "title": "Panel data",
+    "section": "",
+    "text": "Here are slides for today.\n\nThis session will cover a series of estimators that apply when\n\nmany units are observed over many time periods each\none or more units become treated at some point in the observation window\n\nThese estimators include difference in difference, interrupted time series, regression discontinuity, and synthetic control. In order to cover many estimators, today’s class will focus more on conceptual ideas than on coding. Thus, material is currently available in slide form rather than in written note form.",
+    "crumbs": [
+      "Problem Sets",
+      "Non-Probability Samples and Observational Causal Inference",
+      "Panel data"
     ]
   },
   {
@@ -866,40 +955,23 @@
     ]
   },
   {
-    "objectID": "panel_data.html",
-    "href": "panel_data.html",
-    "title": "Panel data",
+    "objectID": "scales.html",
+    "href": "scales.html",
+    "title": "Scale construction",
     "section": "",
-    "text": "Here are slides for today.\n\nThis session will cover a series of estimators that apply when\n\nmany units are observed over many time periods each\none or more units become treated at some point in the observation window\n\nThese estimators include difference in difference, interrupted time series, regression discontinuity, and synthetic control. In order to cover many estimators, today’s class will focus more on conceptual ideas than on coding. Thus, material is currently available in slide form rather than in written note form.",
+    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
     "crumbs": [
       "Problem Sets",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Panel data"
+      "Additional topics",
+      "Scale construction"
     ]
   },
   {
-    "objectID": "weighting_for_inference.html",
-    "href": "weighting_for_inference.html",
-    "title": "Weighting for causal and population inference",
+    "objectID": "who_we_are.html",
+    "href": "who_we_are.html",
+    "title": "Who We Are",
     "section": "",
-    "text": "This session will be about weighting to draw population inference from non-probability samples and causal inference from observational studies, both of which involve analogous assumptions and estimators. Slides are available here and may be updated more before class.\n\nNote. This week does not yet have website materials. I haven’t yet finished updating materials for the website, but you are welcome to see my undergrad course notes which share many similarities to the grad course notes.",
-    "crumbs": [
-      "Problem Sets",
-      "Non-Probability Samples and Observational Causal Inference",
-      "Estimation by weighting"
-    ]
-  },
-  {
-    "objectID": "yhat_regression.html",
-    "href": "yhat_regression.html",
-    "title": "Regression for Y-hat",
-    "section": "",
-    "text": "slides\nThis class is about regression as a tool to approximate a conditional expectation function. From this perspective, the \\(\\hat\\beta\\) estimates are only a step toward the broader purpose of regression to produce \\(\\hat{Y}\\) values that achieve this approximation well. This perspective will ultimately allow us to consider machine learning estimators beyond regression.\nSome of this class relies on an ongoing project on description: ilundberg.github.io/description",
-    "crumbs": [
-      "Problem Sets",
-      "Descriptive Data Science with Probability Samples",
-      "Regression for Y-hat"
-    ]
+    "text": "Get to know a little bit about our teaching team!\n\n\n\n\n\n\n\n\nIan Lundberg\nianlundberg@ucla.edu\n(he / him)\nWorking with data to understand inequality brings me joy! I am excited about causal inference and finding new research questions and ways to answer them. Other joys of mine include hiking, surfing, and oatmeal with blueberries.\n\n\n\n\n\n\n\n\nSoonhong Cho\ntnsehdtm@gmail.com\n(he / him)\nSoonhong is a PhD candidate in political science at UCLA."
   },
   {
     "objectID": "problem_sets.html",

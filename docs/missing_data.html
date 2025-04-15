@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -66,6 +100,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -246,8 +309,22 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#think-carefully-about-data-you-dont-see" id="toc-think-carefully-about-data-you-dont-see" class="nav-link active" data-scroll-target="#think-carefully-about-data-you-dont-see">Think carefully about data you don’t see</a></li>
+  <li><a href="#missing-completely-at-random-a-social-scientists-hope" id="toc-missing-completely-at-random-a-social-scientists-hope" class="nav-link" data-scroll-target="#missing-completely-at-random-a-social-scientists-hope">Missing completely at random: A social scientist’s hope</a></li>
+  <li><a href="#missing-at-random-exchangeability-within-subgroups" id="toc-missing-at-random-exchangeability-within-subgroups" class="nav-link" data-scroll-target="#missing-at-random-exchangeability-within-subgroups">Missing at random: Exchangeability within subgroups</a></li>
+  <li><a href="#swiss-cheese-missingness" id="toc-swiss-cheese-missingness" class="nav-link" data-scroll-target="#swiss-cheese-missingness">Swiss cheese missingness</a></li>
+  <li><a href="#imputation-of-missing-values" id="toc-imputation-of-missing-values" class="nav-link" data-scroll-target="#imputation-of-missing-values">Imputation of missing values</a></li>
+  <li><a href="#statistical-uncertainty" id="toc-statistical-uncertainty" class="nav-link" data-scroll-target="#statistical-uncertainty">Statistical uncertainty</a>
+  <ul class="collapse">
+  <li><a href="#historical-note-rubins-rules" id="toc-historical-note-rubins-rules" class="nav-link" data-scroll-target="#historical-note-rubins-rules">Historical note: Rubin’s rules</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -271,9 +348,273 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.</p>
+<blockquote class="blockquote">
+<p>This is a supplemental topic which in 2025 was covered in 212C (the quarter following 212B). Here are <a href="slides/missing_data/missing_data.pdf">slides</a></p>
+</blockquote>
+<p>Statistics classes often present examples in which all variables have valid values for all cases. But in practice, values are often missing in data used in social science research. This page introduces missing data and connects approaches to missing data to existing approaches you have already learned for causal inference.</p>
+<section id="think-carefully-about-data-you-dont-see" class="level2">
+<h2 class="anchored" data-anchor-id="think-carefully-about-data-you-dont-see">Think carefully about data you don’t see</h2>
+<blockquote class="blockquote">
+<p>This section presents a historical account, drawing on <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.1984.10478038">Mangel and Samaniego (1984)</a>. Our use of this example is inspired by Joe Blitzstein’s presentation <a href="https://www.youtube.com/watch?v=dzFf3r1yph8">“The Soul of Statistics”</a> at Harvard Thinks Big.</p>
+</blockquote>
+<p>Abraham Wald (of Wald test fame) was born in 1902 in Austria-Hungary. As a Jewish statistician, he faced persecution from the Nazis and fled to the U.S. in 1938. As a statistical consultant to the U.S. Navy, he was tasked with an important question: where should reinforce the armor on planes used in battle?</p>
+<p>The Navy presented Wald with data on planes that returned from battle, where it was possible to see where those planes had been hit by enemy fire. As a simplified example, suppose that many returning planes showed evidence of hits to the fuselage. A naive adviser might recommend reinforcing the planes’ armor around the fuselage.</p>
+<p>Wald had a different insight: think carefully about the planes that <strong>did not return</strong>. For example, very few of the returning planes had a single hit to the engine. Did this mean that the engine was less likely to take enemy fire? No, instead Wald deduced that this implied that a single hit to the engine had a high likelihood of downing the plane—so that such a plane would never appear in the data.</p>
+<p>The example of Wald’s analysis of planes illustrates a key concept in statistical analysis with missing data: one must carefully theorize why some data in the population may be missing in one’s analysis.</p>
+</section>
+<section id="missing-completely-at-random-a-social-scientists-hope" class="level2">
+<h2 class="anchored" data-anchor-id="missing-completely-at-random-a-social-scientists-hope">Missing completely at random: A social scientist’s hope</h2>
+<p>The simplest approach to missing data is to drop any cases with missing values, analyzing only the cases with observed values. This approach is sometimes called <strong>listwise deletion</strong>.</p>
+<p>Consider the population of 4 people below, each of whom has an outcome value: <span class="math inline">\(Y = 1\)</span> if employed or <span class="math inline">\(Y = 0\)</span> if not. Each person also has a missingness indicator: <span class="math inline">\(M_Y = 0\)</span> if they answered a survey question about employment and <span class="math inline">\(M_Y = 1\)</span> if the data are missing. The researcher does not see the true value of <span class="math inline">\(Y\)</span>, but rather only sees the missingness indicator <span class="math inline">\(M_Y\)</span> and the survey response <span class="math inline">\(Y_\text{Observed}\)</span>.</p>
+<table class="caption-top table">
+<caption>A simplified setting in which MCAR holds: <span class="math inline">\(Y ⫫ M_Y\)</span>, so listwise deletion is ok.</caption>
+<colgroup>
+<col style="width: 18%">
+<col style="width: 23%">
+<col style="width: 22%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Person ID</th>
+<th>True Outcome <span class="math inline">\(Y\)</span></th>
+<th>Missingness <span class="math inline">\(M_Y\)</span></th>
+<th>Observed Outcome <span class="math inline">\(Y_\text{Observed}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>0</td>
+<td>1</td>
+<td>NA</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>1</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table>
+<p>The researcher follows the simple approach and simply drops cases 2 and 4, for which the outcome data were missing. Taking the average of the observed cases (1 and 3), the researcher estimates that 50% of the population is employed. By luck, this researcher’s estimate is correct! In this case <span class="math inline">\(\text{E}(Y_\text{Observed}\mid \text{M_Y} = 0) = \text{E}(Y)\)</span>.</p>
+<p>The setting above is constructed so that a key assumption holds.</p>
+<blockquote class="blockquote">
+<p><strong>Missing Completely at Random (MCAR).</strong> Missingness is independent of true values. In the univariate case, <span class="math inline">\(Y⫫ M_Y\)</span>. In the multivariate case, <span class="math inline">\(\vec{X}⫫ \vec{M}\)</span> where <span class="math inline">\(\vec{X}\)</span> is a vector of variables and <span class="math inline">\(\vec{M}\)</span> is a vector of missingness indicators on those variables.</p>
+</blockquote>
+<p>The MCAR assumption is highly doubtful in many settings. In the present example, perhaps people who are not employed are busy searching for jobs and thus have no time to answer surveys. Then the data might follow the pattern below, in which MCAR does not hold and a researcher who dropped missing cases would mistakenly conclude that 100% of the population is employed!</p>
+<table class="caption-top table">
+<caption>A simplified setting in which MCAR <strong>does not</strong> hold: <span class="math inline">\(Y\not⫫ M_Y\)</span>, so listwise deletion introduces problems.</caption>
+<colgroup>
+<col style="width: 18%">
+<col style="width: 23%">
+<col style="width: 22%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Person ID</th>
+<th>True Outcome <span class="math inline">\(Y\)</span></th>
+<th>Missingness <span class="math inline">\(M_Y\)</span></th>
+<th>Observed Outcome <span class="math inline">\(Y_\text{Observed}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>NA</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>0</td>
+<td>1</td>
+<td>NA</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Connection to causal inference.</strong> In missing data, we do not observe <span class="math inline">\(Y\)</span> when the missingness indicator is <span class="math inline">\(M = 1\)</span>. This is analogous to the causal inference setting, in which we do not observe <span class="math inline">\(Y^0\)</span> when the treatment indicator is <span class="math inline">\(A = 1\)</span>. The MCAR assumption is identical to the marginal exchangeability assumption that holds in a simple randomized experiment.</p>
+</section>
+<section id="missing-at-random-exchangeability-within-subgroups" class="level2">
+<h2 class="anchored" data-anchor-id="missing-at-random-exchangeability-within-subgroups">Missing at random: Exchangeability within subgroups</h2>
+<p>Because the MCAR assumption rarely holds, one might hope that a conditional version of this assumption holds: that missingness is independent of true values within subgroups of observed variables.</p>
+<p>As a concrete example, suppose we now have a population of 6 people: 4 high school graduates and 2 non-graduates.</p>
+<table class="caption-top table">
+<caption>A simplified setting in which MCAR does not hold, but MAR holds: <span class="math inline">\(Y\not⫫ M_Y\)</span>, but <span class="math inline">\(Y⫫ M_Y\mid X\)</span>. Listwise deletion introduces problems but multiple imputation is consistent.</caption>
+<colgroup>
+<col style="width: 10%">
+<col style="width: 20%">
+<col style="width: 16%">
+<col style="width: 17%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Person ID</th>
+<th>High school grad <span class="math inline">\(X\)</span></th>
+<th>True Outcome <span class="math inline">\(Y\)</span></th>
+<th>Missingness <span class="math inline">\(M_Y\)</span></th>
+<th>Observed Outcome <span class="math inline">\(Y_\text{Observed}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>NA</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>NA</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>In this example, missingness is not independent of <span class="math inline">\(Y\)</span>: the employment rate is 25% among observed cases but 50% among missing cases. The overall rate of employment among the 6 people is 33%, but a researcher who analyzed only the observed outcomes would mistakenly conclude that the employment rate is 25%.</p>
+<p>There is hope for the example above, however. Among high school graduates, the responders have the same employment rate as those who don’t respond. Among non-graduates, everyone responds. Thus, a conditional assumption known as missing at random holds.</p>
+<blockquote class="blockquote">
+<p><strong>Missing at random.</strong> Missingness is independent of true values, given observed values. In the univariate case, <span class="math inline">\(Y⫫ M_Y\mid X\)</span>. In the multivariate case, <span class="math inline">\(\vec{X}⫫ \vec{M}\mid \vec{X}_\text{Observed}\)</span> where <span class="math inline">\(\vec{X}\)</span> is a vector of variables and <span class="math inline">\(\vec{M}\)</span> is a vector of missingness indicators on those variables, and <span class="math inline">\(\vec{X}_\text{Observed}\)</span> is a vector of observed values.</p>
+</blockquote>
+<p>When missing at random holds, it would be safe to</p>
+<ul>
+<li>stratify by <span class="math inline">\(X\)</span></li>
+<li>conduct analysis by listwise deletion</li>
+<li>re-aggregate over <span class="math inline">\(X\)</span></li>
+</ul>
+<p>In math, we can carry out a proof using the missing at random assumption.</p>
+<p><span class="math display">\[\begin{aligned}
+\text{E}(Y) &amp;= \text{E}_X\bigg(\text{E}(Y\mid X)\bigg) &amp;\text{law of iterated expectation} \\
+&amp;= \text{E}_X\bigg(\text{E}(Y\mid X, M_Y = 0)\bigg) &amp;\text{missing at random assumption}
+\end{aligned}\]</span></p>
+<p>where the second line can be estimated directly since we observe <span class="math inline">\(Y = Y_\text{Observed}\)</span> for the non-missing cases (for whom <span class="math inline">\(M_Y = 0\)</span>).</p>
+<p><strong>Connection to causal inference.</strong> The MAR assumption is identical to the conditional exchangeability assumption of invoked for causal inference.</p>
+<p><span class="math display">\[
+\underbrace{M ⫫ Y\mid X}_\text{Missing at Random} \qquad \underbrace{A⫫ Y^a\mid X}_\text{Conditional Exchangeability}
+\]</span></p>
+<p>DAGs are also helpful for missing data. In the example above, we might assume that dependence between <span class="math inline">\(M_Y\)</span> and <span class="math inline">\(Y\)</span> arises because being a high school graduate (<span class="math inline">\(X\)</span>) affects both. In this case, the only path connecting <span class="math inline">\(Y\)</span> and <span class="math inline">\(M_Y\)</span> is the path <span class="math inline">\(Y\leftarrow X\rightarrow M_Y\)</span>, which becomes blocked by conditioning on <span class="math inline">\(X\)</span>.</p>
+<p><img src="assets/figures/missing_data_dag.png" class="img-fluid" style="width:30.0%"></p>
+</section>
+<section id="swiss-cheese-missingness" class="level2">
+<h2 class="anchored" data-anchor-id="swiss-cheese-missingness">Swiss cheese missingness</h2>
+<p>In practice, researchers often face missingness on multiple variables, so that the dataset has holes in various places. We will refer to this as “Swiss cheese missingness” because the holes in the data are like a piece of Swiss cheese. If one analyzed these data with listwise deletion, only case 6 would remain since it is the only case with entirely valid values.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="missing_data_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>With Swiss cheese missingness, researchers often rely on a multivariate version of the Missing at Random assumption: a vector of missingness <span class="math inline">\(\vec{M}\)</span> is independent of the true values of the variables <span class="math inline">\(\vec{X}\)</span> given the observed values <span class="math inline">\(\vec{X}_\text{Observed}\)</span>.</p>
+<p>It is very difficult to reason about when the multivariate MAR assumption holds. Using the simplified example below with only two variables, one would hope that</p>
+<ul>
+<li><span class="math inline">\(M_Y\)</span> is independent of <span class="math inline">\(Y\)</span> conditional on <span class="math inline">\(X\)</span>
+<ul>
+<li>holds in the DAG below, where <span class="math inline">\(X\)</span> blocks the only path <span class="math inline">\(Y\leftarrow X \rightarrow M_Y\)</span> between <span class="math inline">\(Y\)</span> and <span class="math inline">\(M_Y\)</span></li>
+</ul></li>
+<li><span class="math inline">\(M_X\)</span> is independent of <span class="math inline">\(X\)</span> conditional on <span class="math inline">\(Y\)</span>
+<ul>
+<li>holds in the DAG below, where <span class="math inline">\(Y\)</span> blocks the only path <span class="math inline">\(X\rightarrow Y \rightarrow M_X\)</span> between <span class="math inline">\(X\)</span> and <span class="math inline">\(M_X\)</span></li>
+</ul></li>
+</ul>
+<p><img src="assets/figures/missing_data_dag_2.png" class="img-fluid" style="width:30.0%"></p>
+<p>In general, researchers almost never draw a missingness DAG like the one above. The assumptions are very difficult to satisfy, and with more than a few variables the DAG becomes intractably complicated. Thus, it is important to remember that the Missing at Random assumption in the setting of Swiss cheese missingness is a truly heroic assumption that we simply hope will hold.</p>
+<p>Nonetheless, readers and reviewers are often more amenable to MAR than MCAR. You may also find that as a researcher, listwise deletion would remove so many observations that your analysis becomes impossible. Thus, many of us make a heroic MAR assumption and then proceed with a common empirical strategy that can be valid under MAR: multiple imputation.</p>
+</section>
+<section id="imputation-of-missing-values" class="level2">
+<h2 class="anchored" data-anchor-id="imputation-of-missing-values">Imputation of missing values</h2>
+<p>When the MAR assumption holds, one can model the conditional distribution of each variable as a function of all the other variables. When focusing on the <span class="math inline">\(p\)</span>-th variable,</p>
+<p><span class="math display">\[
+X_p \mid X_{-p} \sim \text{a model}
+\]</span> Then one can use the model to impute hypothetical values of <span class="math inline">\(X_p\)</span> given its conditional distribution, using them to replace missing values.</p>
+<p><span class="math display">\[
+x^\text{Imputed}_{ip} = \begin{cases}
+x^\text{Observed}_{ip} &amp;\text{if }M_{ip}=0 \\
+\text{Draw from model for }X_p\mid X_{-p}=x_{i,-p}&amp;\text{if }M_{ip}=1
+\end{cases}
+\]</span> One can then carry out analysis on the imputed data exactly as one would have if the full data had been observed. One can think of the entire process as falling within an estimator function, which is represented below in pseudocode.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>estimator <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Impute missing values with some impute() function</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># from a software package for multiple imputation.</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  imputed <span class="ot">&lt;-</span> <span class="fu">impute</span>(data)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Apply a point estimtor that you write</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  estimate <span class="ot">&lt;-</span> <span class="fu">point_estimator</span>(imputed)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(estimate)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="statistical-uncertainty" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-uncertainty">Statistical uncertainty</h2>
+<p>Because imputation above is incorporated into an estimator function, you can assess statistical uncertainty by <a href="./resampling.html">resampling methods</a> in which the <code>estimator()</code> function is applied repeatedly to resampled datasets <code>data</code>^* such as via a bootstrap.</p>
+<p>For practical purposes, the procedure above is a good one to choose. It works well regardless of whether there exists an analytical variance formula for your estimator. But for historical purposes, it is worthwhile to know about the most common approach to statistical uncertainty in current practice: Rubin’s rules.</p>
+<section id="historical-note-rubins-rules" class="level3">
+<h3 class="anchored" data-anchor-id="historical-note-rubins-rules">Historical note: Rubin’s rules</h3>
+<p>A widely-used approach to statistical uncertainty was developed by <a href="https://onlinelibrary.wiley.com/doi/book/10.1002/9780470316696">Rubin (1987)</a>. In an era of limited computational resources, one might use the observed data to create a small number (e.g., 5) of imputed datasets. Then, one could conduct analysis on each of these and pool the point estimates and variances after the fact. For a target estimand <span class="math inline">\(\theta\)</span>, one could then produce imputation-specific point estimates <span class="math inline">\(\hat\theta_1,\dots,\hat\theta_5\)</span> as well as within-imputation variance estimate <span class="math inline">\(\text{V}(\hat\theta_1),\dots,\text{V}(\hat\theta_5)\)</span>. As a point estimate, one would use the mean of the <span class="math inline">\(m\)</span> imputation-specific estimates: <span class="math inline">\(\frac{1}{m}\sum_{i=1}^m \hat\theta_i\)</span>. The variance of this point estimate equal a combination of the average within-imputation variance and the between-imputation variance, which captures our uncertainty about the missing values.</p>
+<p><img src="assets/figures/rubins_rules.png" class="img-fluid" style="width:50.0%"></p>
+<p>Rubin’s rules are widely used. They work well in settings where each imputation-specific variance <span class="math inline">\(\text{V}(\hat\theta_i)\)</span> can be estimated from an analytic formula. But when this within-imputation variance is going to be estimated by a bootstrap, Rubin’s rules would require you to repeat your bootstrap <span class="math inline">\(m\)</span> times (once per imputation). For this reason and in favor of simplicity, I personally use the bootstrap strategy instead: carry out single imputation within an estimator function, with variance calculated by bootstrapping that estimator function.</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
