@@ -959,7 +959,43 @@
     "href": "scales.html",
     "title": "Scale construction",
     "section": "",
-    "text": "To be written. This is not a central topic of the course, but will have an appendix page since it may be relevant to student projects.",
+    "text": "Note to readers. More than the other pages, this page is a work in progress. I do not use scales much, and some issues that I raise on this page may be solved by work of which I am not yet aware! Things here could also be wrong. If you are a reader who knows about or works with scales, I’m always happy to hear your thoughts.",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Scale construction"
+    ]
+  },
+  {
+    "objectID": "scales.html#a-case-when-scales-work-a-truly-latent-causal-treatment",
+    "href": "scales.html#a-case-when-scales-work-a-truly-latent-causal-treatment",
+    "title": "Scale construction",
+    "section": "A case when scales work: A truly latent causal treatment",
+    "text": "A case when scales work: A truly latent causal treatment\nSuppose that \\(A_i \\sim \\mathcal{N}(0,1)\\) is a latent variable that causes \\(Y_i\\). We can’t see \\(A_i\\) directly, but only indirect measures \\(X_{i1},X_{i2},X_{i3}\\).\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHow should we estimate the causal effect of \\(A_i\\) on \\(Y_i\\)? One way is by converting the measured variables into a scale. For example, we might define a measure \\(\\tilde{A}_i\\).\n\\[\n\\tilde{A}_i = \\frac{1}{3}\\left(X_{i1} + X_{i2} + X_{i3}\\right)\n\\]\nThis might be especially credible if the true data generating process were a linear model, such as each measure being a standard Normal draw centered on the true latent construct value \\(A_i\\).\n\\[\nX_{ij} \\sim \\mathcal{N}(A_i, 1)\n\\]\nIn that case, one can show that our scale estimator has a known sampling distribution,\n\\[\n\\tilde{A}_i \\sim \\mathcal{N}(A_i, \\sigma^2 = \\frac{1}{3})\n\\]\nunder which the scale estimate equals the latent construct on average, but is estimated with some noise. The measure would be better if there were more \\(X\\) variables providing many signals of the latent construct.\nSuppose the true causal effect of \\(A\\) on \\(Y\\) followed a very simple linear functional form that could be well-summarized by coefficients \\(\\alpha\\) and \\(\\beta\\), which capture both a descriptive and a causal association because in this case \\(A\\rightarrow Y\\) is unconfounded.\n\\[\nE(Y^a) = E(Y\\mid A = a) = \\alpha + \\beta a\n\\]\nIf one estimated by OLS regression of \\(Y\\) on \\(\\tilde{A}\\), this would produce a downwardly biased estimator for \\(\\beta\\) because of measurement error in \\(\\tilde{A}\\). Because the measurement error in this simple model is by assumption known, one could correct for that error and produce an unbiased estimator for \\(\\beta\\) despite having not measured \\(A\\) directly. First, we can derive the estimate when regressing \\(Y\\) on \\(\\tilde{A}\\).\n\\[\n\\begin{aligned}\n\\text{E}(Y\\mid\\tilde{A}) &= \\tilde\\alpha + \\tilde\\beta \\tilde{A} \\\\\n\\hat{\\tilde\\beta} &= \\frac{\\text{Cov}(\\tilde{A},Y)}{\\text{Var}(\\tilde{A})} \\\\\n&= \\frac{\\text{E}\\left(\\text{Cov}(\\tilde{A}, Y \\mid A)\\right) + \\text{Cov}\\left(\\text{E}(\\tilde{A}\\mid A), \\text{E}(Y\\mid A)\\right)}{\\text{E}(\\text{Var}(\\tilde{A}\\mid A)) + \\text{Var}(\\text{E}(\\tilde{A}\\mid A))} \\\\\n&= \\frac{\n  0 + \\text{Cov}(A, \\alpha + \\beta A)\n}{\n  \\frac{1}{3} + \\text{Var}(A)\n} \\\\\n&= \\frac{\n  \\beta\n}{\n  \\frac{1}{3} + 1\n} \\\\\n&= \\frac{3}{4}\\beta\n\\end{aligned}\n\\] Therefore one could arrive at the following strategy:\n\nestimate \\(\\tilde{A}\\) by the average of \\(X_{i1}\\), $X_{i2}, \\(X_{i3}\\).\nestimate \\(\\hat{\\tilde\\beta}\\) by regressing \\(Y\\) on \\(\\tilde{A}\\)\nestimate \\(\\hat\\beta = \\frac{4}{3}\\hat{\\tilde\\beta}\\)\n\nIn the analysis above, a few things made this simple:\n\neach measure \\(X_{ij}\\) was linearly related to \\(A_i\\)\neach measure had the same mean given \\(A_i\\) and the same conditional variance\nmeasures were independent given \\(A_i\\): \\(X_{ij}\\unicode{x2AEB} X_{ij'}\\mid A_i\\) for all \\(j\\) and \\(j'\\)\n\nMethods for factor analysis and scale construction can relax the criteria above. These are statistical issues that are solveable. A bigger reason to be skeptical about scales is as follows: what if the latent construct is not the causal force after all?",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Scale construction"
+    ]
+  },
+  {
+    "objectID": "scales.html#how-scales-can-be-problematic",
+    "href": "scales.html#how-scales-can-be-problematic",
+    "title": "Scale construction",
+    "section": "How scales can be problematic",
+    "text": "How scales can be problematic\nSuppose the causal process is more accurately represented by the DAG below: each of the \\(X\\) variables is a cause of \\(Y\\), rather than the latent construct. There is actually no latent construct \\(A\\) in the world; the variable \\(A\\) is only a statistical tool that is a deterministic aggregation of the \\(X\\) variables. Thus \\(A\\) actually doe snot appear in the DAG at all! What has the causal power are the \\(X\\) variables.\n\n          \nThis may often be the setting in which social scientists use scales. A few examples:\n\nNeighborhood disadvantage\n\n\\(A\\) is neighborhood disadvantage\n\\(X\\) variables are neighborhood-level poverty, crime, and presence of local nonprofits\n\\(Y\\) is children’s high school completion rates\n\nAcademic achievement\n\n\\(A\\) is academic achievement measured by GPA\n\\(X\\) variables are grades in math, English, science, and social studies\n\\(Y\\) is college enrollment\n\nVoting patterns in Congress\n\n\\(A\\) is a partisanship score (liberal to conservative)\n\\(X\\) variables are voting patterns on fiscal, social, and foreign policy issues\n\\(Y\\) is being re-elected\n\n\nIn each case, it is possible that each \\(X\\) affects \\(Y\\), rather than \\(A\\) affecting \\(Y\\). If we had enough data, it would be better to study the causal effect of each \\(X\\) on \\(Y\\) instead of aggregating them to a score.\n\nConsistency goes wrong when you aggregate\nWhat is the potential high school completion outcome \\(Y^a\\) for a child assigned to grow up in a neighborhood assigned to disadvantaged score \\(a\\)? If poverty and crime each affect high school completion, then it would matter how you assign that child to this score: the outcome might depend on what mix of crime and poverty together create the score \\(a\\).\nMathematically, the consistency assumption is no longer so clear. The potential outcome if assigned to treatment value \\(a\\) is not fully defined. It might be better to study the potential outcome \\(Y^{x_1,x_2,x_3}\\) to be realized if assigned to a neighborhood characterized by the specific set of treatment conditions \\(x_1\\), \\(x_2\\), and \\(x_3\\).\nA scale may still be useful in practice: there may be too few cases to yield a precise estimate of the joint causal effects of \\(X_1\\), \\(X_2\\), and \\(X_3\\). It is possible that an estimator using the scale \\(Y^{\\tilde{a}(x_1,x_2,x_3)}\\) would actually be closer to \\(Y^{x_1,x_2,x_3}\\) than an estimator that studies the full joint causal effects. This may be an open question.\nWhat is relevant is that when using a scale, one ought to be transparent about the assumed model of the world and why the scale is useful.",
+    "crumbs": [
+      "Problem Sets",
+      "Additional topics",
+      "Scale construction"
+    ]
+  },
+  {
+    "objectID": "scales.html#pros-and-cons",
+    "href": "scales.html#pros-and-cons",
+    "title": "Scale construction",
+    "section": "Pros and cons",
+    "text": "Pros and cons\nTo recap, scales come with some pros and cons:\n\nPros\n\nsimpler to study one scale than many causal inputs\nfewer causal estimates to report\npossible gains in statistical precision\n\nCons\n\nloss of concreteness: you can ask a policymaker to reduce poverty, but it is hard to ask a policymaker to intervene to change a latent scale\na scale requires a model of how signals relate to the latent construct, and that model may be wrong\na scale may create challenges for the consistency assumption\n\n\nIf using a scale, some things you want are:\n\nas many signals of the latent construct as possible\nindependence of your signals\nstrong association between the latent construct and each signal\n\nMuch of the literature on scales focuses on these things because they are statistically tractable. But before using a scale, you should ask yourself whether a move from many concrete variables to one latent variable will improve or complicate your analysis.",
     "crumbs": [
       "Problem Sets",
       "Additional topics",
